@@ -38,9 +38,9 @@ INSTALLDIR  ?= /usr/local/bin/
 # Arguments
 REGISTRY    ?= ghcr.io
 ORG         ?= lancs-net
+REPO        ?= wayfinder
 BIN         ?= wayfinder
 IMAGE_TAG   ?= latest
-IMAGE       ?= $(REGISTRY)/$(ORG)/$(BIN):$(IMAGE_TAG)
 
 
 ifeq ($(HASH),)
@@ -63,9 +63,9 @@ GIT_SHA     ?= $(shell git update-index -q --refresh && \
 # Tools
 DOCKER      ?= docker
 DOCKER_RUN  ?= $(DOCKER) run --rm $(1) \
-               -w /go/src/github.com/$(ORG)/$(BIN) \
-               -v $(WORKDIR):/go/src/github.com/$(ORG)/$(BIN) \
-               $(REGISTRY)/$(ORG)/$(BIN):$(IMAGE_TAG) \
+               -w /go/src/github.com/$(ORG)/$(REPO) \
+               -v $(WORKDIR):/go/src/github.com/$(ORG)/$(REPO) \
+               $(REGISTRY)/$(ORG)/$(REPO):$(IMAGE_TAG) \
                  $(2)
 GO          ?= go
 
@@ -109,17 +109,19 @@ $(.PROXY)build:
 .PHONY: container
 container: GO_VERSION         ?= 1.14
 container: DOCKER_BUILD_EXTRA ?=
+container: IMAGE              ?= $(REGISTRY)/$(ORG)/$(REPO):$(IMAGE_TAG)
 container:
 	$(DOCKER) build \
 		--build-arg ORG=$(ORG) \
-		--build-arg BIN=$(BIN) \
+		--build-arg REPO=$(REPO) \
 		--build-arg GO_VERSION=$(GO_VERSION) \
 		--tag $(IMAGE) \
+		--file $(WORKDIR)/Dockerfile \
 		$(DOCKER_BUILD_EXTRA) $(WORKDIR)
 
 # Run an environment where we can build
 .PHONY: devenv
-devenv: DOCKER_RUN_EXTRA ?= -it --name $(BIN)-devenv
+devenv: DOCKER_RUN_EXTRA ?= -it --name $(REPO)-devenv
 devenv:
 	$(Q)$(call DOCKER_RUN,$(DOCKER_RUN_EXTRA),bash)
 
