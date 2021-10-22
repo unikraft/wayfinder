@@ -89,21 +89,21 @@ endif
 
 # Targets
 .PHONY: all
-$(.PROXY)all: build
+$(.PROXY)all: $(BIN)
 
-.PHONY: build
 ifeq ($(DEBUG),y)
-$(.PROXY)build: GO_GCFLAGS ?= -N -l
+$(.PROXY)$(BIN): GO_GCFLAGS ?= -N -l
 endif
-$(.PROXY)build: GO_LDFLAGS ?= -s -w
-$(.PROXY)build: GO_LDFLAGS += -X "main.version=$(APP_VERSION)"
-$(.PROXY)build: GO_LDFLAGS += -X "main.commit=$(GIT_SHA)"
-$(.PROXY)build: GO_LDFLAGS += -X "main.buildTime=$(shell date)"
-$(.PROXY)build:
+$(.PROXY)$(BIN): GO_LDFLAGS ?= -s -w
+$(.PROXY)$(BIN): GO_LDFLAGS += -X "main.version=$(APP_VERSION)"
+$(.PROXY)$(BIN): GO_LDFLAGS += -X "main.commit=$(GIT_SHA)"
+$(.PROXY)$(BIN): GO_LDFLAGS += -X "main.buildTime=$(shell date)"
+$(.PROXY)$(BIN):
 	$(GO) build \
 		-ldflags='$(GO_GCFLAGS)' \
 		-ldflags='$(GO_LDFLAGS)' \
-		-o $(DISTDIR)/$(BIN)
+		-o $(DISTDIR)/$@ \
+		$(WORKDIR)/cmd/$@
 
 # Create an environment where we can build
 .PHONY: container
