@@ -1,0 +1,230 @@
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Authors: Alexander Jung <a.jung@lancs.ac.uk>
+#
+# Copyright (c) 2021, Lancaster University.  All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# 
+# ===============
+#
+# 
+#
+http-server:
+  addr: ":8080"
+
+# 
+# ===============
+#
+# 
+#
+health:
+
+# 
+# ===============
+#
+# 
+#
+grpc-server:
+  addr: ":5000"
+
+# 
+# ===============
+#
+# 
+#
+service-register:
+
+# 
+# ===============
+#
+# 
+#
+postgres:
+  host: "${MYSQL_HOST:postgres}"
+  port: ${MYSQL_PORT:3306}
+  user: "${MYSQL_USER:wayfinder}"
+  password: "${MYSQL_PASSWORD:wayfinder}"
+  database: "${MYSQL_DATABASE:wayfinder}"
+
+# 
+# ===============
+#
+# 
+#
+redis:
+  master_name: "master"
+  addr: "${REDIS_ADDR:localhost:6379}"
+  password: "${REDIS_PASSWORD:redis}"
+
+
+# 
+# ===============
+#
+# 
+#
+job:
+
+
+# Scheduler Service
+# =================
+#
+# 
+#
+scheduler:
+  prefetch_limit: ${SCHEDULER_PREFETCH_LIMIT:1000}
+  poll_duration: "${SCHEDULER_POLL_DURATION:100ms}"
+  grace_time: "${SCHEDULER_GRACE_TIME:3s}"
+  max_retries: ${SCHEDULER_MAX_RETRIES:3}
+
+
+# Host Configurator
+# =================
+#
+# 
+#
+hostconfig:
+  # TODO: Use this number in scheduler's coremap by evicting cores not in this
+  # list/var
+  cpu_sets: 20-30
+  scaling_governor: performance
+  procfs:
+    # Filesystem
+    - /proc/sys/fs/file-max:20000
+    # - /proc/sys/vm/drop_caches:3
+
+    # Networking
+    - /proc/sys/net/core/somaxconn:1024
+    - /proc/sys/net/ipv4/ip_forward:1
+    - /proc/sys/net/ipv4/ip_local_port_range:1024   60999
+    - /proc/sys/net/ipv4/tcp_keepalive_time:60
+    - /proc/sys/net/ipv4/tcp_keepalive_intvl:60
+    # - /proc/sys/net/ipv4/tcp_tw_reusee:1
+
+    # Processor
+    - /sys/devices/system/cpu/intel_pstate/no_turbo:1
+
+    # Memory
+    - /proc/sys/kernel/randomize_va_space:0
+    - /proc/sys/kernel/unprivileged_userns_clone:1
+
+
+# Container Service
+# =================
+#
+# The container service ...
+#
+container:
+  # Path to cache and filesystems of containers.  Hot tip: place this in /tmp
+  # to make things run faster!
+  #! rootdir: /var/lib/wayfinder/containers
+  rootdir: /tmp/lib/wayfinder/containers
+
+  # 
+  #! cachedir: /var/lib/wayfinder/cache
+  cachedir: /tmp/lib/wayfinder/cache
+
+  # 
+  #! bridge_statedir: /var/lib/wayfinder/bridges
+  bridge_statedir: /tmp/lib/wayfinder/bridges
+
+  # 
+  host_iface: eth0
+
+  # Name of the shared bridge for containers
+  bridge: wayfinder0
+
+  # The subnet for containers to use
+  subnet: 172.88.0.1/16
+
+# MinIO Service
+# =============
+#
+# MinIO provides object storage for kernel and ramdisk artifacts resulting from
+# unique job permutations.
+#
+#! minio:
+#!   endpoint: minio:9000
+#!   access_key_id: wayfinder
+#!   secret_access_key: wayfinder
+#!   use_ssl: false
+#!   default_bucket: wayfinder
+#!   default_location: eu-west-1
+
+# Builder Service
+# ===============
+#
+# The builder service ...
+#
+builder:
+  # Path on the host to output artifacts from a build.
+  # TODO: Save this in an object store?
+  outputdir: /tmp/wayfinder/builds/
+
+  # Timeout for killing a build (which may take too long).  Setting this to zero
+  # means there is no timeout.
+  kill_timeout: 10m
+
+  # How many attempts the build should be tried before we give up on it.
+  retries: 3
+
+
+# Tester Service
+# ==============
+#
+# The tester service ...
+#
+tester:
+
+  # Timeout for killing a test (which may take too long).  Setting this to zero
+  # means there is no timeout.
+  kill_timeout: 10m
+
+  # How many attempts the test should be tried before we give up on it.
+  retries: 3
+
+
+# libvirt Service
+# ===============
+#
+# ...
+#
+libvirt:
+  endpoint: qemu:///system
+
+  # 
+  #! bridge_statedir: /var/lib/wayfinder/bridges
+  bridge_statedir: /tmp/lib/wayfinder/bridges
+
+  # 
+  host_iface: eth0
+
+  # Name of the shared bridge for containers
+  bridge: wayfinder0
+
+  # The subnet for containers to use
+  subnet: 172.88.0.1/16

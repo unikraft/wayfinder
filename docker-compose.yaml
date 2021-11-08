@@ -1,0 +1,154 @@
+version: '3.7'
+
+networks:
+  wayfinder:
+
+volumes:
+  postgres:
+  influxdb:
+  chronograf:
+  minio:
+
+services:
+  logstash:
+    image: ghcr.io/lancs-net/wayfinder/logstash:latest
+    hostname: logstash
+    container_name: wayfinder-logstash
+    restart: on-failure
+    build:
+      context: support/logstash
+    environment:
+      INPUT_PORT: 12345
+      OUTPUT_HOST: influxdb
+      OUTPUT_PORT: 8086
+      OUTPUT_USER: admin
+      OUTPUT_PASS: secret
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+    ports:
+      - 12345:12345
+    networks:
+      - wayfinder
+
+  influxdb:
+    image: influxdb:1.4-alpine
+    container_name: wayfinder-influxdb
+    restart: on-failure
+    stdin_open: true
+    volumes:
+     - influxdb:/var/lib/influxdb
+    # env_file: ./.env
+    ports:
+     - 8086:8086
+    networks:
+      - wayfinder
+    environment:
+      INFLUXDB_DB: wayfinder
+      INFLUXDB_HTTP_AUTH_ENABLED: "true"
+      INFLUXDB_ADMIN_USER: wayfinder
+      INFLUXDB_ADMIN_PASSWORD: wayfinder
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+
+  chronograf:
+    image: chronograf:latest
+    hostname: chronograf
+    container_name: wayfinder-chrongraf
+    restart: on-failure
+    volumes:
+     - chronograf:/var/lib/chronograf
+    ports:
+     - 8888:8888
+    command: --influxdb-url=http://influxdb:8086
+    networks:
+      - wayfinder
+    environment:
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+
+  grafana:
+    image: grafana/grafana:latest
+    hostname: grafana
+    container_name: wayfinder-grafana
+    ports:
+      - 3000:3000/tcp
+    volumes:
+      - ./support/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./support/grafana/dashboards_config:/etc/grafana/provisioning/dashboards
+      - ./support/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./support/grafana/plugins:/var/lib/grafana/plugins
+    # env_file: ./.env
+    environment:
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      GF_DASHBOARDS_JSON_ENABLED: "true"
+      GF_SECURITY_ADMIN_PASSWORD: secret
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_SECRET_KEY: 1234
+    networks:
+      - wayfinder
+  
+  redis:
+    image: redis:6.2.6-alpine
+    hostname: redis
+    container_name: wayfinder-redis
+    restart: on-failure
+    env_file: ./.env
+    command:
+      - redis-server
+      - --requirepass "${REDIS_PASSWORD:-redis}"
+    ports:
+      - 6379:6379
+    networks:
+      - wayfinder    
+
+  postgres:
+    image: postgres:latest
+    container_name: wayfinder-postgres
+    hostname: postgres
+    restart: on-failure
+    env_file: ./.env
+    ports:
+      - 5432:5432
+    networks:
+      - wayfinder
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2021-10-23T03-28-24Z
+    container_name: wayfinder-minio
+    hostname: miniio
+    command: server --console-address ":9001" /data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    env_file: ./.env
+    volumes:
+      - minio:/data
+
+  wayfinder:
+    image: ghcr.io/lancs-net/wayfinder:latest
+    container_name: wayfinder
+    depends_on:
+      - redis
+      - postgres
+    restart: on-failure
+    env_file: ./.env
+    volumes:
+      - .:/go/src/github.com/unikraft/wayfinder
+    ports:
+      - 8080:8080
+      - 5000:5000
+    networks:
+      - wayfinder
+
+  

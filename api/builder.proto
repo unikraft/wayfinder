@@ -1,0 +1,162 @@
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Authors: Alexander Jung <alex@unikraft.io>
+//
+// Copyright (c) 2021, Unikraft UG.  All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3. Neither the name of the copyright holder nor the names of its
+//    contributors may be used to endorse or promote products derived from
+//    this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+syntax = "proto3";
+
+package wayfinder;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/unikraft/wayfinder/api/proto";
+
+// The builder service definition.
+service BuilderService {
+
+  // create build
+  rpc CreateBuild (CreateBuildRequest) returns (CreateBuildResponse)  {
+    option (google.api.http) = {
+      put: "/api/job/{jobId}/permutation/{permutationId}/build",
+    };
+  }
+
+  // start build
+  rpc StartBuild (StartBuildRequest) returns (StartBuildResponse)  {
+    option (google.api.http) = {
+      put: "/api/job/{jobId}/permutation/{permutationId}/build/start",
+    };
+  }
+
+  // get the build status
+  rpc GetBuildStatus (GetBuildStatusRequest) returns (GetBuildStatusResponse)  {
+    option (google.api.http) = {
+      get: "/api/job/{jobId}/permutation/{permutationId}/build/status",
+    };
+  }
+
+  // get the build status
+  rpc SaveBuildOutputsToDisk (SaveBuildOutputsToDiskRequest) returns (SaveBuildOutputsToDiskResponse)  {
+    option (google.api.http) = {
+      post: "/api/job/{jobId}/permutation/{permutationId}/build/save",
+    };
+  }
+
+  // destroy the build
+  rpc DestroyBuild (DestroyBuildRequest) returns (DestroyBuildResponse)  {
+    option (google.api.http) = {
+      post: "/api/job/{jobId}/permutation/{permutationId}/destroy",
+    };
+  }
+}
+
+message BuildOutputs {
+  string kernel = 1 [json_name = "kernel"];
+  string initRd = 2 [json_name = "initrd"];
+}
+
+message BuildEnvVar {
+  string name  = 1;
+  string value = 2;
+}
+
+enum BuildStatus {
+  BUILD_CREATED = 0;
+  BUILD_RUNNING = 1;
+  BUILD_PAUSED  = 2;
+  BUILD_SUCCESS = 3;
+  BUILD_KILLED  = 4;
+  BUILD_FAILED  = 5;
+}
+
+// message Build {
+//   int64       id        = 1 [json_name = "id"];
+//   int64       totalTime = 2 [json_name = "total_time"];
+//   BuildStatus status    = 3 [json_name = "status"];
+// }
+
+message CreateBuildRequest {
+  int64                jobId         = 1 [json_name = "job_id"];
+  int64                permutationId = 2 [json_name = "permutation_id"];
+  string               image         = 3 [json_name = "image"];
+  repeated BuildEnvVar envVars       = 4 [json_name = "envvars"];
+  repeated string      devices       = 5 [json_name = "devices"];
+  repeated string      capabilities  = 6 [json_name = "capabilities"];
+  repeated uint64      cores         = 7 [json_name = "cores"];
+  string               commands      = 8 [json_name = "commands"];
+}
+
+message CreateBuildResponse {
+  bool   success     = 1 [json_name = "success"];
+  string uuid        = 2 [json_name = "uuid"];
+}
+
+message StartBuildRequest {
+  string uuid         = 1 [json_name = "uuid"];
+  int64 jobId         = 2 [json_name = "job_id"];
+  int64 permutationId = 3 [json_name = "permutation_id"];
+}
+
+message StartBuildResponse {
+  bool   success = 1 [json_name = "success"];
+}
+
+message GetBuildStatusRequest {
+  string uuid         = 1 [json_name = "uuid"];
+  int64 jobId         = 2 [json_name = "job_id"];
+  int64 permutationId = 3 [json_name = "permutation_id"];
+}
+
+message GetBuildStatusResponse {
+  bool        success = 1 [json_name = "success"];
+  BuildStatus status  = 2 [json_name = "status"];
+  string      runtime = 3 [json_name = "runtime"];
+}
+
+message SaveBuildOutputsToDiskRequest {
+  string       uuid          = 1 [json_name = "uuid"];
+  int64        jobId         = 2 [json_name = "job_id"];
+  int64        permutationId = 3 [json_name = "permutation_id"];
+  BuildOutputs outputs       = 4 [json_name = "outputs"];
+}
+
+message SaveBuildOutputsToDiskResponse {
+  bool         success = 1 [json_name = "success"];
+  BuildOutputs outputs = 2 [json_name = "outputs"];
+}
+
+message DestroyBuildRequest {
+  string uuid         = 1 [json_name = "uuid"];
+  int64 jobId         = 2 [json_name = "job_id"];
+  int64 permutationId = 3 [json_name = "permutation_id"];
+}
+
+message DestroyBuildResponse {
+  bool success = 1 [json_name = "success"];
+}

@@ -1,0 +1,44 @@
+params:
+  - name: TEST3
+    type: string
+    only: ["A", "B"]
+
+  - name: TEST4
+    type: string
+    only: ["C", "D"]
+
+build:
+  image: ghcr.io/lancs-net/wayfinder/fakebuild:latest
+  outputs:
+    kernel: /build/nginx_kvm-x86_64
+    initrd: /build/initramfs.cpio
+    arch: x86_64
+    plat: kvm
+  devices:
+    - /dev/urandom
+  capabilities:
+    - CAP_NET_ADMIN
+  cores: 1
+  commands:
+    |
+    set -xe
+    env
+
+test:
+  kernel:
+    memory: 10M
+    args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_SUBNET netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK --
+    cores: 1
+  benchtool:
+    image: ghcr.io/lancs-net/wayfinder/wrk:latest
+    devices:
+      - /dev/urandom
+    capabilities:
+      - CAP_NET_ADMIN
+    commands: /test.sh
+    cores: 1
+    start_delay: 5
+  results:
+    - name: throughput
+      path: /results/throughput.txt
+      type: float

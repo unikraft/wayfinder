@@ -39,7 +39,9 @@ INSTALLDIR  ?= /usr/local/bin/
 REGISTRY    ?= ghcr.io
 ORG         ?= lancs-net
 REPO        ?= wayfinder
-BIN         ?= wayfinder
+PORT        ?= 5000
+BIN         ?= wfctl \
+               wayfinderd
 IMAGE_TAG   ?= latest
 
 
@@ -63,11 +65,13 @@ GIT_SHA     ?= $(shell git update-index -q --refresh && \
 # Tools
 DOCKER      ?= docker
 DOCKER_RUN  ?= $(DOCKER) run --rm $(1) \
+							 -p $(PORT):$(PORT) \
                -w /go/src/github.com/$(ORG)/$(REPO) \
                -v $(WORKDIR):/go/src/github.com/$(ORG)/$(REPO) \
                $(REGISTRY)/$(ORG)/$(REPO):$(IMAGE_TAG) \
                  $(2)
 GO          ?= go
+GOHUB       ?= gohub
 
 # Misc
 Q           ?= @
@@ -88,8 +92,15 @@ $(MAKECMDGOALS):
 endif
 
 # Targets
-.PHONY: all
+.PHONY: api all
 $(.PROXY)all: $(BIN)
+
+.PHONY: api
+api:
+	$(GOHUB) protoc protocol $(WORKDIR)/api/*.proto \
+		--service_out $(WORKDIR)/api/proto \
+		--client_out $(WORKDIR)/api/client \
+		--msg_out $(WORKDIR)/api/proto
 
 ifeq ($(DEBUG),y)
 $(.PROXY)$(BIN): GO_GCFLAGS ?= -N -l
@@ -107,7 +118,7 @@ $(.PROXY)$(BIN):
 
 # Create an environment where we can build
 .PHONY: container
-container: GO_VERSION         ?= 1.14
+container: GO_VERSION         ?= 1.17
 container: DOCKER_BUILD_EXTRA ?=
 container: IMAGE              ?= $(REGISTRY)/$(ORG)/$(REPO):$(IMAGE_TAG)
 container:

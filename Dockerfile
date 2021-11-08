@@ -29,7 +29,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-ARG GO_VERSION=1.14
+ARG GO_VERSION=1.17
 
 FROM golang:${GO_VERSION}-stretch AS base
 
@@ -41,8 +41,17 @@ RUN set -xe; \
     apt-get install -y --no-install-recommends \
       build-essential \
       make \
-      git;
+      libvirt-dev \
+      git; \
+    go get -u github.com/erda-project/erda-infra/tools/gohub; \
+    go get -u github.com/cosmtrek/air
+
 
 COPY . /go/src/github.com/${ORG}/${REPO}
 WORKDIR /go/src/github.com/${ORG}/${REPO}
 ENV GOROOT=/usr/local/go
+
+EXPOSE 5000
+
+# for live reloading of go container
+CMD air -c .air.toml
