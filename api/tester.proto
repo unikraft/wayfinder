@@ -1,0 +1,163 @@
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Authors: Alexander Jung <alex@unikraft.io>
+//
+// Copyright (c) 2021, Unikraft UG.  All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3. Neither the name of the copyright holder nor the names of its
+//    contributors may be used to endorse or promote products derived from
+//    this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+syntax = "proto3";
+
+package wayfinder;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/unikraft/wayfinder/api/proto";
+
+// The tester service definition.
+service TesterService {
+
+  // create test
+  rpc CreateTest (CreateTestRequest) returns (CreateTestResponse)  {
+    option (google.api.http) = {
+      put: "/api/job/{jobId}/permutation/{permutationId}/test",
+    };
+  }
+
+  // start test
+  rpc StartTest (StartTestRequest) returns (StartTestResponse)  {
+    option (google.api.http) = {
+      post: "/api/job/{jobId}/permutation/{permutationId}/test/start",
+    };
+  }
+
+  // get the test status
+  rpc GetTestStatus (GetTestStatusRequest) returns (GetTestStatusResponse)  {
+    option (google.api.http) = {
+      get: "/api/job/{jobId}/permutation/{permutationId}/test/status",
+    };
+  }
+
+  // destroy the test
+  rpc DestroyTest (DestroyTestRequest) returns (DestroyTestResponse)  {
+    option (google.api.http) = {
+      post: "/api/job/{jobId}/permutation/{permutationId}/test/destroy",
+    };
+  }
+}
+
+message TestEnvVar {
+  string name  = 1 [json_name = "name"];
+  string value = 2 [json_name = "value"];
+}
+
+enum TestStatus {
+  TEST_CREATED          = 0;
+  TEST_RUNNING          = 1;
+  TEST_PAUSED           = 2;
+  TEST_KILLED           = 3;
+  TEST_KERNEL_FAILED    = 4;
+  TEST_BENCHTOOL_FAILED = 5;
+  TEST_SUCCESS          = 6;
+}
+
+enum TestResultType {
+  TEST_RESULT_INT   = 0;
+  TEST_RESULT_STR   = 1;
+  TEST_RESULT_FLOAT = 2;
+  TEST_RESULT_BOOL  = 3;
+}
+
+message TestKernel {
+  string          memory    = 1 [json_name = "memory"];
+  string          args      = 2 [json_name = "args"];
+  repeated uint64 cores     = 3 [json_name = "cores"];
+  string          image     = 4 [json_name = "image"];
+  string          initRd    = 5 [json_name = "initrd"];
+  string          arch      = 6 [json_name = "arch"];
+  string          plat      = 7 [json_name = "plat"];
+}
+
+message TestBenchTool {
+  string              image         = 1 [json_name = "image"];
+  repeated TestEnvVar envVars       = 2 [json_name = "envvar"];
+  repeated string     devices       = 3 [json_name = "devices"];
+  repeated string     capabilities  = 4 [json_name = "capabilities"];
+  repeated uint64     cores         = 5 [json_name = "cores"];
+  string              commands      = 6 [json_name = "commands"];
+  uint64              startDelay    = 7 [json_name = "start_delay"];
+}
+
+message TestResult {
+  string name         = 1 [ json_name = "name" ];
+  string path         = 2 [ json_name = "path" ];
+  TestResultType type = 3 [ json_name = "type" ];
+}
+
+message CreateTestRequest {
+  int64         jobId         = 2 [json_name = "job_id"];
+  int64         permutationId = 3 [json_name = "permutation_id"];
+  TestKernel    kernel        = 4 [json_name = "kernel"];
+  TestBenchTool benchTool     = 5 [json_name = "benchtool"];
+}
+
+message CreateTestResponse {
+  bool   success     = 1 [json_name = "success"];
+  string uuid        = 2 [json_name = "uuid"];
+}
+
+message StartTestRequest {
+  string uuid                 = 1 [json_name = "uuid"];
+  int64 jobId                 = 2 [json_name = "job_id"];
+  int64 permutationId         = 3 [json_name = "permutation_id"];
+  repeated TestResult results = 4 [json_name = "results"];
+}
+
+message StartTestResponse {
+  bool success = 1 [json_name = "success"];
+}
+
+message GetTestStatusRequest {
+  string uuid         = 1 [json_name = "uuid"];
+  int64 jobId         = 2 [json_name = "job_id"];
+  int64 permutationId = 3 [json_name = "permutation_id"];
+}
+
+message GetTestStatusResponse {
+  bool       success = 1 [json_name = "success"];
+  TestStatus status  = 2 [json_name = "status"];
+  string     runtime = 3 [json_name = "runtime"];
+}
+
+message DestroyTestRequest {
+  string uuid         = 1 [json_name = "uuid"];
+  int64 jobId         = 2 [json_name = "job_id"];
+  int64 permutationId = 3 [json_name = "permutation_id"];
+}
+
+message DestroyTestResponse {
+  bool success = 1 [json_name = "success"];
+}
