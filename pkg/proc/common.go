@@ -1,9 +1,10 @@
-package job
+package proc
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
 //
 // Copyright (c) 2020, Lancaster University.  All rights reserved.
+//               2021, Unikraft UG.  All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -36,7 +37,7 @@ import (
   "strings"
   "io/ioutil"
 
-  "github.com/lancs-net/wayfinder/log"
+  "github.com/unikraft/wayfinder/internal/logs"
 )
 
 type ProcValue struct {
@@ -75,8 +76,8 @@ func (p *Proc) remember(path string, original string, new string) {
   })
 }
 
-// setProcfsValue sets a string value at a procfs path
-func setProcfsValue(path string, value string, dryRun bool) error {
+// SetProcfsValue sets a string value at a procfs path
+func SetProcfsValue(path string, value string, dryRun bool) error {
   // Check if the path is set
   if len(path) == 0 {
     return fmt.Errorf("File path cannot be empty")
@@ -90,14 +91,14 @@ func setProcfsValue(path string, value string, dryRun bool) error {
 
   // Check if this file receives input via stdin
   if stat.Size() == 0 {
-    log.Infof("Setting %s to %s", path, value)
+    logs.Infof("Setting %s to %s", path, value)
 
   // This is a regular proc file with a set value
   } else {
     dat, err := ioutil.ReadFile(path)
     if err != nil {
       if dryRun {
-        log.Warnf("Could not read file: %s", err)
+        logs.Warnf("Could not read file: %s", err)
       } else {
         return fmt.Errorf("Could not read file: %s", err)
       }
@@ -111,7 +112,7 @@ func setProcfsValue(path string, value string, dryRun bool) error {
       return nil
     }
 
-    log.Infof("Setting %s from %s to %s", path, current, value)
+    logs.Infof("Setting %s from %s to %s", path, current, value)
 
     // Save the current value for later reset
     procfs.remember(path, current, value)
@@ -121,7 +122,7 @@ func setProcfsValue(path string, value string, dryRun bool) error {
   f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
   if err != nil {
     if dryRun {
-      log.Warn(err)
+      logs.Warn(err)
     } else {
       return err
     }
@@ -137,119 +138,6 @@ func setProcfsValue(path string, value string, dryRun bool) error {
     // Close file
     if err := f.Close(); err != nil {
       return err
-    }
-  }
-
-  return nil
-}
-
-func PrepareEnvironment(cpus []int, dryRun bool) error {
-  if _, err := os.Stat("/proc/self/ns/user"); os.IsNotExist(err) {
-		return fmt.Errorf("userns is unsupported")
-	}
-
-  /*
-   * Filesystem preparation
-   */
-
-  err := setProcfsValue("/proc/sys/fs/file-max", "20000", dryRun)
-  if err != nil {
-    return err
-  }
-
-  // Drop fs cache
-  // err = setProcfsValue("/proc/sys/vm/drop_caches", "3", dryRun)
-  // if err != nil {
-  //   return err
-  // }
-
-  /*
-   * Networking preparation
-   */
-
-  err = setProcfsValue("/proc/sys/net/core/somaxconn", "1024", dryRun)
-  if err != nil {
-    return err
-  }
-
-  err = setProcfsValue("/proc/sys/net/ipv4/ip_forward", "1", dryRun)
-  if err != nil {
-    return err
-  }
-
-  err = setProcfsValue("/proc/sys/net/ipv4/ip_local_port_range", "1024   60999", dryRun)
-  if err != nil {
-    return err
-  }
-
-  // err = setProcfsValue("/proc/sys/net/ipv4/tcp_tw_reusee", "1", dryRun)
-  // if err != nil {
-  //   return err
-  // }
-
-  err = setProcfsValue("/proc/sys/net/ipv4/tcp_keepalive_time", "60", dryRun)
-  if err != nil {
-    return err
-  }
-  
-  err = setProcfsValue("/proc/sys/net/ipv4/tcp_keepalive_intvl", "60", dryRun)
-  if err != nil {
-    return err
-  }
-
-  /*
-   * Processor preparation
-   */
-  // Set scaling governor performance
-  for _, c := range cpus {
-    err = setProcfsValue(fmt.Sprintf("/sys/devices/system/cpu/cpu%d/cpufreq/scaling_governor", c), "performance", dryRun)
-    if err != nil {
-      log.Warnf("Cannot set scaling governor: %s", err)
-    }
-
-    // err = setProcfsValue(fmt.Sprintf("/sys/devices/system/cpu/cpu%d/online", c), "0", dryRun)
-    // if err != nil {
-    //   log.Warnf("Cannot set scaling governor: %s", err)
-    // }
-  }
-  
-  // Disable Intel Turbo mode
-  // TODO: Determine if this setting is even possible on this machine
-  err = setProcfsValue("/sys/devices/system/cpu/intel_pstate/no_turbo", "1", dryRun)
-  if err != nil {
-    log.Warnf("Cannot set Intel Turbo mode: %s", err)
-  }
-
-  /*
-   * Memory prepraration
-   */
-
-  // Disable ASLR
-  err = setProcfsValue("/proc/sys/kernel/randomize_va_space", "0", dryRun)
-  if err != nil {
-    return err
-  }
-
-  /*
-   * Namespacing
-   */
-
-  // Allow rootless containers
-  err = setProcfsValue("/proc/sys/kernel/unprivileged_userns_clone", "1", dryRun)
-  if err != nil {
-    return err
-  }
-
-  return nil
-}
-
-// RevertEnvironment sets original Procfs entries 
-func RevertEnvironment(dryRun bool) error {
-  // Reset updated procfs itemss
-  for _, item := range procfs.Items {
-    err := setProcfsValue(item.Path, item.Original, dryRun)
-    if err != nil {
-      log.Warn(err)
     }
   }
 
