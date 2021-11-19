@@ -57,3 +57,34 @@ grpc-server:
 # This is an internal option which allows for the existence of other modules,
 # plugins and connections to distributed services.
 service-register:
+
+# Host Configurator
+# =================
+#
+# The host configurator sets idiomatic and static values for performing 
+# isolated and controlled experiments on job permutations.
+#
+hostconfig:
+  # TODO: Use this number in scheduler's coremap by evicting cores not in this
+  # list/var
+  cpu_sets: 20-30
+  scaling_governor: performance
+  procfs:
+    # Filesystem
+    - /proc/sys/fs/file-max:20000
+    # - /proc/sys/vm/drop_caches:3
+
+    # Networking
+    - /proc/sys/net/core/somaxconn:1024
+    - /proc/sys/net/ipv4/ip_forward:1
+    - /proc/sys/net/ipv4/ip_local_port_range:1024   60999
+    - /proc/sys/net/ipv4/tcp_keepalive_time:60
+    - /proc/sys/net/ipv4/tcp_keepalive_intvl:60
+    # - /proc/sys/net/ipv4/tcp_tw_reusee:1
+
+    # Processor
+    - /sys/devices/system/cpu/intel_pstate/no_turbo:1
+
+    # Memory
+    - /proc/sys/kernel/randomize_va_space:0
+    - /proc/sys/kernel/unprivileged_userns_clone:1

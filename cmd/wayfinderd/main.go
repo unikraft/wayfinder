@@ -47,6 +47,8 @@ import (
   _ "github.com/erda-project/erda-infra/providers/grpcclient"
   _ "github.com/erda-project/erda-infra/providers/serviceregister"
 
+  _ "github.com/unikraft/wayfinder/modules/hostconfig"
+
   _ "github.com/unikraft/wayfinder/api/client"
 )
 
