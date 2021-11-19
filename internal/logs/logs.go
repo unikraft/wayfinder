@@ -1,9 +1,10 @@
-package log
+package logs
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
 //
 // Copyright (c) 2020, Lancaster University.  All rights reserved.
+//               2021, Unikraft UG.  All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -35,6 +36,8 @@ import (
   "strings"
 
   "github.com/muesli/termenv"
+
+  l2 "github.com/erda-project/erda-infra/base/logs"
 )
 
 // LogLevel is an enum-like type that we can use to designate the log level
@@ -52,23 +55,31 @@ const (
 // Logger is a base struct that could eventually maintain connections to
 // something like bugsnag or logging tools.
 type Logger struct{
-  LogLevel LogLevel
+  logLevel LogLevel
   Prefix   string
 }
 
 var (
-  logger *Logger
+  globalLogger *Logger
 )
 
 func init() {
-  logger = &Logger{
-    LogLevel: INFO,
+  globalLogger = &Logger{
+    logLevel: INFO,
   }
+}
+
+func New() Logger {
+  logger := Logger{
+    logLevel: INFO,
+  }
+
+  return logger
 }
 
 // log is a private function that manages the internal logic about what and how
 // to log data depending on the log level.
-func (l *Logger) log(level LogLevel, format string, messages ...interface{}) {
+func (l Logger) log(level LogLevel, format string, messages ...interface{}) {
   var logType string
   var logColor termenv.ANSIColor
   switch level {
@@ -98,7 +109,7 @@ func (l *Logger) log(level LogLevel, format string, messages ...interface{}) {
     break
   }
 
-  if level < l.LogLevel {
+  if level < l.logLevel {
     return
   }
 
@@ -114,116 +125,142 @@ func (l *Logger) log(level LogLevel, format string, messages ...interface{}) {
 }
 
 func SetLevel(level LogLevel) {
-  logger.LogLevel = level
+  globalLogger.logLevel = level
+}
+
+func (l Logger) SetLevel(lvl string) error {
+  return nil
+}
+
+func (l Logger) Sub(name string) l2.Logger {
+  // globalLogger.logLevel = lvl
+  l.Prefix = name
+  return l
 }
 
 func GetLevel() LogLevel {
-  return logger.LogLevel
+  return globalLogger.logLevel
 }
 
-func Debug(messages ...interface{}) {
-  logger.log(DEBUG, "%s", messages...)
+func Debug(args ...interface{}) {
+  globalLogger.log(DEBUG, "%s", args...)
 }
 
-func Debugf(format string, messages ...interface{}) {
-  logger.log(DEBUG, format, messages...)
+func Debugf(format string, args ...interface{}) {
+  globalLogger.log(DEBUG, format, args...)
 }
 
-func (l *Logger) Debug(messages ...interface{}) {
-  l.log(DEBUG, "%s", messages...)
+func (l Logger) Debug(args ...interface{}) {
+  l.log(DEBUG, "%s", args...)
 }
 
-func (l *Logger) Debugf(format string, messages ...interface{}) {
-  l.log(DEBUG, format, messages...)
+func (l Logger) Debugf(format string, args ...interface{}) {
+  l.log(DEBUG, format, args...)
 }
 
-func Info(messages ...interface{}) {
-  logger.log(INFO, "%s", messages...)
+func Info(args ...interface{}) {
+  globalLogger.log(INFO, "%s", args...)
 }
 
-func Infof(format string, messages ...interface{}) {
-  logger.log(INFO, format, messages...)
+func Infof(format string, args ...interface{}) {
+  globalLogger.log(INFO, format, args...)
 }
 
-func (l *Logger) Info(messages ...interface{}) {
-  l.log(INFO, "%s", messages...)
+func (l Logger) Info(args ...interface{}) {
+  l.log(INFO, "%s", args...)
 }
 
-func (l *Logger) Infof(format string, messages ...interface{}) {
-  l.log(INFO, format, messages...)
+func (l Logger) Infof(format string, args ...interface{}) {
+  l.log(INFO, format, args...)
 }
 
-func Warn(messages ...interface{}) {
-  logger.log(WARNING, "%s", messages...)
+func Warn(args ...interface{}) {
+  globalLogger.log(WARNING, "%s", args...)
 }
 
-func Warnf(format string, messages ...interface{}) {
-  logger.log(WARNING, format, messages...)
+func Warnf(format string, args ...interface{}) {
+  globalLogger.log(WARNING, format, args...)
 }
 
-func (l *Logger) Warn(messages ...interface{}) {
-  l.log(WARNING, "%s", messages...)
+func (l Logger) Warn(args ...interface{}) {
+  l.log(WARNING, "%s", args...)
 }
 
-func (l *Logger) Warnf(format string, messages ...interface{}) {
-  l.log(WARNING, format, messages...)
+func (l Logger) Warnf(format string, args ...interface{}) {
+  l.log(WARNING, format, args...)
 }
 
-func Error(messages ...interface{}) {
-  logger.log(ERROR, "%s", messages...)
+func Error(args ...interface{}) {
+  globalLogger.log(ERROR, "%s", args...)
 }
 
-func Errorf(format string, messages ...interface{}) {
-  logger.log(ERROR, format, messages...)
+func Errorf(format string, args ...interface{}) {
+  globalLogger.log(ERROR, format, args...)
 }
 
-func (l *Logger) Error(messages ...interface{}) {
-  l.log(ERROR, "%s", messages...)
+func (l Logger) Error(args ...interface{}) {
+  l.log(ERROR, "%s", args...)
 }
 
-func (l *Logger) Errorf(format string, messages ...interface{}) {
-  l.log(ERROR, format, messages...)
+func (l Logger) Errorf(format string, args ...interface{}) {
+  l.log(ERROR, format, args...)
 }
 
-func Fatal(messages ...interface{}) {
-  logger.log(FATAL, "%s", messages...)
+func Fatal(args ...interface{}) {
+  globalLogger.log(FATAL, "%s", args...)
 }
 
-func Fatalf(format string, messages ...interface{}) {
-  logger.log(FATAL, format, messages...)
+func Fatalf(format string, args ...interface{}) {
+  globalLogger.log(FATAL, format, args...)
 }
 
-func (l *Logger) Fatal(messages ...interface{}) {
-  l.log(FATAL, "%s", messages...)
+func (l Logger) Fatal(args ...interface{}) {
+  l.log(FATAL, "%s", args...)
 }
 
-func (l *Logger) Fatalf(format string, messages ...interface{}) {
-  l.log(FATAL, format, messages...)
+func (l Logger) Fatalf(format string, args ...interface{}) {
+  l.log(FATAL, format, args...)
 }
 
-func Success(messages ...interface{}) {
-  logger.log(SUCCESS, "%s", messages...)
+func Panic(args ...interface{}) {
+  globalLogger.log(FATAL, "%s", args...)
 }
 
-func Successf(format string, messages ...interface{}) {
-  logger.log(SUCCESS, format, messages...)
+func Panicf(format string, args ...interface{}) {
+  globalLogger.log(FATAL, format, args...)
 }
 
-func (l *Logger) Success(messages ...interface{}) {
-  l.log(SUCCESS, "%s", messages...)
+func (l Logger) Panic(args ...interface{}) {
+  l.log(FATAL, "%s", args...)
 }
 
-func (l *Logger) Successf(format string, messages ...interface{}) {
-  l.log(SUCCESS, format, messages...)
+func (l Logger) Panicf(format string, args ...interface{}) {
+  l.log(FATAL, format, args...)
+}
+
+func Success(args ...interface{}) {
+  globalLogger.log(SUCCESS, "%s", args...)
+}
+
+func Successf(format string, args ...interface{}) {
+  globalLogger.log(SUCCESS, format, args...)
+}
+
+func (l Logger) Success(args ...interface{}) {
+  l.log(SUCCESS, "%s", args...)
+}
+
+func (l Logger) Successf(format string, args ...interface{}) {
+  l.log(SUCCESS, format, args...)
 }
 
 // Write implements io.Writer
-func (l *Logger) Write(b []byte) (n int, err error) {
+func (l Logger) Write(b []byte) (n int, err error) {
   if len(string(b)) > 0 {
-    messages := strings.Split(string(b), "\n")
-    for _, message := range messages {
-      if len(message) > 0 {
-        l.log(INFO, "%s", message)
+    args := strings.Split(string(b), "\n")
+    for _, arg := range args {
+      if len(arg) > 0 {
+        l.log(INFO, "%s", arg)
       }
     }
   }
