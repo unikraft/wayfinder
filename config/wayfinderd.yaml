@@ -101,3 +101,14 @@ hostconfig:
     # Memory
     - /proc/sys/kernel/randomize_va_space:0
     - /proc/sys/kernel/unprivileged_userns_clone:1
+
+# Redis Client
+# ============
+#
+# Provision to connect to a redis server.  This is used to store the state of 
+# requested jobs and their permutations which will be passed to the scheduler.
+#
+redis:
+  master_name: "master"
+  addr: "${REDIS_ADDR:localhost:6379}"
+  password: "${REDIS_PASSWORD:redis}"
