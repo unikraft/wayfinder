@@ -38,7 +38,8 @@ INSTALLDIR  ?= /usr/local/bin/
 # Arguments
 REGISTRY    ?= ghcr.io
 ORG         ?= lancs-net
-BIN         ?= wayfinder
+REPO        ?= wayfinder
+BIN         ?= wayfinderd
 IMAGE_TAG   ?= latest
 IMAGE       ?= $(REGISTRY)/$(ORG)/$(BIN):$(IMAGE_TAG)
 
@@ -89,21 +90,22 @@ endif
 
 # Targets
 .PHONY: all
-$(.PROXY)all: build
+$(.PROXY)all: $(BIN)
 
-.PHONY: build
 ifeq ($(DEBUG),y)
-$(.PROXY)build: GO_GCFLAGS ?= -N -l
+$(addprefix $(.PROXY), $(BIN)): GO_GCFLAGS ?= -N -l
 endif
-$(.PROXY)build: GO_LDFLAGS ?= -s -w
-$(.PROXY)build: GO_LDFLAGS += -X "main.version=$(APP_VERSION)"
-$(.PROXY)build: GO_LDFLAGS += -X "main.commit=$(GIT_SHA)"
-$(.PROXY)build: GO_LDFLAGS += -X "main.buildTime=$(shell date)"
-$(.PROXY)build:
+$(addprefix $(.PROXY), $(BIN)): GO_LDFLAGS ?= -s -w
+$(addprefix $(.PROXY), $(BIN)): GO_LDFLAGS += -X "main.version=$(APP_VERSION)"
+$(addprefix $(.PROXY), $(BIN)): GO_LDFLAGS += -X "main.commit=$(GIT_SHA)"
+$(addprefix $(.PROXY), $(BIN)): GO_LDFLAGS += -X "main.buildTime=$(shell date)"
+$(addprefix $(.PROXY), $(BIN)): deps
+$(addprefix $(.PROXY), $(BIN)):
 	$(GO) build \
 		-ldflags='$(GO_GCFLAGS)' \
 		-ldflags='$(GO_LDFLAGS)' \
-		-o $(DISTDIR)/$(BIN)
+		-o $(DISTDIR)/$@ \
+		$(WORKDIR)/cmd/$@
 
 # Create an environment where we can build
 .PHONY: container
