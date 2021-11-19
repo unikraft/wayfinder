@@ -1,9 +1,10 @@
-package run
+package bridge
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
 //
 // Copyright (c) 2020, Lancaster University.  All rights reserved.
+//               2021, Unikraft UG.  All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -31,44 +32,62 @@ package run
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-	"net"
+  "net"
 
-	"github.com/lancs-net/netns/bridge"
-	"github.com/lancs-net/netns/network"
-	"github.com/opencontainers/runtime-spec/specs-go"
-
-  "github.com/lancs-net/wayfinder/log"
+  "github.com/lancs-net/netns/bridge"
+  "github.com/lancs-net/netns/network"
+  "github.com/opencontainers/runtime-spec/specs-go"
 )
 
 type Bridge struct {
   Name       string
   Interface  string
   Subnet     string
-  CacheDir   string
-	netOpt     network.Opt
-	brOpt      bridge.Opt
-	client    *network.Client
+  StateDir   string
+  netOpt     network.Opt
+  brOpt      bridge.Opt
+  client    *network.Client
 }
 
 // Init prepares netns
-func (b *Bridge) Init(dryRun bool) error {
-  return nil
+func New(name, iface, subnet, stateDir string) *Bridge {
+  var err error
+
+  b := &Bridge{
+    Name:      name,
+    Interface: iface,
+    Subnet:    subnet,
+    StateDir:  stateDir,
+  }
+
+  // Create the bridge using netns
+  b.netOpt = network.Opt{
+    ContainerInterface: b.Interface,
+    BridgeName: b.Name,
+    StateDir: b.StateDir,
+  }
+
+  b.brOpt = bridge.Opt{
+    Name: b.Name,
+    IPAddr: b.Subnet,
+  }
+
+  b.client, err = network.New(b.netOpt)
+  if err != nil {
+    return nil
+  }
+
+  return b
 }
 
-// Create a veth pair with the bridge for the container
-func (b *Bridge) Create(s *specs.State) (net.IP, error) {
-  // Create the bridge using netns
-  b.netOpt.ContainerInterface = b.Interface
-  b.netOpt.BridgeName = b.Name
-  b.brOpt.Name = b.Name
-  b.brOpt.IPAddr = b.Subnet
-  b.netOpt.StateDir = b.CacheDir
+// Create a veth pair with the bridge
+func (b *Bridge) Create(pid int, configure bool) (net.IP, error) {
+  return b.client.Create(&specs.State{
+    Pid: pid,
+  }, b.brOpt, "", configure)
+}
 
-  log.Debugf("Creating bridge %s...", b.Name)
-  client, err := network.New(b.netOpt)
-  if err != nil {
-    return nil, err
-  }
-  
-  return client.Create(s, b.brOpt, "")
+// Delete a veth pair from the bridge
+func (b *Bridge) Delete(pid int, ip net.IP) error {
+  return b.client.Delete(pid, ip)
 }
