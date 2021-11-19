@@ -1,0 +1,90 @@
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Authors: Alexander Jung <alex@unikraft.io>
+//
+// Copyright (c) 2021, Unikraft UG.  All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3. Neither the name of the copyright holder nor the names of its
+//    contributors may be used to endorse or promote products derived from
+//    this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+syntax = "proto3";
+
+package wayfinder;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/unikraft/wayfinder/api/proto";
+
+// The host configurator service definition.
+service HostConfigService {
+
+  // create host
+  rpc CreateHost (CreateHostRequest) returns (CreateHostResponse)  {
+    option (google.api.http) = {
+      put: "/api/host",
+    };
+  }
+}
+
+message Host {
+  int64  id                   = 1;
+  string dmiUUID              = 2;
+  string hostname             = 3;
+  string architecture         = 4;
+  string byteOrder            = 5;
+  string addressSizesPhysical = 6;
+  string addressSizesVirtual  = 7;
+  int64  cPUs                 = 8;
+  int64  threadsPerCore       = 9;
+  int64  coresPerSocket       = 10;
+  int64  sockets              = 11;
+  int64  nUMAnodes            = 12;
+  string vendorID             = 13;
+  int64  cPUFamily            = 14;
+  int64  model                = 15;
+  string modelName            = 16;
+  int64  stepping             = 17;
+  float  cPUMHz               = 18;
+  float  cPUMaxMHz            = 19;
+  float  cPUMinMHz            = 20;
+  float  bogoMIPS             = 21;
+  string virtualization       = 22;
+  string l1dCache             = 23;
+  string l1iCache             = 24;
+  string l2Cache              = 25;
+  string l3Cache              = 26;
+  string nUMANode0CPUs        = 27;
+  string nUMANode1CPUs        = 28;
+  string flags                = 29;
+}
+
+message CreateHostRequest {
+  Host host = 1;
+}
+
+message CreateHostResponse {
+  bool success = 1;
+  int64 id = 2;
+}
