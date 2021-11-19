@@ -1,0 +1,129 @@
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Authors: Alexander Jung <alex@unikraft.io>
+//
+// Copyright (c) 2021, Unikraft UG.  All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3. Neither the name of the copyright holder nor the names of its
+//    contributors may be used to endorse or promote products derived from
+//    this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+syntax = "proto3";
+
+package wayfinder;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/unikraft/wayfinder/api/proto";
+
+// The job service definition.
+service JobService {
+
+  // create job
+  rpc CreateJob (CreateJobRequest) returns (CreateJobResponse)  {
+    option (google.api.http) = {
+      put: "/api/job",
+    };
+  }
+
+  // start job
+  rpc StartJob (StartJobRequest) returns (StartJobResponse)  {
+    option (google.api.http) = {
+      post: "/api/job/start/{id}",
+    };
+  }
+}
+
+enum JobScheduler {
+  JOB_SCHEDULER_GRID     = 0;
+  JOB_SCHEDULER_RANDOM   = 1;
+  JOB_SCHEDULER_BAYESIAN = 2;
+}
+
+enum JobIsolLevel {
+  JOB_ISOL_LEVEL_NONE   = 0;
+  JOB_ISOL_LEVEL_CORE   = 1;
+  JOB_ISOL_LEVEL_CACHE  = 2;
+  JOB_ISOL_LEVEL_SOCKET = 3;
+  JOB_ISOL_LEVEL_FULL   = 4;
+}
+
+enum JobIsolSplit {
+  JOB_ISOL_SPLIT_BOTH   = 0;
+  JOB_ISOL_SPLIT_BUILDS = 1;
+  JOB_ISOL_SPLIT_TESTS  = 2;
+}
+
+enum JobStatus {
+  JOB_STATUS_CREATED = 0;
+  JOB_STATUS_RUNNING = 1;
+  JOB_STATUS_PAUSED  = 2;
+  JOB_STATUS_FAILED  = 3;
+  JOB_STATUS_SUCCESS = 4;
+}
+
+enum JobPermutationStatus {
+  JOB_PERM_STATUS_CREATED       = 0;
+  JOB_PERM_STATUS_BUILD_INIT    = 1;
+  JOB_PERM_STATUS_BUILD_RUNNING = 2;
+  JOB_PERM_STATUS_BUILD_PAUSED  = 3;
+  JOB_PERM_STATUS_BUILD_FAILED  = 4;
+  JOB_PERM_STATUS_BUILD_KILLED  = 5;
+  JOB_PERM_STATUS_TEST_INIT     = 6;
+  JOB_PERM_STATUS_TEST_RUNNING  = 7;
+  JOB_PERM_STATUS_TEST_PAUSED   = 8;
+  JOB_PERM_STATUS_TEST_FAILED   = 9;
+  JOB_PERM_STATUS_TEST_KILLED   = 10;
+  JOB_PERM_STATUS_SUCCESS       = 11;
+}
+
+message Job {
+  int64        id        = 1;
+  JobScheduler scheduler = 2;
+  JobIsolLevel isolLevel = 3;
+  JobIsolSplit isolSplit = 4;
+  JobStatus    status    = 5;
+}
+
+message CreateJobRequest {
+  bytes data       = 1;
+  bool  compressed = 2;
+}
+
+message CreateJobResponse {
+  bool  success = 1;
+  int64 id      = 2;
+}
+
+message StartJobRequest {
+  int64        id               = 1;
+  JobScheduler scheduler        = 3;
+  JobIsolLevel isolLevel        = 4;
+  JobIsolSplit isolSplit        = 5;
+  int64        permutationLimit = 6;
+}
+
+message StartJobResponse {
+  bool success = 1;
+}
