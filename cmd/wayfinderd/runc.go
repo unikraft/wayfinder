@@ -1,9 +1,10 @@
-package cmd
+package main
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
 //
 // Copyright (c) 2020, Lancaster University.  All rights reserved.
+//               2021, Unikraft UG.  All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -31,13 +32,12 @@ package cmd
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
+  "fmt"
   "runtime"
 
-	"github.com/spf13/cobra"
+  "github.com/spf13/cobra"
   "github.com/opencontainers/runc/libcontainer"
   _ "github.com/opencontainers/runc/libcontainer/nsenter"
-
-  "github.com/lancs-net/wayfinder/log"
 )
 
 var runcInitCmd = &cobra.Command{
@@ -54,7 +54,7 @@ func doRuncInitCmd(cmd *cobra.Command, args []string) {
 
   factory, _ := libcontainer.New("")
   if err := factory.StartInitialization(); err != nil {
-    log.Fatal(err)
+    fmt.Printf("could not init: %s", err)
   }
 
   panic("Could not initialise pid 0 for container")
