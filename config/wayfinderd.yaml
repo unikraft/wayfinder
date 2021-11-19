@@ -58,6 +58,19 @@ grpc-server:
 # plugins and connections to distributed services.
 service-register:
 
+# Postgres Client
+# ===============
+#
+# Connect wayfinder to a remote postgres client to save information about jobs,
+# permutations and more long-term. 
+#
+postgres:
+  host: "${POSTGRES_HOST:postgres}"
+  port: ${POSTGRES_PORT:3306}
+  user: "${POSTGRES_USER:wayfinder}"
+  password: "${POSTGRES_PASSWORD:wayfinder}"
+  database: "${POSTGRES_DATABASE:wayfinder}"
+
 # Host Configurator
 # =================
 #
