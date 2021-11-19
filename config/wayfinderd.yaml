@@ -112,3 +112,53 @@ redis:
   master_name: "master"
   addr: "${REDIS_ADDR:localhost:6379}"
   password: "${REDIS_PASSWORD:redis}"
+
+
+# libvirt Client
+# ==============
+#
+# Provision to connect to the libvirt daemon with additional control parameters 
+# for the runtime of virtual machines.
+#
+libvirt:
+  # Connection endpoint to the libvirt daemon service
+  endpoint: qemu:///system
+
+  # Emulator to use to launch virtual machines
+  emulator: /usr/bin/qemu-system-x86_64
+
+  # Path to list of runtime virtual machine's sockets.
+  sockdir: /run/libvirt/qemu/
+
+  # Timeout for when making connections to libvirt
+  timeout: 30s
+
+  # Name of the shared bridge for virtual machines.
+  bridge: wayfinder0
+
+  # Host interface to connect the bridge to.
+  host_iface: eth0
+
+  # State directory where on-going connections to the bridge are saved.
+  bridge_statedir: /tmp/lib/wayfinder/bridges
+
+  # The subnet for containers to use
+  subnet: 172.88.0.1/24
+
+  # Directory to store the complete log of the virtual machine's output.
+  logdir: /var/lib/wayfinder/logs
+
+  # Path to the proc filesystem
+  procf: /proc
+
+  # Frequency (in seconds) for collecting metrics
+  measure_freq: 1s
+
+  # Enable CPU metrics
+  measure_cpu: true
+
+  # Enable memory metrics
+  measure_mem: true
+
+  # Enable network metrics
+  measure_net: true
