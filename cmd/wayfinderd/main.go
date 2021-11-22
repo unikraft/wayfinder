@@ -49,6 +49,7 @@ import (
 
   _ "github.com/unikraft/wayfinder/modules/job"
   _ "github.com/unikraft/wayfinder/modules/postgres"
+  _ "github.com/unikraft/wayfinder/modules/scheduler"
   _ "github.com/unikraft/wayfinder/modules/hostconfig"
 
   _ "github.com/unikraft/wayfinder/api/client"

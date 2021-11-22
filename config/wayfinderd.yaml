@@ -175,3 +175,24 @@ job:
 
   # The amount of time to timeout from the Redis queue
   poll_duration: ${JOB_POLL_DURATION:100ms}
+
+# Scheduler Service
+# =================
+#
+# The scheduler picks up permutations from the Redis queue and decides whether
+# to run the particular permutation or reject it.  On schedule, it will oversee
+# the build and test of the permutation on designated cores.
+#
+scheduler:
+  # Queue pre-fetch limit is used to limit the number of permutations which are 
+  # consumed
+  prefetch_limit: ${SCHEDULER_PREFETCH_LIMIT:1000}
+
+  # The amount of time to timeout from the Redis queue
+  poll_duration: ${SCHEDULER_POLL_DURATION:100ms}
+
+  # Amount of time to wait in between scheduling permutations
+  grace_time: "${SCHEDULER_GRACE_TIME:3s}"
+
+  # Number of times to re-try the permutation in case it fails
+  max_retries: ${SCHEDULER_MAX_RETRIES:3}
