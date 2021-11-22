@@ -41,6 +41,7 @@ RUN set -xe; \
     apt-get install -y --no-install-recommends \
       build-essential \
       make \
+      libvirt-dev \
       git; \
     go get -u github.com/erda-project/erda-infra/tools/gohub
 
