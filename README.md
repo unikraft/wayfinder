@@ -256,6 +256,9 @@ Global Flags:
   -V, --version         Show version and quit
 ```
 
+Example job configuration files can be found in [examples/](examples/) directory
+of this repository.
+
 #### Starting a job
 
 ```
@@ -296,9 +299,6 @@ Below is a description of each table and its intended purpose.
 | `builds`             | After generating possible permutations from the set of parameters and their possible values, each permutation will perform a "build" where the image is constructed using the unique values of the parameters.  The `builds` table contains information such as the state of the build, such as whether it succeded or not, output information, and total runtime for the build.                                                                                     |
 | `tests`              | Once a unique build is completed, a test will be performed on the resulting artifacts.  The `tests` table contains information and th e state of the test, for example whether it passed or failed and how long it took to complete.                                                                                                                                                                                                                                 |
 | `results`            | For successful tests, a number of results will be generated.  Since jobs can submit custom results, each entry in the results table represents the unqiue entry for the job's test results.  A job may have multiple results and they are saved here.                                                                                                                                                                                                                |
-
-Example configuration files can be found in [examples/](examples/) directory of
-this repository.
 
 ## Cite
 
