@@ -123,6 +123,8 @@ func NewRootCommand() *cobra.Command {
 
   // Subcommands
   rootCmd.AddCommand(createCmd)
+  rootCmd.AddCommand(startCmd)
+
   return rootCmd
 }
 
