@@ -1,0 +1,51 @@
+input {
+  tcp {
+    port => $INPUT_PORT
+    codec => json
+  }  
+}
+
+filter {
+  metricize {
+    metrics => [ "domain" ]
+    value_field_name => "rawin"
+  }
+
+  if [metric] == "domain" {
+    # produce one event for each domain
+    split {
+      field => "rawin"
+    }
+  }
+
+  if [metric] == "domain" {
+    # move fields form 'rawin' object to root
+    ruby {
+      code => "
+        if event.get('rawin').respond_to?('each')
+          event.get('rawin').each {|k, v|
+            event.set(k, v)
+          }
+        end
+        event.remove('rawin')
+      "
+    }
+  }
+}
+
+output {
+  if [metric] == "domain" {
+    stdout { codec => rubydebug }
+    influxdb {
+      host => "$OUTPUT_HOST"
+      port => $OUTPUT_PORT
+      user => "$OUTPUT_USER"
+      password => "$OUTPUT_PASS"
+      db => "wayfinder"
+      time_precision => "ms"
+      measurement => "wayfinder.domain"
+      send_as_tags => ["test_uuid"]
+      use_event_fields_for_data_points => true
+    }
+  }
+}
