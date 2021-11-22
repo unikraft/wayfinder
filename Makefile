@@ -134,6 +134,10 @@ devenv: DOCKER_RUN_EXTRA ?= -it --name $(REPO)-devenv
 devenv:
 	$(Q)$(call DOCKER_RUN,$(DOCKER_RUN_EXTRA),bash)
 
+.PHONY: deps
+deps: api
+deps:
+	$(GO) mod tidy
 
 # For CI
 .PHONY: ci-install-ci-tools
