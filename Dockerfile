@@ -41,7 +41,9 @@ RUN set -xe; \
     apt-get install -y --no-install-recommends \
       build-essential \
       make \
-      git;
+      git; \
+    go get -u github.com/erda-project/erda-infra/tools/gohub
+
 
 COPY . /go/src/github.com/${ORG}/${BIN}
 WORKDIR /go/src/github.com/${ORG}/${BIN}
