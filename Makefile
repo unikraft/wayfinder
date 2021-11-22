@@ -84,9 +84,10 @@ endif
 .PROXY      :=
 ifneq ($(DOCKER_RUN),)
 .PROXY      := docker-proxy-
-$(MAKECMDGOALS):
-	$(info Running target via Docker ($(IMAGE)...))
-	$(Q)$(call DOCKER_RUN,,$(MAKE) $@)
+$(BIN):
+	$(info Running target via Docker...)
+	$(Q)$(call DOCKER_RUN,,$(MAKE) -e $@)
+	$(Q)exit 0
 endif
 
 # Targets
