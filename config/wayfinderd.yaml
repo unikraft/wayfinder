@@ -244,3 +244,24 @@ builder:
 
   # How many attempts the build should be tried before we give up on it.
   retries: 3
+
+# Tester Service
+# ==============
+#
+# The tester service facilitates the test by launching the virtual machine 
+# which results from a successful build.  The test will begin when the 
+# benchtool has started, which receives information about the VM.
+#
+tester:
+  # The default amount of time to wait between starting the VM and starting the 
+  # benchmark tool.  Also known as the "VM warm up period"
+  default_start_delay: ${TESTER_DEFAULT_START_DELAY:5s}
+
+  # Frequency (in seconds) for pushing metrics
+  metrics_freq: 1s
+
+  # Mechanic to connect to the metrics receiver.
+  metrics_receiver_type: tcp
+
+  # Location of the remote metrics receiver.
+  metrics_receiver: 127.0.0.1:12345
