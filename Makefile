@@ -42,6 +42,7 @@ REPO        ?= wayfinder
 BIN         ?= wayfinderd \
 							 wfctl
 IMAGE_TAG   ?= latest
+PORT        ?= 5000
 
 
 ifeq ($(HASH),)
