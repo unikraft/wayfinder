@@ -43,9 +43,13 @@ RUN set -xe; \
       make \
       libvirt-dev \
       git; \
-    go get -u github.com/erda-project/erda-infra/tools/gohub
+    go get -u github.com/erda-project/erda-infra/tools/gohub; \
+    go get -u github.com/cosmtrek/air
 
 
 COPY . /go/src/github.com/${ORG}/${REPO}
 WORKDIR /go/src/github.com/${ORG}/${REPO}
 ENV GOROOT=/usr/local/go
+
+# for live reloading of go container
+CMD air -c .air.toml
