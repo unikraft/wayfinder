@@ -175,7 +175,7 @@ outputs:
 ## Getting started and usage
 
 To get started using wayfinder, download the [latest
-release](https://github.com/lancs-net/wayfinder/releases) and install on your
+release](https://github.com/unikraft/wayfinder/releases) and install on your
 host system.  Once installed, you can use `wayfinder` as a CLI program:
 
 ```
