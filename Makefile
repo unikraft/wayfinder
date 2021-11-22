@@ -127,6 +127,7 @@ container:
 		--build-arg REPO=$(REPO) \
 		--build-arg GO_VERSION=$(GO_VERSION) \
 		--tag $(IMAGE) \
+		--file $(WORKDIR)/Dockerfile \
 		$(DOCKER_BUILD_EXTRA) $(WORKDIR)
 
 # Run an environment where we can build
