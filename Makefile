@@ -69,6 +69,7 @@ DOCKER_RUN  ?= $(DOCKER) run --rm $(1) \
                $(REGISTRY)/$(ORG)/$(BIN):$(IMAGE_TAG) \
                  $(2)
 GO          ?= go
+GOHUB       ?= gohub
 
 # Misc
 Q           ?= @
@@ -91,6 +92,13 @@ endif
 # Targets
 .PHONY: all
 $(.PROXY)all: $(BIN)
+
+.PHONY: api
+api:
+	$(GOHUB) protoc protocol $(WORKDIR)/api/*.proto \
+		--service_out $(WORKDIR)/api/proto \
+		--client_out $(WORKDIR)/api/client \
+		--msg_out $(WORKDIR)/api/proto
 
 ifeq ($(DEBUG),y)
 $(addprefix $(.PROXY), $(BIN)): GO_GCFLAGS ?= -N -l
