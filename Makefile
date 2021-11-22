@@ -117,7 +117,7 @@ $(addprefix $(.PROXY), $(BIN)):
 
 # Create an environment where we can build
 .PHONY: container
-container: GO_VERSION         ?= 1.14
+container: GO_VERSION         ?= 1.17
 container: DOCKER_BUILD_EXTRA ?=
 container:
 	$(DOCKER) build \
