@@ -129,7 +129,7 @@ container:
 
 # Run an environment where we can build
 .PHONY: devenv
-devenv: DOCKER_RUN_EXTRA ?= -it --name $(BIN)-devenv
+devenv: DOCKER_RUN_EXTRA ?= -it --name $(REPO)-devenv
 devenv:
 	$(Q)$(call DOCKER_RUN,$(DOCKER_RUN_EXTRA),bash)
 

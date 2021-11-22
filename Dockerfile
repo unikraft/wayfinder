@@ -33,8 +33,8 @@ ARG GO_VERSION=1.14
 
 FROM golang:${GO_VERSION}-stretch AS base
 
-ARG ORG=lancs-net
-ARG BIN=wayfinder
+ARG ORG=unikraft
+ARG REPO=wayfinder
 
 RUN set -xe; \
     apt-get update; \
@@ -45,6 +45,6 @@ RUN set -xe; \
     go get -u github.com/erda-project/erda-infra/tools/gohub
 
 
-COPY . /go/src/github.com/${ORG}/${BIN}
-WORKDIR /go/src/github.com/${ORG}/${BIN}
+COPY . /go/src/github.com/${ORG}/${REPO}
+WORKDIR /go/src/github.com/${ORG}/${REPO}
 ENV GOROOT=/usr/local/go
