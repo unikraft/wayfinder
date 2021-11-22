@@ -282,6 +282,8 @@ Global Flags:
 
 ## Database Overview
 
+![](doc/database-overview.svg)
+
 Below is a description of each table and its intended purpose.
 
 | Table                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
