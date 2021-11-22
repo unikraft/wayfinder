@@ -51,5 +51,7 @@ COPY . /go/src/github.com/${ORG}/${REPO}
 WORKDIR /go/src/github.com/${ORG}/${REPO}
 ENV GOROOT=/usr/local/go
 
+EXPOSE 5000
+
 # for live reloading of go container
 CMD air -c .air.toml
