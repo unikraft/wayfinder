@@ -329,6 +329,17 @@ func (d *Domain) Start() error {
     return fmt.Errorf("domain is not running: %s", err)
   }
 
+  if err := d.InitMeasurements(); err != nil {
+    return fmt.Errorf("could initialize measurements: %s", err)
+  }
+
+  go func() {
+    for d.measure {
+      time.Sleep(d.p.Cfg.MeasureFreq)
+      d.MeasureResources()
+    }
+  }()
+
   return nil
 }
 
@@ -388,6 +399,60 @@ func (d *Domain) Destroy() error {
 
 func (d *Domain) IP() net.IP {
   return d.ip
+}
+
+func (d *Domain) InitMeasurements() error {
+  d.measure = true
+
+  if err := d.CpuLookup(); err != nil {
+    return fmt.Errorf("Could not look up CPU cores: %s", err)
+  }
+
+  if err := d.MemLookup(); err != nil {
+    return fmt.Errorf("Could not look up CPU cores: %s", err)
+  }
+
+  if err := d.NetLookup(); err != nil {
+    return fmt.Errorf("Could not look up CPU cores: %s", err)
+  }
+
+  return nil
+}
+
+func (d *Domain) MeasureResources() []error {
+  var errs []error
+
+  if err := d.CpuMeasure(); err != nil {
+    errs = append(errs, fmt.Errorf("could not measure CPU: %s", err))
+  }
+
+  if err := d.MemMeasure(); err != nil {
+    errs = append(errs, fmt.Errorf("could not measure memory: %s", err))
+  }
+
+  if err := d.NetMeasure(); err != nil {
+    errs = append(errs, fmt.Errorf("could not measure network: %s", err))
+  }
+
+  return errs
+}
+
+func (d *Domain) GetResourceMeasurements() map[string]string {
+  res := make(map[string]string)
+
+  for k, v := range d.CpuPrint() {
+    res[k] = v
+  }
+
+  for k, v := range d.MemPrint() {
+    res[k] = v
+  }
+
+  for k, v := range d.NetPrint() {
+    res[k] = v
+  }
+
+  return res
 }
 
 // TODO: https://gist.github.com/hodgesds/7d8354b51bea65c833817a067e45fd8d
