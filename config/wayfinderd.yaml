@@ -162,3 +162,16 @@ libvirt:
 
   # Enable network metrics
   measure_net: true
+
+# Job Service
+# ===========
+#
+# This service handles incoming jobs, parsing them for validty from the queue
+# and begins to populate the permutation queue.
+#
+job:
+  # Queue pre-fetch limit is used to limit the number of jobs which are consumed
+  prefetch_limit: ${JOB_PREFETCH_LIMIT:1000}
+
+  # The amount of time to timeout from the Redis queue
+  poll_duration: ${JOB_POLL_DURATION:100ms}
