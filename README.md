@@ -80,124 +80,204 @@ will be run via wayfinder:
 |  5 | `100` | `hello` |
 |  6 | `100` | `world` |
 
-### Runtime configuration
+### Build configuration
 
-| Attribute      | Required | Description                                                             |
-|----------------|----------|-------------------------------------------------------------------------|
-| `name`         | Yes      | The name of the run.                                                    |
-| `image`        | Yes      | Remote OCI image for the filesystem to use for the run.                 |
-| `cmd`          | Yes      | The command to run within the OCI image during the run.                 |
-| `devices`      | No       | List of additional devices to attach from the host to the run instance. |
-| `cores`        | No       | Number of cores to allocate the run instance.  Default is `1`.          |
-| `capabilities` | No       | List of capabilities the OCI filesystem should have access to.          |
+Wayfinder is split into two main operations: builds and tests.  Builds are
+operations which construct a kernel image and init ram.  A job's build can be
+specified with the following additional YAML attributes:
 
-All parameters defined in the YAML configuration are provided to `run`s as
-environmental variables.  Every run directive can use a remote OCI image for
+| Attribute        | Required | Description                                                             |
+| ---------------- | -------- | ----------------------------------------------------------------------- |
+| `image`          | Yes      | Remote OCI image for the filesystem to use for the build.               |
+| `outputs.kernel` | Yes      | The path to the resulting kernel image.                                 |
+| `outputs.initrd` | Yes      | The name of the resulting initrd.                                       |
+| `outputs.arch`   | No       | The architecture the kernel targets.                                    |
+| `outputs.plat`   | No       | The paltform the kernel targets.                                        |
+| `devices`        | No       | List of additional devices to attach from the host to the build instance. |
+| `capabilities`   | No       | List of capabilities the OCI filesystem should have access to.          |
+| `cores`          | No       | Number of cores to allocate the build instance.  Default is `1`.        |
+| `commands`       | Yes      | The commands to run within the OCI image to complete the build.         |
+
+All parameters defined in the YAML configuration are provided to a `build` as
+environmental variables.  The `build` directive can use a remote OCI image for
 creating a flesystem with the needed dependencies of the action, for example:
 
-#### Example 
-
 ```yaml
-run:
-  - name: build
-    image: unikraft/kraft:staging
-    cmd:
-      |
-      echo $C $D
+build:
+  image: ghcr.io/unikraft/wayfinder/fakebuild:latest
+  outputs:
+    kernel: /build/nginx_kvm-x86_64
+    initrd: /build/initramfs.cpio
+    arch: x86_64
+    plat: kvm
+  devices:
+    - /dev/urandom
+  capabilities:
+    - CAP_NET_ADMIN
+  cores: 1
+  commands:
+    |
+    set -xe
+    env
 ```
 
-Additional devices can be attached to a `run` directive or capabilities, for
-example being able to manipulate the host network:
+### Test configuration
+
+| Attribute                | Required | Description                                                                                                                                     |
+| ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kernel.memroy`          | Yes      | The amount of memory to give the kernel.                                                                                                        |
+| `kernel.args`            | Yes      | The "command line" arguments to pass to the kernel.  We provide additional utility variables listed [below](#automatic-command-line-variables). |
+| `kernel.cores`           | Yes      | Number of cores to allocate the test kernel instance.  Default is `1`.                                                                          |
+| `benchtool.devices`      | No       | List of additional devices to attach from the host to the run instance.                                                                         |
+| `benchtool.capabilities` | No       | List of capabilities the OCI filesystem should have access to.                                                                                  |
+| `benchtool.commands`     | Yes      | The commands to run within the OCI image to complete the test.                                                                                  |
+| `benchtool.cores`        | Yes      | Number of cores to allocate the test benchmark tool.  Default is `1`.                                                                           |
+| `benchtool.start_delay`  | No       | An optional "warm up period" to be used as a delay between starting the kernel and running the benchmark tool.                                  |
+| `results[].name`         | Yes      | A series of results which come from a successful test.  This is the name of the result.                                                         |
+| `results[].path`         | Yes      | A path to the location where the result is saved within the OCI filesystem after a successful test.                                             |
+| `results[].type`         | Yes      | The result type, one of `[` `int`, `str`, `float`, `bool` `]`.                                                                                  |
 
 ```yaml
-run:
-  - name: build
-    image: unikraft/kraft:staging
+test:
+  kernel:
+    memory: 10M
+    args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_GW_ADDR netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK --
+    cores: 1
+  benchtool:
+    image: ghcr.io/unikraft/wayfinder/wrk:latest
     devices:
-      - /dev/net/tun
+      - /dev/urandom
     capabilities:
       - CAP_NET_ADMIN
-    cmd:
-      |
-      brctl addbr test0
+    commands: /test.sh
+    cores: 1
+    start_delay: 5
+  results:
+    - name: throughput
+      path: /results/throughput.txt
+      type: float
 ```
 
-The cores which have been allocated from the host system to the runtime instance
-via the scheduler are passed as environmental variables to the instance.  For
-example, if `2` cores are required for the `run`, then they are passed like so:
+#### Automatic command-line variables
 
-```yaml
-run:
-  - name: build
-    image: unikraft/kraft:staging
-    cores: 2
-    cmd:
-      |
-      taskset -c $WAYFINDER_CORE_ID0 ./path/to/executable1.sh &
-      taskset -c $WAYFINDER_CORE_ID1 ./path/to/executable2.sh
-```
+A number of special variables can be used in the `kernel.args` parameter of a
+`test` directive which will be automatically replaced before the domain is
+launched.  These include:
 
-This can be used by, for example, `taskset` to ensure isolation.
-
-### Input and output artifacts
-
-All permutations may need information passed into it from the host system or
-artifacts are generated from the result of a permutation, such as a OS binary.
-These I/O can also be specified in the YAML configuration.
-
-#### Inputs
-
-| Attribute     | Required | Description                                                              |
-|---------------|----------|--------------------------------------------------------------------------|
-| `source`      | Yes      | The source of the file on the host to place in the run instance.         |
-| `destination` | Yes      | The destination of the file to place in OCI filesystem the run instance. |
-
-#### Outputs
-
-| Attribute | Required | Description                                                                            |
-|-----------|----------|----------------------------------------------------------------------------------------|
-| `path`    | Yes      | The location of an artifact in the OCI filesystem created during the instance runtime. |
-
-#### Example
-
-```yaml
-inputs:
-  # Use the same DNS entries as the host system within the runtime instance.
-  - source: /etc/resolv.conf
-    destination: /etc/resolv.conf
-
-outputs:
-  # Output artifacts from the runtime instance.
-  - path: /path/to/binary
-  - path: /results.txt
-```
+| Variable                       | Description                                                                                 |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| `$WAYFINDER_DOMAIN_IP_ADDR`    | The IP address which has been allocated by Wayfinder to the test kernel, e.g. `172.88.0.2`. |
+| `$WAYFINDER_DOMAIN_IP_GW_ADDR` | The gateway address, e.g. `172.88.0.1`                                                      |
+| `$WAYFINDER_DOMAIN_IP_MASK`    | The full subnet mask of the of the gateway, e.g. `255.255.255.0`.                           |
 
 ## Getting started and usage
 
+### Daemon and Server
+
 To get started using wayfinder, download the [latest
 release](https://github.com/unikraft/wayfinder/releases) and install on your
-host system.  Once installed, you can use `wayfinder` as a CLI program:
+host system.  Once installed, you can can launch the Wayfinder daemon
+(`wayfinderd`) as a CLI program:
 
 ```
-Run a specific experiment job.
+Wayfinder is a generic OS performance evaluation platform.  Wayfinder is fully
+automated and ensures both the accuracy and reproducibility of results, all the
+while speeding up how fast tests are run on a system. Wayfinder is easily
+extensible and offers convenient APIs to:
+
+  - Implement custom configuration space exploration techniques,
+  - Add new benchmarks; and,
+  - Support additional OS projects.
 
 Usage:
-  wayfinder run [OPTIONS...] [FILE]
+  wayfinderd -c wayfinderd.yaml
+  wayfinderd [command]
+
+Available Commands:
+  completion  generate the autocompletion script for the specified shell
+  help        Help about any command
 
 Flags:
-  -O, --allow-override            Override contents in directories (otherwise tasks allowed to fail).
-  -b, --bridge string              (default "wayfinder0")
-      --cpu-sets string           Specify which CPUs to run experiments on. (default "2-48")
-  -D, --dry-run                   Run without affecting the host or running the jobs.
-  -h, --help                      help for run
-  -n, --hostnet string             (default "eth0")
-  -r, --max-retries int           Maximum number of retries for a run.
-  -g, --schedule-grace-time int   Number of seconds to gracefully wait in the scheduler. (default 1)
-  -s, --subnet string              (default "172.88.0.1/16")
-  -w, --workdir string            Specify working directory for outputting results, data, file systems, etc.
+  -c, --config string   config file (default "wayfinderd.yaml")
+  -h, --help            help for wayfinderd
+  -V, --version         Show version and quit
+
+Use "wayfinderd [command] --help" for more information about a command.
+```
+
+`wayfinderd` supports gRPC and HTTP requests and is manipulated generally via
+the client-side program [`wfctl`](#wfctl).  A sample configuration for the
+daemon server can be found in [`config/`](/config/wayfinderd.yaml).
+
+### `wfctl`
+
+To manipulate Wayfinder; to create jobs and start job permutaiton evalutions,
+use the command-line client `wftctl`:
+
+```
+wayfinder: OS Configuration Micro-Benchmarking Framework
+
+Usage:
+  wfctl
+  wfctl [command]
+
+Available Commands:
+  completion  generate the autocompletion script for the specified shell
+  create      Create a new job to be executed by the wayfinder server.
+  help        Help about any command
+  start       Start a job on the wayfinder server.
+
+Flags:
+  -h, --help            help for wfctl
+  -w, --server string   Remote path to wayfinder gRPC server (default "localhost:5000")
+  -v, --verbose         Enable verbose logging
+  -V, --version         Show version and quit
+
+Use "wfctl [command] --help" for more information about a command.
+```
+
+#### Creating a job
+
+```
+Create a new job to be executed by the wayfinder server.
+
+Usage:
+  wfctl create [OPTIONS...] FILE
+
+Aliases:
+  create, cj
+
+Flags:
+  -h, --help   help for create
 
 Global Flags:
-  -v, --verbose   Enable verbose logging
+  -w, --server string   Remote path to wayfinder gRPC server (default "localhost:5000")
+  -v, --verbose         Enable verbose logging
+  -V, --version         Show version and quit
+```
+
+#### Starting a job
+
+```
+Start a job on the wayfinder server.
+
+Usage:
+  wfctl start [OPTIONS...] ID
+
+Aliases:
+  start, sj
+
+Flags:
+  -h, --help                    help for start
+  -i, --isol-level none         Specify the level of isolation for job permutations. (default none)
+  -x, --isol-split both         Specify the split of isolation for job permutations. (default both)
+  -l, --permutation-limit int   Number of permutations to iterate over before stopping.  Zero means all.
+  -s, --scheduler grid          Specify the scheduler for job permutations. (default grid)
+
+Global Flags:
+  -w, --server string   Remote path to wayfinder gRPC server (default "localhost:5000")
+  -v, --verbose         Enable verbose logging
+  -V, --version         Show version and quit
 ```
 
 ## Database Overview
