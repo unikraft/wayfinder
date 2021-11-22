@@ -121,6 +121,8 @@ func NewRootCommand() *cobra.Command {
     "Remote path to wayfinder gRPC server",
   )
 
+  // Subcommands
+  rootCmd.AddCommand(createCmd)
   return rootCmd
 }
 
