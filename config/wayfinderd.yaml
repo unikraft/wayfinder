@@ -196,3 +196,33 @@ scheduler:
 
   # Number of times to re-try the permutation in case it fails
   max_retries: ${SCHEDULER_MAX_RETRIES:3}
+
+# Container Service
+# =================
+#
+# The container service is a generic internal module to facilitate the runtime
+# of containers.  Used by both build and test jobs.
+#
+container:
+  # Path to cache and filesystems of containers.  Hot tip: place this in /tmp
+  # to make things run faster!
+  rootdir: ${CONTAINER_ROOTDIR:/tmp/lib/wayfinder/containers}
+
+  # The directory to save container OCI archives
+  cachedir: ${CONTAINER_CACHEDIR:/tmp/lib/wayfinder/cache}
+
+  # Path to save logs to from container runtimes
+  logdir: ${CONTAINER_LOGDIR:/var/lib/wayfinder/logs}
+
+  # The networking bridge cache dir used for saving the state of networking
+  bridge_statedir: ${CONTAINER_BRIDGE_STATEDIR:/tmp/lib/wayfinder/bridges}
+
+  # Host network interface to connect the bridge to to access the wider area 
+  # network.
+  host_iface: ${CONTAINER_HOST_IFACE:eth0}
+
+  # Name of the shared bridge for containers
+  bridge: ${CONTAINER_BRIDGE:wayfinder0}
+
+  # The subnet for containers to use
+  subnet: ${CONTAINER_SUBNET:172.88.0.1/24}

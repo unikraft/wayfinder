@@ -51,6 +51,7 @@ import (
   _ "github.com/unikraft/wayfinder/modules/redis"
   _ "github.com/unikraft/wayfinder/modules/libvirt"
   _ "github.com/unikraft/wayfinder/modules/postgres"
+  _ "github.com/unikraft/wayfinder/modules/container"
   _ "github.com/unikraft/wayfinder/modules/scheduler"
   _ "github.com/unikraft/wayfinder/modules/hostconfig"
 

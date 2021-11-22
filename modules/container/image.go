@@ -1,4 +1,4 @@
-package run
+package container
 // SPDX-License-Identifier: Apache-2.0
 //
 // Copyright (C) 2015-2017 Thomas LE ROUX <thomas@leroux.io>
@@ -29,8 +29,8 @@ import (
 
   "github.com/tidwall/gjson"
   "github.com/moby/moby/pkg/archive"
-	"github.com/google/go-containerregistry/pkg/crane"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
+  "github.com/google/go-containerregistry/pkg/crane"
+  v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
 const (
@@ -189,7 +189,7 @@ func UnpackImage(image v1.Image, cacheDir, outDir string, allowOverride bool) er
     if err != nil {
       return fmt.Errorf("Extracting tar from %s failed: %s", tarball, err)
     }
-	}
+  }
 
   return nil
 }
