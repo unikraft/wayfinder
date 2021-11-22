@@ -1,4 +1,4 @@
-module github.com/lancs-net/wayfinder
+module github.com/unikraft/wayfinder
 
 go 1.17
 
