@@ -1,0 +1,68 @@
+// SPDX-License-Identifier: BSD-3-Clause
+//
+// Authors: Alexander Jung <alex@unikraft.io>
+//
+// Copyright (c) 2021, Unikraft UG.  All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3. Neither the name of the copyright holder nor the names of its
+//    contributors may be used to endorse or promote products derived from
+//    this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+syntax = "proto3";
+
+package wayfinder;
+
+option go_package = "github.com/unikraft/wayfinder/api/proto";
+
+enum ContainerState {
+  CONTAINER_STATE_INIT    = 0;
+  CONTAINER_STATE_RUNNING = 1;
+  CONTAINER_STATE_PAUSED  = 2;
+  CONTAINER_STATE_EXITED  = 3;
+}
+
+message ContainerEnvVar {
+  string key   = 1;
+  string value = 2;
+}
+
+message Container {
+  string id            = 1;
+  string image         = 2;
+  ContainerState state = 3;
+}
+
+message CreateContainerRequest {
+  string          image        = 1 [json_name = "image"];
+  string          id           = 2 [json_name = "id"];
+  repeated string devices      = 3 [json_name = "devices"];
+  repeated string capabilities = 4 [json_name = "capabilities"];
+  repeated int64  cores        = 5 [json_name = "cores"];
+  repeated string environment  = 6 [json_name = "environment"];
+  string          commands     = 7 [json_name = "commands"];
+}
+
+message CreateContainerResponse {
+  bool  success = 1;
+}
