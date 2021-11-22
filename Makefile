@@ -39,7 +39,8 @@ INSTALLDIR  ?= /usr/local/bin/
 REGISTRY    ?= ghcr.io
 ORG         ?= unikraft
 REPO        ?= wayfinder
-BIN         ?= wayfinderd
+BIN         ?= wayfinderd \
+							 wfctl
 IMAGE_TAG   ?= latest
 
 
