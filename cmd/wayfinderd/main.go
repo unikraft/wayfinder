@@ -49,6 +49,7 @@ import (
 
   _ "github.com/unikraft/wayfinder/modules/job"
   _ "github.com/unikraft/wayfinder/modules/redis"
+  _ "github.com/unikraft/wayfinder/modules/builder"
   _ "github.com/unikraft/wayfinder/modules/libvirt"
   _ "github.com/unikraft/wayfinder/modules/postgres"
   _ "github.com/unikraft/wayfinder/modules/container"

@@ -226,3 +226,21 @@ container:
 
   # The subnet for containers to use
   subnet: ${CONTAINER_SUBNET:172.88.0.1/24}
+
+# Builder Service
+# ===============
+#
+# The builder service facilitates the runtime of a permutation's build by 
+# interacting with the container service and oversees its runtime and status.
+#
+builder:
+  # Path on the host to output artifacts from a build.
+  # TODO: Save this in an object store?
+  outputdir: /tmp/wayfinder/builds/
+
+  # Timeout for killing a build (which may take too long).  Setting this to zero
+  # means there is no timeout.
+  kill_timeout: 10m
+
+  # How many attempts the build should be tried before we give up on it.
+  retries: 3
