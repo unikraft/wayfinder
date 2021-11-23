@@ -286,8 +286,8 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
   go func(){
     // Give the container a delay in its startup, so we can wait for kernel
     // to boot up correctly
-    s.p.Log.Debugf("Waiting %d seconds before starting benchtool...", test.startDelay)
-    time.Sleep(time.Duration(test.startDelay) * time.Second)
+    s.p.Log.Debugf("Waiting %d seconds before starting benchtool...", test.startDelay / 1000000000)
+    time.Sleep(time.Duration(test.startDelay))
 
     pushMetrics := true
 
