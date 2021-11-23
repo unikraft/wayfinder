@@ -182,6 +182,10 @@ func GetCpuInfo() (*CpuInfo, error) {
       c.CPUMHz = float32(t)
 
     case "CPU max MHz":
+      if strings.Contains(value, ",") {
+        value = strings.ReplaceAll(value, ",", ".")
+      }
+
       t, err := strconv.ParseFloat(value, 8)
       if err != nil {
         return nil, fmt.Errorf("could not parse CPU max MHz: %s", err)
@@ -190,6 +194,10 @@ func GetCpuInfo() (*CpuInfo, error) {
       c.CPUMaxMHz = float32(t)
 
     case "CPU min MHz":
+      if strings.Contains(value, ",") {
+        value = strings.ReplaceAll(value, ",", ".")
+      }
+
       t, err := strconv.ParseFloat(value, 8)
       if err != nil {
         return nil, fmt.Errorf("could not parse CPU min MHz: %s", err)
