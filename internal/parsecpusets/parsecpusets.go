@@ -63,10 +63,10 @@ func ParseCpuSets(cpuSets string) ([]uint64, error) {
         cpus = append(cpus, j)
       }
     }
-  
+
   // Maybe the range is simply A-C
   } else {
-    moreCpus, err := parseDelim(cpuSets)
+    moreCpus, err := parseRange(cpuSets)
     if err != nil {
       return nil, err
     }
