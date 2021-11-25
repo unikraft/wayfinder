@@ -1,15 +1,3 @@
-FROM debian:stretch AS wrk
-
-RUN set -xe; \
-    apt-get update; \
-    apt-get install -y \
-      build-essential \
-      unzip \
-      git; \
-    git clone --depth 1 https://github.com/wg/wrk.git /wrk; \
-    cd /wrk; \
-    make
-
 FROM unikraft/kraft:staging AS kraft
 
 ARG UK_KRAFT_GITHUB_TOKEN=
@@ -18,7 +6,6 @@ ENV UK_CACHEDIR=/usr/src/unikraft/.kraftcache
 ENV UK_WORKDIR=/usr/src/unikraft 
 
 LABEL org.opencontainers.image.source="https://github.com/unikraft/wayfinder"
-COPY --from=wrk /wrk/wrk /usr/local/bin/wrk
 COPY ./nginx-caching.conf /nginx-caching.conf
 COPY ./nginx-nocaching.conf /nginx-nocaching.conf
 COPY ./test.sh /test.sh
