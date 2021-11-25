@@ -1,2 +1,129 @@
-# Not done
+params:
+  # Unikraft-specific
+  - name: LWIP_NUM_TCPCON
+    type: int
+    only: [8, 16, 32, 64]
 
+  - name: LWIP_NUM_TCPLISTENERS
+    type: int
+    only: [8, 16, 32, 64]
+  
+  - name: LWIP_UKNETDEV_POLLONLY
+    type: string
+    only: ["y"]
+  
+  - name: LWIP_POOLS
+    type: string
+    only: ["y", "n"]
+
+  # Nginx-specific
+  - name: ACCESS_LOG
+    type: string
+    only: ["n"]
+
+  - name: KEEPALIVE_TIMEOUT
+    type: int
+    only: [0, 60]
+
+  - name: OPEN_FILE_CACHE
+    type: string
+    only: ["nocaching"]
+
+  # Client-specific
+  - name: WORKER_CONNECTIONS
+    type: int
+    only: [63]
+
+  - name: PAYLOAD_SIZE
+    type: int
+    only: [612] # bytes
+  
+  - name: NUM_PARALLEL_CONNS
+    type: int
+    only: [30]
+
+build:
+  image: ghcr.io/lancs-net/wayfinder/unikraft
+  outputs:
+    kernel: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64
+    initrd: /usr/src/unikraft/apps/nginx/initramfs.cpio
+    arch: x86_64
+    plat: kvm
+  devices:
+    - /dev/urandom
+  capabilities:
+    - CAP_NET_ADMIN
+  cores: 2
+  commands:
+    |
+    set -ex
+    env
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export UK_CACHEDIR=/usr/src/unikraft/.kraftcache/
+    export UK_WORKDIR=/usr/src/unikraft 
+
+    cd /usr/src/unikraft/apps/nginx
+
+    # Configure Image for Nginx
+    kraft -v configure -F \
+      -u unikraft@staging \
+      -u nginx@staging \
+      -u newlib@staging \
+      -u pthread-embedded@staging \
+      -u lwip@staging \
+      --arch x86_64 \
+      --plat kvm \
+      --set LWIP_NUM_TCPCON=$LWIP_NUM_TCPCON \
+      --set LWIP_NUM_TCPLISTENERS=$LWIP_NUM_TCPLISTENERS \
+      --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
+      --set LWIP_POOLS=$LWIP_POOLS \
+      --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
+      --yes LIBVFSCORE_ROOTFS_INITRD \
+      --yes LIBCPIO \
+      --no  LIB9PFS \
+      --no  LIBUK9P
+
+    # Build the image
+    kraft build --no-progress --fast
+
+    # Modify values inside the configuration
+    cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
+    if [[ $ACCESS_LOG == "y" ]]; then \
+     export ACCESS_LOG="\/dev\/stdout"; \
+    else \
+     export ACCESS_LOG="off"; \
+    fi
+    sed -i "s/\$ACCESS_LOG/${ACCESS_LOG}/g" ./fs0/nginx/conf/nginx.conf
+    sed -i "s/\$KEEPALIVE_TIMEOUT/${KEEPALIVE_TIMEOUT}/g" ./fs0/nginx/conf/nginx.conf
+
+    cat ./fs0/nginx/conf/nginx.conf
+
+    # Generate cpio image
+    cd fs0/
+    tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > ./nginx/html/payload.txt
+    find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
+
+    echo "Build Done!"
+
+test:
+  kernel:
+    memory: 20M
+    args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_SUBNET netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK --
+    cores: 1
+  benchtool:
+    image: ghcr.io/lancs-net/wayfinder/wrk:latest
+    devices:
+      - /dev/urandom
+      - /dev/kvm
+      - /dev/net/tun
+    capabilities:
+      - CAP_NET_ADMIN
+    commands: /test.sh
+    cores: 1
+    start_delay: 5
+  results:
+    - name: throughput
+      path: /results/throughput.txt
+      type: float
