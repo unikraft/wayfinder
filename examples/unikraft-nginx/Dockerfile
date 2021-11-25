@@ -5,7 +5,6 @@ ENV UK_KRAFTRC=/usr/src/unikraft/.kraftrc
 ENV UK_CACHEDIR=/usr/src/unikraft/.kraftcache
 ENV UK_WORKDIR=/usr/src/unikraft 
 
-LABEL org.opencontainers.image.source="https://github.com/unikraft/wayfinder"
 COPY ./nginx-caching.conf /nginx-caching.conf
 COPY ./nginx-nocaching.conf /nginx-nocaching.conf
 COPY ./test.sh /test.sh
