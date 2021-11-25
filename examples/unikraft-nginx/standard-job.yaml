@@ -51,7 +51,7 @@ params:
     only: [30]
 
 build:
-  image: ghcr.io/lancs-net/wayfinder/unikraft
+  image: ghcr.io/unikraft/wayfinder/unikraft:latest
   outputs:
     kernel: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64
     initrd: /usr/src/unikraft/apps/nginx/initramfs.cpio

@@ -6,16 +6,18 @@ RUN set -xe; \
       build-essential \
       unzip \
       git; \
-    git clone https://github.com/wg/wrk.git /wrk; \
+    git clone --depth 1 https://github.com/wg/wrk.git /wrk; \
     cd /wrk; \
     make
 
 FROM unikraft/kraft:staging AS kraft
 
 ARG UK_KRAFT_GITHUB_TOKEN=
-ENV KRAFTRC=/usr/src/unikraft/.kraftrc
-ENV KRAFTCACHE=/usr/src/unikraft/.kraftcache
+ENV UK_KRAFTRC=/usr/src/unikraft/.kraftrc
+ENV UK_CACHEDIR=/usr/src/unikraft/.kraftcache
+ENV UK_WORKDIR=/usr/src/unikraft 
 
+LABEL org.opencontainers.image.source="https://github.com/unikraft/wayfinder"
 COPY --from=wrk /wrk/wrk /usr/local/bin/wrk
 COPY ./nginx-caching.conf /nginx-caching.conf
 COPY ./nginx-nocaching.conf /nginx-nocaching.conf
@@ -30,7 +32,7 @@ RUN set -xe; \
       procps \
       bridge-utils \
       net-tools \
-      bsdcpio; \
+      libarchive-tools; \
     echo "" > $KRAFTRC; \
     kraft list add https://github.com/unikraft/unikraft.git; \
     kraft list add https://github.com/lancs-net/lib-lwip.git; \
