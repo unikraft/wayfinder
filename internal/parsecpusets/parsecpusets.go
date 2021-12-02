@@ -114,7 +114,7 @@ func parseRange(cpuSets string) ([]uint64, error) {
       return nil, fmt.Errorf("invalid syntax for CPU sets: %s", cpuSets)
     }
     
-    for i := start; i < end; i++ {
+    for i := start; i <= end; i++ {
       cpus = append(cpus, i)
     }
   }
