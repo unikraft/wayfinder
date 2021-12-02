@@ -274,7 +274,7 @@ Flags:
   -h, --help                    help for start
   -i, --isol-level none         Specify the level of isolation for job permutations. (default none)
   -x, --isol-split both         Specify the split of isolation for job permutations. (default both)
-  -l, --permutation-limit int   Number of permutations to iterate over before stopping.  Zero means all.
+  -l, --permutation-limit int   Number of permutations to iterate over before stopping (powers of 2).  Zero means all.
   -s, --scheduler grid          Specify the scheduler for job permutations. (default grid)
 
 Global Flags:

@@ -169,7 +169,7 @@ func init() {
     "permutation-limit",
     "l",
     0,
-    "Number of permutations to iterate over before stopping.  Zero means all.",
+    "Number of permutations to iterate over before stopping (powers of 2).  Zero means all.",
   )
 
   // TODO: Flag to skip existing permutations of this job seen in the database
