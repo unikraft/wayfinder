@@ -88,6 +88,29 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
   }
 }
 
+// Busy-waits to release all cores. This happens because sometimes the
+// containers don't have time to exit, after signaling that work is done.
+// Most of the time this should complete in a single pass.
+func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
+  for _, coreId := range coresToFree {
+    retries := 0
+    c.p.CoreMap().ReleaseCore(coreId)
+    for {
+      if activity, _ := c.p.CoreMap().GetCoreActivity(coreId); activity == nil {
+        break;
+      }
+      if retries > 10 {
+        fmt.Printf("DEBUG ___ CEZ ___ CEZ ___ could not release core %d\n\n", coreId)
+        return fmt.Errorf("could not release core %d", coreId)
+      }
+      time.Sleep(1 * time.Millisecond)
+      c.p.CoreMap().ReleaseCore(coreId)
+      retries++
+    }
+  }
+  return nil
+}
+
 func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   // TODO: Implement a *real* scheduler.  For now this consumer accepts any task
   // it receives and attempts to complete it.  This method should essentially
@@ -181,6 +204,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     EnvVars:       buildEnvVars,
   })
   if err != nil {
+    c.releaseCoresById(buildCoreIds)
     return fmt.Errorf("could not create build: %s", err)
   }
 
@@ -192,18 +216,26 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     Uuid: build.uuid,
   })
   if err != nil {
+    c.releaseCoresById(buildCoreIds)
     return fmt.Errorf("could not start build: %s", err)
   }
 
   // Wait for the build to complete
   c.Log.Infof("waiting for build container for permutation_id=%d to complete...", permutation.Id)
+  var numRetries uint64 = 0;
   buildstatus:for {
     statusBuildResp, err := c.p.Builder.GetBuildStatus(context.TODO(), &proto.GetBuildStatusRequest{
       Uuid: build.uuid,
     })
+
+    // Retry 5 times waiting a second each, fail if no response
     if err != nil {
-      // return fmt.Errorf("could not get build status: %s", err)
-      // TODO: Retries + timeout
+      numRetries++
+      if numRetries >= 5 {
+        c.releaseCoresById(buildCoreIds)
+        return fmt.Errorf("could not get build status: %s", err)
+      }
+      time.Sleep(time.Second)
       continue
     }
 
@@ -214,6 +246,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
         
         _, err = time.ParseDuration(statusBuildResp.Runtime)
         if err != nil {
+          c.releaseCoresById(buildCoreIds)
           return fmt.Errorf("could not convert test runtime into duration: %s", err)
         }
 
@@ -235,6 +268,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     },
   })
   if err != nil {
+    c.releaseCoresById(buildCoreIds)
     return fmt.Errorf("could not save build outputs: %s", err)
   }
 
@@ -244,12 +278,14 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     Uuid: build.uuid,
   })
   if err != nil {
+    c.releaseCoresById(buildCoreIds)
     return fmt.Errorf("could not destroy build environment%s", err)
   }
 
   // Free up cores
-  for _, coreId := range buildCoreIds {
-    c.p.CoreMap().ReleaseCore(coreId)
+  err = c.releaseCoresById(buildCoreIds)
+  if (err != nil) {
+    return fmt.Errorf("could not release cores: %s", err)
   }
 
   //
@@ -322,6 +358,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     },
   })
   if err != nil {
+    c.releaseCoresById(testCoreIds)
     return fmt.Errorf("could not create test: %s", err)
   }
 
@@ -361,18 +398,25 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     Results: results,
   })
   if err != nil {
+    c.releaseCoresById(testCoreIds)
     return fmt.Errorf("could not start test: %s", err)
   }
 
-  // Wait for the build to complete
+  // Wait for the test to complete
+  numRetries = 0
   c.Log.Infof("waiting for test for permutation_id=%d to complete...", permutation.Id)
   teststatus:for {
     statusTestResp, err := c.p.Tester.GetTestStatus(context.TODO(), &proto.GetTestStatusRequest{
       Uuid: test.uuid,
     })
+    // Retry 5 times waiting a second each, fail if no response
     if err != nil {
-      // return fmt.Errorf("could not start build: %s", err)
-      // TODO: Retries + timeout
+      numRetries++
+      if numRetries >= 5 {
+        c.releaseCoresById(testCoreIds)
+        return fmt.Errorf("could not get test status: %s", err)
+      }
+      time.Sleep(time.Second)
       continue
     }
 
@@ -384,6 +428,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
         
         _, err = time.ParseDuration(statusTestResp.Runtime)
         if err != nil {
+          c.releaseCoresById(testCoreIds)
           return fmt.Errorf("could not convert test runtime into duration: %s", err)
         }
 
@@ -395,14 +440,19 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
   c.Log.Infof("test for permutation_id=%d to complete!", permutation.Id)
 
-  // Destroy the build
+  // Destroy the test
   c.Log.Infof("destroying test permutation_id=%d", permutation.Id)
   _, err = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
     Uuid: test.uuid,
   })
   if err != nil {
+    c.releaseCoresById(testCoreIds)
     return fmt.Errorf("could not destroy test: %s", err)
   }
 
+  err = c.releaseCoresById(testCoreIds)
+  if err != nil {
+    return fmt.Errorf("could not release cores: %s", err)
+  }
   return nil
 }
