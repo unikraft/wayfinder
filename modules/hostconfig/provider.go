@@ -53,14 +53,14 @@ type config struct {
   Procfs          []string `file:"procfs"           env:"HOSTCONFIG_PROCFS"`
 }
 
-type provider struct {
+type Provider struct {
   Cfg    *config
   Log     logs.Logger
   DB      postgres.Interface `autowired:"postgres"`
   procfs *ProcFs
 }
 
-func (p *provider) Init(ctx servicehub.Context) error {
+func (p *Provider) Init(ctx servicehub.Context) error {
   // TODO: Clean up when the servce exits, restoring the host back to its
   // original configuration.
   // p.exited = ctx.Hub().Events().Exited()
@@ -71,7 +71,7 @@ func (p *provider) Init(ctx servicehub.Context) error {
   return nil
 }
 
-func (p *provider) PrepareEnvironmentTask(ctx context.Context) error {
+func (p *Provider) PrepareEnvironmentTask(ctx context.Context) error {
   var err error
   cpuSets, err := parsecpusets.ParseCpuSets(p.Cfg.CpuSets)
   if err != nil {
@@ -106,7 +106,7 @@ func (p *provider) PrepareEnvironmentTask(ctx context.Context) error {
   return nil
 }
 
-func (p *provider) SaveHostDetailsTask(ctx context.Context) error {
+func (p *Provider) SaveHostDetailsTask(ctx context.Context) error {
   dmiUuid, err := sys.GetSysDmiUUID()
   if err != nil {
     return err
@@ -165,7 +165,7 @@ func (p *provider) SaveHostDetailsTask(ctx context.Context) error {
   return nil
 }
 
-func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
+func (p *Provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
   return p
 }
 
@@ -184,7 +184,7 @@ func init() {
       return &config{}
     },
     Creator:                func() servicehub.Provider {
-      return &provider{}
+      return &Provider{}
     },
   })
 }

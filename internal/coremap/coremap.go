@@ -55,8 +55,18 @@ type CoreMap struct {
   numaNodes map[uint64]*NumaNode
 }
 
+// Helper function
+func contains(array []uint64, element uint64) bool {
+  for _, a := range array {
+      if a == element {
+          return true
+      }
+  }
+  return false
+}
+
 // NumaNode creates a fixed-length map of cores with their ID as index.
-func NewNumaNode(id uint64, cores []uint64) *NumaNode {
+func NewNumaNode(id uint64, cores []uint64, availableCores []uint64) *NumaNode {
   numaNode := &NumaNode{
     id:         id,
     cores:      make(map[uint64]*Core, len(cores)),
@@ -65,11 +75,13 @@ func NewNumaNode(id uint64, cores []uint64) *NumaNode {
 
   // Add the core ID as index to the map
   for i := 0; i < len(cores); i++ {
-    numaNode.cores[cores[i]] = &Core{
-      id:         cores[i],
-      numaNodeId: id,
-      busy:       false,
-      activity:   nil,
+    if contains(availableCores, cores[i]) {
+      numaNode.cores[cores[i]] = &Core{
+        id:         cores[i],
+        numaNodeId: id,
+        busy:       false,
+        activity:   nil,
+      }
     }
   }
 
@@ -84,11 +96,12 @@ func New(numaNodes map[uint64]*NumaNode) *CoreMap {
 }
 
 // Create a new CoreMap based on string array of CPU set notation
-func NewFromStr(numaNodesStr []string) (*CoreMap, error) {
+func NewFromStr(numaNodesStr []string, availableCpuSet string) (*CoreMap, error) {
   if len(numaNodesStr) == 0 {
     return nil, fmt.Errorf("no NUMA node strings provided")
   }
 
+  availableCores, _ := parsecpusets.ParseCpuSets(availableCpuSet)
   numaNodes := make(map[uint64]*NumaNode, len(numaNodesStr))
 
   for i, numaNodeStr := range numaNodesStr {
@@ -97,7 +110,7 @@ func NewFromStr(numaNodesStr []string) (*CoreMap, error) {
       return nil, fmt.Errorf("could not parse NUMA node string: %s", err)
     }
 
-    numaNodes[uint64(i)] = NewNumaNode(uint64(i), cores)
+    numaNodes[uint64(i)] = NewNumaNode(uint64(i), cores, availableCores)
   }
 
   return New(numaNodes), nil

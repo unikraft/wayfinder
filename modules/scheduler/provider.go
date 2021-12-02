@@ -46,6 +46,7 @@ import (
   "github.com/unikraft/wayfinder/modules/builder"
   "github.com/unikraft/wayfinder/modules/postgres"
   "github.com/unikraft/wayfinder/internal/coremap"
+  "github.com/unikraft/wayfinder/modules/hostconfig"
 )
 
 type Interface interface {
@@ -67,10 +68,11 @@ type config struct {
 type provider struct {
   Cfg        *config
   Log         logs.Logger
-  Redis      *redis.Client       `autowired:"redis-client"`
-  DB          postgres.Interface `autowired:"postgres"`
-  Builder    *builder.Service    `autowired:"builder"`
-  Tester     *tester.Service     `autowired:"tester"`
+  Redis      *redis.Client        `autowired:"redis-client"`
+  DB          postgres.Interface  `autowired:"postgres"`
+  Builder    *builder.Service     `autowired:"builder"`
+  Tester     *tester.Service      `autowired:"tester"`
+  HostConfig *hostconfig.Provider `autowired:"hostconfig"`
 
   // Internal
   taskQueue   rmq.Queue
@@ -105,7 +107,9 @@ func (p *provider) Init(ctx servicehub.Context) error {
   p.coreMap, err = coremap.NewFromStr([]string{
     cpuInfo.NUMANode0CPUs,
     cpuInfo.NUMANode1CPUs,
-  })
+  },
+  p.HostConfig.Cfg.CpuSets)
+
   if err != nil {
     return fmt.Errorf("could not initialize core map: %s", err)
   }
