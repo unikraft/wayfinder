@@ -142,7 +142,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
   // Create a new fake PID to be used for the bridge and for counting the
   // domains
   pidCount += 1
-  pid := pidCount
+  pid := pidCount % 4 + 1
 
   pidUuidMap[pid] = uuid
   

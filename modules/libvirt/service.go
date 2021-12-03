@@ -195,10 +195,21 @@ func (d *Domain) SetArgs(args string) error {
 func (d *Domain) CreateBridge(name, hostIface, subnet, stateDir string) error {
   var err error
 
-  d.bridge = bridge.New(name, hostIface, subnet, stateDir)
-  d.ip, err = d.bridge.Create(d.fakePid, false)
-  d.subnet = subnet
+  // TODO sometimes fails
+  retries := 0
+  for retries < 5 {
+    d.bridge = bridge.New(name, hostIface, subnet, stateDir)
+    d.ip, err = d.bridge.Create(d.fakePid, false)
+    d.subnet = subnet
+    if err != nil {
+      retries++
+      time.Sleep(1 * time.Second)
+    } else {
+      break
+    }
+  }
   if err != nil {
+    // fmt.Printf("Allocating bridge: bridge=%#v d.ip=%#v d.subnet=%#v d.fakePid=%#v\n", d.bridge, d.ip, d.subnet, d.fakePid)
     return fmt.Errorf("could not allocate IP: %s", err)
   }
 
@@ -389,8 +400,20 @@ func (d *Domain) Destroy() error {
     return fmt.Errorf("could not undefine domain: %s", err)
   }
 
-  // Clean up the network
-  if err := d.bridge.Delete(d.fakePid, d.ip); err != nil {
+  // TODO sometimes fails
+  retries := 0
+  var err error
+  for retries < 5 {
+    // Clean up the network
+    if err = d.bridge.Delete(d.fakePid, d.ip); err != nil {
+      retries++
+      time.Sleep(1 * time.Second)
+      } else {
+      break
+    }
+  }
+
+  if retries >= 5 {
     return fmt.Errorf("could not delete veth pair: %s", err)
   }
 
@@ -430,6 +453,7 @@ func (d *Domain) MeasureResources() []error {
     errs = append(errs, fmt.Errorf("could not measure memory: %s", err))
   }
 
+  // Throws "could not find network device" error
   if err := d.NetMeasure(); err != nil {
     errs = append(errs, fmt.Errorf("could not measure network: %s", err))
   }
