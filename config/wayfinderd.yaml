@@ -211,6 +211,9 @@ container:
   # The directory to save container OCI archives
   cachedir: ${CONTAINER_CACHEDIR:/tmp/lib/wayfinder/cache}
 
+  # The directory to save container unpacked images for jobs
+  saveddir: ${CONTAINER_SAVEDDIR:/tmp/lib/wayfinder/saved}
+
   # Path to save logs to from container runtimes
   logdir: ${CONTAINER_LOGDIR:/var/lib/wayfinder/logs}
 
