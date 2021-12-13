@@ -43,6 +43,7 @@ import (
   
   "github.com/unikraft/wayfinder/api/proto"
   "github.com/unikraft/wayfinder/modules/postgres"
+  "github.com/unikraft/wayfinder/modules/container"
 )
 
 type config struct {
@@ -57,6 +58,7 @@ type provider struct {
   Redis      *redis.Client        `autowired:"redis-client"`
   DB          postgres.Interface  `autowired:"postgres"`
   TaskQueue   rmq.Queue           `autowired:"scheduler-queue"`
+  Container  *container.Service   `autowired:"container"` // SavedDir
   JobQueue    rmq.Queue
   RedisErr    chan error
   service    *service
