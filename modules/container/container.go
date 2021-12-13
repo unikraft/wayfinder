@@ -132,21 +132,22 @@ var (
 )
 
 type Service struct {
-  p *provider
+  P *Provider
 }
 
 type Container struct {
-  p          *provider
-  Log         logs.Logger
-  spec        proto.Container
-  image       v1.Image
-  bridge     *bridge.Bridge
-  config     *configs.Config
-  env       []string
-  container   libcontainer.Container
-  process    *libcontainer.Process
-  timer       time.Time
-  exitCode    int
+  p               *Provider
+  Log              logs.Logger
+  spec             proto.Container
+  image            v1.Image
+  imageManifestHex string
+  bridge          *bridge.Bridge
+  config          *configs.Config
+  env            []string
+  container       libcontainer.Container
+  process         *libcontainer.Process
+  timer            time.Time
+  exitCode         int
 }
 
 func (s *Service) NewContainer(id string) (*Container, error) {
@@ -155,13 +156,13 @@ func (s *Service) NewContainer(id string) (*Container, error) {
   }
 
   container := &Container{
-    p:    s.p,
+    p:    s.P,
     env:  defaultEnvironment,
     spec: proto.Container{
       Id: id,
     },
     config: &configs.Config{
-      Rootfs: path.Join(s.p.Cfg.ContainerRootDir, id),
+      Rootfs: path.Join(s.P.Cfg.ContainerRootDir, id),
       Namespaces: configs.Namespaces([]configs.Namespace{
         {Type: configs.NEWNS},
         {Type: configs.NEWUTS},
@@ -258,7 +259,7 @@ func (s *Service) NewContainer(id string) (*Container, error) {
         },
       },
     },
-    Log: s.p.Log.Sub(id),
+    Log: s.P.Log.Sub(id),
   }
 
   // The `StartContainer` hook is the closest way to run code before the
@@ -390,12 +391,17 @@ func (c *Container) PullImage() error {
     return nil
   }
 
-  var err error
-  c.image, err = PullImage(c.spec.Image, c.p.Cfg.CacheDir)
+  var err error = nil
+  c.image, c.imageManifestHex, err = PullImage(c.spec.Image, c.p.Cfg.CacheDir, c.p.Cfg.SavedDir)
   if err != nil {
     return fmt.Errorf("could not pull image: %s", err)
   }
-  
+
+  // If the image is nil it means that the image was not found locally and copied
+  if c.image == nil {
+    return nil
+  }
+
   _, err = c.image.Digest()
   if err != nil {
     return fmt.Errorf("could not process image digest: %s", err)
@@ -405,8 +411,7 @@ func (c *Container) PullImage() error {
 }
 
 func (c *Container) AttachImage() error {
-  // TODO: SLOW!
-  err := UnpackImage(c.image, c.p.Cfg.CacheDir, c.config.Rootfs, true) // r.Config.AllowOverride
+  err := UnpackImage(c.image, c.imageManifestHex, c.p.Cfg.CacheDir, c.p.Cfg.SavedDir, c.config.Rootfs, true) // r.Config.AllowOverride
   if err != nil {
     return fmt.Errorf("could not attach image: %s", err)
   }

@@ -45,6 +45,7 @@ import (
 type config struct {
   ContainerRootDir  string `file:"rootdir"          env:"CONTAINER_ROOTDIR"         default:"/var/lib/wayfinder/containers"`
   CacheDir          string `file:"cachedir"         env:"CONTAINER_CACHEDIR"        default:"/var/lib/wayfinder/cache"`
+  SavedDir          string `file:"saveddir"         env:"CONTAINER_SAVEDDIR"        default:"/var/lib/wayfinder/saved"`
   LogDir            string `file:"logdir"           env:"CONTAINER_LOGDIR"          default:"/var/lib/wayfinder/logs"`
   HostIface         string `yaml:"host_iface"       env:"CONTAINER_HOST_IFACE"      default:"eth0"`
   Bridge            string `yaml:"bridge"           env:"CONTAINER_BRIDGE"          default:"wayfinder0"`
@@ -52,7 +53,7 @@ type config struct {
   Subnet            string `yaml:"subnet"           env:"CONTAINER_SUBNET"          default:"172.88.0.1/16"`
 }
 
-type provider struct {
+type Provider struct {
   Cfg        *config
   Log         logs.Logger
   Register    transport.Register
@@ -64,11 +65,11 @@ var (
   factoryType = reflect.TypeOf((libcontainer.Factory)(nil))
 )
 
-func (p *provider) Init(ctx servicehub.Context) error {
+func (p *Provider) Init(ctx servicehub.Context) error {
   var err error
 
   if p.Register != nil {
-    p.service = &Service{p:p}
+    p.service = &Service{P:p}
     // proto.RegisterBuilderServiceImp(p.Register, p.Service)
   }
 
@@ -86,7 +87,7 @@ func (p *provider) Init(ctx servicehub.Context) error {
   return nil
 }
 
-func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
+func (p *Provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
   switch {
   case ctx.Service() == "container",
        ctx.Service() == "wayfinder.ContainerService":
@@ -116,7 +117,7 @@ func init() {
       return &config{}
     },
     Creator:                func() servicehub.Provider {
-      return &provider{}
+      return &Provider{}
     },
   })
 }

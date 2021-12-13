@@ -31,6 +31,7 @@ import (
   "github.com/moby/moby/pkg/archive"
   "github.com/google/go-containerregistry/pkg/crane"
   v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/docker/docker/daemon/graphdriver/copy"
 )
 
 const (
@@ -87,7 +88,7 @@ type Image struct {
 }
 
 // PullImage downloads an image
-func PullImage(image, cacheDir string) (v1.Image, error) {
+func PullImage(image, cacheDir, savedDir string) (v1.Image, string, error) {
   var options []crane.Option
 
   // options = append(options, crane.Insecure)
@@ -101,16 +102,16 @@ func PullImage(image, cacheDir string) (v1.Image, error) {
   // Grab the remote manifest
   manifest, err := crane.Manifest(image, options...)
   if err != nil {
-    return nil, fmt.Errorf("failed fetching manifest for %s: %v", image, err)
+    return nil, "", fmt.Errorf("failed fetching manifest for %s: %v", image, err)
   }
 
   if !gjson.Valid(string(manifest)) {
-    return nil, fmt.Errorf("Cannot parse manifest: %s", string(manifest))
+    return nil, "", fmt.Errorf("Cannot parse manifest: %s", string(manifest))
   }
 
   value := gjson.Get(string(manifest), "config.digest").Value().(string)
   if value == "" {
-    return nil, fmt.Errorf("Malformed manifest: %s", string(manifest))
+    return nil, "", fmt.Errorf("Malformed manifest: %s", string(manifest))
   }
   
   digest := strings.Split(value, ":")[1]
@@ -128,67 +129,78 @@ func PullImage(image, cacheDir string) (v1.Image, error) {
     // Pull the image
     img, err := crane.Pull(image, options...)
     if err != nil {
-      return nil, fmt.Errorf("Could not pull image: %s", err)
+      return nil, "", fmt.Errorf("Could not pull image: %s", err)
     }
     
     f, err := os.Create(tarball)
     if err != nil {
-      return nil, fmt.Errorf("Failed to open %s: %v", tarball, err)
+      return nil, "", fmt.Errorf("Failed to open %s: %v", tarball, err)
     }
   
     defer f.Close()
   
     err = crane.Save(img, image, tarball)
     if err != nil {
-      return nil, fmt.Errorf("Could not save image: %s", err)
+      return nil, "", fmt.Errorf("Could not save image: %s", err)
     }
   }
 
-  img, err := crane.Load(tarball)
-  if err != nil {
-    return nil, fmt.Errorf("Could not load image: %s", err)
+  var img v1.Image = nil
+  imageDir := fmt.Sprintf("%s/%s", savedDir, digest)
+  if _, err := os.Stat(imageDir); os.IsNotExist(err) {
+    img, err = crane.Load(tarball)
+    if err != nil {
+      return nil, "", fmt.Errorf("Could not load image: %s", err)
+    }
   }
 
-  return img, nil
+  return img, digest, nil
 }
 
 // UnpackImage takes a container image and writes its filesystem to outDir
-func UnpackImage(image v1.Image, cacheDir, outDir string, allowOverride bool) error {
-  if image == nil {
-    return fmt.Errorf("Invalid image")
-  }
-
-  // Retrieve the manifest, checking if it's a valid `image` variable
-  manifest, err := image.Manifest()
-  if err != nil {
-    return fmt.Errorf("Cannot read manifest: %s", err)
-  }
+func UnpackImage(image v1.Image, manifestHex string, cacheDir, savedDir, outDir string, allowOverride bool) error {
+  imageDir := fmt.Sprintf("%s/%s", savedDir, manifestHex)
 
   // Check if the tarball exists in the cache
-  tarball := fmt.Sprintf("%s/%s.tar.gz", cacheDir, manifest.Config.Digest.Hex)
+  tarball := fmt.Sprintf("%s/%s.tar.gz", cacheDir, manifestHex)
   if _, err := os.Stat(tarball); os.IsNotExist(err) {
     return fmt.Errorf("Image does not exist: %s", tarball)
   }
-  
-  // Get the layers of this image
-  layers, err := image.Layers()
-  if err != nil {
-    return fmt.Errorf("Could not read layers: %s", err)
+
+  if _, err := os.Stat(imageDir); os.IsNotExist(err) {
+    if image == nil {
+      return fmt.Errorf("Invalid image")
+    }
+
+    // Get the layers of this image
+    layers, err := image.Layers()
+    if err != nil {
+      return fmt.Errorf("Could not read layers: %s", err)
+    }
+
+    for _, layer := range layers {
+      uncompressed, err := layer.Uncompressed()
+      if err != nil {
+        return fmt.Errorf("Could not read layer: %s", err)
+      }
+
+      // Untar cached tarball
+      err = archive.Untar(uncompressed, imageDir, &archive.TarOptions{
+        NoLchown: true,
+      })
+      if err != nil {
+        return fmt.Errorf("Extracting tar from %s failed: %s", tarball, err)
+      }
+    }
   }
 
-  for _, layer := range layers {
-    uncompressed, err := layer.Uncompressed()
-    if err != nil {
-      return fmt.Errorf("Could not read layer: %s", err)
-    }
-    
-    // Untar cached tarball
-    err = archive.Untar(uncompressed, outDir, &archive.TarOptions{
-      NoLchown: true,
-    })
-    if err != nil {
-      return fmt.Errorf("Extracting tar from %s failed: %s", tarball, err)
-    }
+  // Copies the saved content to the output directory
+  if _, err := os.Stat(outDir); os.IsNotExist(err) {
+    os.MkdirAll(outDir, os.ModePerm)
+  }
+  err := copy.DirCopy(imageDir, outDir, copy.Content, false)
+  if err != nil {
+    return fmt.Errorf("Could not copy: %s", err)
   }
 
   return nil
