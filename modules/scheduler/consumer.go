@@ -100,7 +100,6 @@ func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
         break;
       }
       if retries > 10 {
-        fmt.Printf("DEBUG ___ CEZ ___ CEZ ___ could not release core %d\n\n", coreId)
         return fmt.Errorf("could not release core %d", coreId)
       }
       time.Sleep(1 * time.Millisecond)
