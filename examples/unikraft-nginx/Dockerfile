@@ -18,6 +18,7 @@ RUN set -xe; \
       procps \
       bridge-utils \
       net-tools \
+      lld \
       libarchive-tools; \
     echo "" > $KRAFTRC; \
     kraft list add https://github.com/unikraft/unikraft.git; \
@@ -40,5 +41,7 @@ RUN set -xe; \
       -u newlib@staging \
       -u lwip@staging \
       -u nginx@staging; \
+    rm -f /bin/ld && ln -s /bin/lld /bin/ld \
+    cat ../../unikraft/plat/kvm/Linker.uk | sed "s/dT/T/g" > ../../unikraft/plat/kvm/Linker.uk; \
     kraft build --no-progress --fast; \
     unset UK_KRAFT_GITHUB_TOKEN
