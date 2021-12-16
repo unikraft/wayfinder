@@ -4,6 +4,7 @@ RUN set -xe; \
     apt-get update; \
     apt-get install -y \
       build-essential \
+      bash \
       unzip \
       curl \
       git; \
