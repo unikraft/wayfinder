@@ -8,7 +8,7 @@ require (
 	github.com/evolbioinfo/gotree v0.4.2
 	github.com/go-redis/redis/v8 v8.3.2
 	github.com/google/go-containerregistry v0.5.1
-	github.com/lancs-net/netns v0.6.0
+	github.com/lancs-net/netns v0.6.1
 	github.com/libvirt/libvirt-go v7.4.0+incompatible
 	github.com/libvirt/libvirt-go-xml v7.4.0+incompatible
 	github.com/moby/moby v20.10.1+incompatible
