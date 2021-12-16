@@ -171,7 +171,7 @@ libvirt:
 #
 job:
   # Queue pre-fetch limit is used to limit the number of jobs which are consumed
-  prefetch_limit: ${JOB_PREFETCH_LIMIT:1000}
+  prefetch_limit: ${JOB_PREFETCH_LIMIT:1}
 
   # The amount of time to timeout from the Redis queue
   poll_duration: ${JOB_POLL_DURATION:100ms}
@@ -186,7 +186,7 @@ job:
 scheduler:
   # Queue pre-fetch limit is used to limit the number of permutations which are 
   # consumed
-  prefetch_limit: ${SCHEDULER_PREFETCH_LIMIT:1000}
+  prefetch_limit: ${SCHEDULER_PREFETCH_LIMIT:1}
 
   # The amount of time to timeout from the Redis queue
   poll_duration: ${SCHEDULER_POLL_DURATION:100ms}
