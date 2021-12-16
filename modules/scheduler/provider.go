@@ -131,6 +131,15 @@ func (p *provider) Run(ctx context.Context) error {
   return nil
 }
 
+func (p *provider) Start() error {
+  return nil
+}
+
+func (p *provider) Close() error {
+  <-p.taskQueue.StopConsuming()
+  return nil
+}
+
 func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
   switch {
     case ctx.Service() == "scheduler-queue",

@@ -105,6 +105,15 @@ func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}
   return p
 }
 
+func (p *provider) Start() error {
+  return nil
+}
+
+func (p *provider) Close() error {
+  <-p.JobQueue.StopConsuming()
+  return nil
+}
+
 func init() {
   servicehub.Register("job", &servicehub.Spec{
     Services:             []string{
