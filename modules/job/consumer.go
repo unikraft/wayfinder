@@ -78,6 +78,8 @@ func (c *JobConsumer) Consume(delivery rmq.Delivery) {
     } else {
       c.p.Log.Errorf("could not complete job %s", err)
     }
+  } else {
+    delivery.Ack()
   }
 }
 

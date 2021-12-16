@@ -85,6 +85,8 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
     if err = delivery.Reject(); err != nil {
       c.Log.Errorf("failed to reject permutation: %s", err)
     }
+  } else {
+    delivery.Ack()
   }
 }
 
