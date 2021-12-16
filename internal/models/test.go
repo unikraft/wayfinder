@@ -43,13 +43,14 @@ import (
 type Test struct {
   Base
 
-  UUID          uuid.UUID        `gorm:"type:char(36)"`
+  UUID             uuid.UUID        `gorm:"type:char(36)"`
 
-  PermutationId uint             `gorm:"column:permutation_id;"    json:"permutation_id"`
+  PermutationId    uint             `gorm:"column:permutation_id;"    json:"permutation_id"`
 
-  Status        proto.TestStatus `gorm:"column:status"             json:"status"`
-  Runtime       time.Duration    `gorm:"column:runtime;default:0"  json:"runtime"`
-  Results       []Result         `gorm:"foreignKey:test_id"        json:"results"`
+  Status           proto.TestStatus `gorm:"column:status"             json:"status"`
+  Runtime          time.Duration    `gorm:"column:runtime;default:0"  json:"runtime"`
+  WayfinderVersion string           `gorm:"column:wayfinder_version" json:"wayfinder_version"`
+  Results          []Result         `gorm:"foreignKey:test_id"        json:"results"`
 }
 
 func (u *Test) BeforeCreate(tx *gorm.DB) (err error) {

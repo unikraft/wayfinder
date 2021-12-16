@@ -36,6 +36,7 @@ import (
 
   "github.com/unikraft/wayfinder/api/proto"
   "github.com/unikraft/wayfinder/internal/models"
+  "github.com/unikraft/wayfinder/internal/version"
 )
 
 // TestsRepository uses gorm.DB for querying the database
@@ -53,8 +54,9 @@ func NewTestsRepository(db *gorm.DB) *TestsRepository {
 // database
 func (repo *TestsRepository) CreateTestForPermutation(permId uint) (*models.Test, error) {
   test := &models.Test{
-    PermutationId: permId,
-    Status:        proto.TestStatus_TEST_CREATED,
+    PermutationId:    permId,
+    Status:           proto.TestStatus_TEST_CREATED,
+    WayfinderVersion: version.String(),
   }
 
   if err := repo.db.Create(test).Error; err != nil {

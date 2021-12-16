@@ -43,15 +43,16 @@ import (
 type Build struct {
   Base
 
-  UUID          uuid.UUID         `gorm:"type:char(36)"`
+  UUID             uuid.UUID         `gorm:"type:char(36)"`
 
-  PermutationId uint              `gorm:"column:permutation_id;"   json:"permutation_id"`
+  PermutationId    uint              `gorm:"column:permutation_id;"   json:"permutation_id"`
 
-  Status        proto.BuildStatus `gorm:"column:status"            json:"status"`
-  Runtime       time.Duration     `gorm:"column:runtime;default:0" json:"runtime"`
-  KernelPath    string            `gorm:"column:kernel_path"       json:"kernel_path"`
-  InitRdPath    string            `gorm:"column:initrd_path"       json:"initrd_path"`
-  LogPath       string            `gorm:"column:log_path"          json:"log_path"`
+  Status           proto.BuildStatus `gorm:"column:status"            json:"status"`
+  Runtime          time.Duration     `gorm:"column:runtime;default:0" json:"runtime"`
+  WayfinderVersion string            `gorm:"column:wayfinder_version" json:"wayfinder_version"`
+  KernelPath       string            `gorm:"column:kernel_path"       json:"kernel_path"`
+  InitRdPath       string            `gorm:"column:initrd_path"       json:"initrd_path"`
+  LogPath          string            `gorm:"column:log_path"          json:"log_path"`
 }
 
 func (u *Build) BeforeCreate(tx *gorm.DB) (err error) {

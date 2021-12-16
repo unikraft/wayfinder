@@ -36,6 +36,7 @@ import (
 
   "github.com/unikraft/wayfinder/api/proto"
   "github.com/unikraft/wayfinder/internal/models"
+  "github.com/unikraft/wayfinder/internal/version"
 )
 
 // BuildsRepository uses gorm.DB for querying the database
@@ -53,8 +54,9 @@ func NewBuildsRepository(db *gorm.DB) *BuildsRepository {
 // database
 func (repo *BuildsRepository) CreateBuildForPermutation(permId uint) (*models.Build, error) {
   build := &models.Build{
-    PermutationId: permId,
-    Status:        proto.BuildStatus_BUILD_CREATED,
+    PermutationId:    permId,
+    Status:           proto.BuildStatus_BUILD_CREATED,
+    WayfinderVersion: version.String(),
   }
 
   if err := repo.db.Create(build).Error; err != nil {
