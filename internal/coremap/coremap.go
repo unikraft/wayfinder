@@ -184,8 +184,8 @@ func (cm *CoreMap) FindCoreOnNumaNode(coreId, numaNodeId uint64) (*Core, error) 
     return nil, fmt.Errorf("could not find NUMA node with id=%d", numaNodeId)
   }
 
-  for i, core := range cm.numaNodes[numaNodeId].cores {
-    if i == coreId {
+  for _, core := range cm.numaNodes[numaNodeId].cores {
+    if core.id == coreId {
       return core, nil
     }
   }
