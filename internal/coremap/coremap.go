@@ -261,7 +261,7 @@ func (cm *CoreMap) ReleaseCoreOnNumaNode(coreId, numaNodeId uint64) error {
 func (cm *CoreMap) ReleaseCore(coreId uint64) error {
   core, err := cm.FindCore(coreId)
   if err != nil {
-    return fmt.Errorf("could not release core with id=%d: %s", coreId, err)
+    return fmt.Errorf("could not find core with id=%d: %s", coreId, err)
   }
 
   return cm.ReleaseCoreOnNumaNode(coreId, core.numaNodeId)
