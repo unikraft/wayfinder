@@ -346,6 +346,26 @@ func (cm *CoreMap) GetCoreActivity(coreId uint64) (interface{}, error) {
   return core.activity, nil
 }
 
+func (cm *CoreMap) Print() {
+  i := 1
+  cols := 3
+  fmt.Printf("Core map:\n")
+  for _, numaNode := range cm.numaNodes {
+    for _, core := range numaNode.cores {
+      busy := ""
+      if core.busy {
+        busy = fmt.Sprintf("%p", &core.activity)
+      }
+      fmt.Printf(" %2d|%2d: [%12s] ", numaNode.id, core.Id(), busy)
+      if int(i) % cols == 0 {
+        fmt.Printf("\n")
+      }
+      i++
+    }
+  }
+  fmt.Printf("\n\n")
+}
+
 func (c *Core) Id() uint64 {
   return c.id
 }
