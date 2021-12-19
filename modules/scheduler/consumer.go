@@ -121,6 +121,53 @@ func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
   return nil
 }
 
+// Busy-waits to reserve a core.  This method is required for builds and tests
+// which have allocated core requirements.  An arbitrary number of cores which
+// are required can be entered as input, as well as a pointer to an interface
+// which will be assigned to the core, and the list of core IDs which are then
+// reserved will be returned.
+func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface{}) ([]uint64) {
+  var buildCoreIds []uint64
+  var buildCores []*coremap.Core
+  
+  // Wait until we have some free cores.
+  for {
+    if len(buildCores) >= requiredNumCores {
+      break
+    }
+
+    c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
+
+    // TODO: Logic on whether the build needs to be numa/socket/cache/core aware
+    cores := c.p.CoreMap().FindAllFreeCoresAcrossAllNumaNodes()
+    for _, core := range cores {
+      // Immediately reserve this core
+      if err := c.p.CoreMap().SetCoreActivity(core.Id(), activity); err != nil {
+        c.p.CoreMap().Print()
+        continue
+      }
+
+      c.p.CoreMap().Print()
+
+      buildCoreIds = append(buildCoreIds, core.Id())
+      buildCores = append(buildCores, core)
+
+      // Also check here in case we received more cores than requested
+      if len(buildCores) >= requiredNumCores {
+        break
+      }
+    }
+
+    time.Sleep(c.p.Cfg.GraceTime)
+  }
+
+  c.Log.Debugf("Reserved cores: %s", strings.Trim(
+    strings.Join(strings.Fields(fmt.Sprint(buildCoreIds)), ","), "[]",
+  ))
+
+  return buildCoreIds;
+}
+
 func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   // TODO: Implement a *real* scheduler.  For now this consumer accepts any task
   // it receives and attempts to complete it.  This method should essentially
@@ -160,37 +207,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   //   return fmt.Errorf("permutation with id=%d not found", perm.Id)
   // }
 
-  build := &build{}
+  build := build{}
 
-  requiredNumBuildCores := int(task.Build.Cores)
-  var buildCoreIds []uint64
-  var buildCores []*coremap.Core
-  
-  // Wait until we have some free cores.
-  for {
-    if len(buildCores) >= requiredNumBuildCores {
-      break
-    }
-
-    // TODO: Logic on whether the build needs to be numa/socket/cache/core aware
-    cores := c.p.CoreMap().FindAllFreeCoresAcrossAllNumaNodes()
-    for _, core := range cores {
-      // Immediately reserve this core
-      if err := c.p.CoreMap().SetCoreActivity(core.Id(), &build); err != nil {
-        continue
-      }
-
-      buildCoreIds = append(buildCoreIds, core.Id())
-      buildCores = append(buildCores, core)
-
-      // Also check here in case we received more cores than requested
-      if len(buildCores) >= requiredNumBuildCores {
-        break
-      }
-    }
-
-    time.Sleep(c.p.Cfg.GraceTime)
-  }
+  buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build)
 
   var buildEnvVars []*proto.BuildEnvVar
   for _, param := range task.CurrentPerm.Params {
@@ -305,35 +324,10 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
   // We add an extra core to be used for the QEMU VMM.
   // TODO: Implement
-  requiredNumTestCores := 1 + task.Test.Kernel.Cores + task.Test.BenchTool.Cores
-
-  var testCoreIds []uint64
-  var testCores []*coremap.Core
-
-  for {
-    if uint64(len(testCores)) >= requiredNumTestCores {
-      break
-    }
-
-    // TODO: Logic on whether the build needs to be numa/socket/cache/core aware
-    cores := c.p.CoreMap().FindAllFreeCoresAcrossAllNumaNodes()
-    for _, core := range cores {
-      // Immediately reserve this core
-      if err := c.p.CoreMap().SetCoreActivity(core.Id(), &test); err != nil {
-        continue
-      }
-
-      testCoreIds = append(testCoreIds, core.Id())
-      testCores = append(testCores, core)
-
-      // Also check here in case we received more cores than requested
-      if uint64(len(testCores)) >= requiredNumTestCores {
-        break
-      }
-    }
-
-    time.Sleep(c.p.Cfg.GraceTime)
-  }
+  testCoreIds := c.busyWaitForCores(
+    int(1 + task.Test.Kernel.Cores + task.Test.BenchTool.Cores),
+    &test,
+  )
 
   // Pop a core from our list of reserved cores.  Niiave!  VMM, VM and Bench
   // tool locality matter!
