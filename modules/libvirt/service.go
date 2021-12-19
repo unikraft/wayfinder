@@ -315,7 +315,7 @@ func (d *Domain) Init() error {
   }
 
   // This prints out the XML:
-  fmt.Printf("%s\n", doc)
+  // fmt.Printf("%s\n", doc)
 
   d.domain, err = d.p.Client().DomainDefineXML(doc)
   if err != nil {
