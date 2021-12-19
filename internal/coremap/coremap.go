@@ -239,8 +239,12 @@ func (cm *CoreMap) SetCoreActivity(coreId uint64, activity interface{}) error {
 
 // Release a core from its activity
 func (cm *CoreMap) ReleaseCoreOnNumaNode(coreId, numaNodeId uint64) error {
-  if _, err := cm.FindCore(coreId); err != nil {
-    return fmt.Errorf("could not set core with id=%d on NUMA node with id: %d, %s", coreId, numaNodeId, err)
+  if _, ok := cm.numaNodes[numaNodeId]; !ok {
+    return fmt.Errorf("invalid NUMA node id=%d", numaNodeId)
+  }
+
+  if _, ok := cm.numaNodes[numaNodeId].cores[coreId]; !ok {
+    return fmt.Errorf("invalid core id=%d for NUMA node with id=%d", coreId, numaNodeId)
   }
 
   cm.RLock()
