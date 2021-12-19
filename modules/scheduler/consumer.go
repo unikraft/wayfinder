@@ -144,11 +144,13 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
     for _, core := range cores {
       // Immediately reserve this core
       if err := c.p.CoreMap().SetCoreActivity(core.Id(), activity); err != nil {
-        c.p.CoreMap().Print()
+        // To see core mapping during allocation, use:
+        // c.p.CoreMap().Print()
         continue
       }
 
-      c.p.CoreMap().Print()
+      // To see core mapping during allocation, use:
+      // c.p.CoreMap().Print()
 
       buildCoreIds = append(buildCoreIds, core.Id())
       buildCores = append(buildCores, core)
