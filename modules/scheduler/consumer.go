@@ -100,17 +100,22 @@ func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
 
   for _, coreId := range coresToFree {
     retries := 0
-    c.p.CoreMap().ReleaseCore(coreId)
-    for {
-      if activity, _ := c.p.CoreMap().GetCoreActivity(coreId); activity == nil {
-        break;
+    freecore:for {
+      c.p.CoreMap().ReleaseCore(coreId)
+      core, err := c.p.CoreMap().FindCore(coreId)
+      if err != nil {
+        c.Log.Warnf("could not get core: %s", err)
+        retries++
+        time.Sleep(1 * time.Second)
+        continue
       }
+
       if retries > 10 {
         return fmt.Errorf("could not release core %d", coreId)
       }
-      time.Sleep(1 * time.Millisecond)
-      c.p.CoreMap().ReleaseCore(coreId)
-      retries++
+      if !core.IsBusy() {
+        break freecore;
+      }
     }
   }
   return nil
