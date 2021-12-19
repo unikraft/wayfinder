@@ -195,11 +195,16 @@ func (cm *CoreMap) FindCoreOnNumaNode(coreId, numaNodeId uint64) (*Core, error) 
 
 // Find a core based on its ID
 func (cm *CoreMap) FindCore(coreId uint64) (*Core, error) {
+  var core *Core
   for numaId, _ := range cm.numaNodes {
-    return cm.FindCoreOnNumaNode(coreId, numaId)
+    core, _ = cm.FindCoreOnNumaNode(coreId, numaId)
   }
 
-  return nil, fmt.Errorf("could not find core with id=%d", coreId)
+  if core == nil {
+    return nil, fmt.Errorf("could not find core with id=%d", coreId)
+  }
+
+  return core, nil
 }
 
 // Set the activity of a core on a NUMA node
