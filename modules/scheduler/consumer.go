@@ -219,8 +219,6 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     })
   }
 
-  fmt.Printf("params = %#v\n", buildEnvVars)
-
   // Create the build
   c.Log.Infof("creating build container for permutation_id=%d", permutation.Id)
   createBuildResp, err := c.p.Builder.CreateBuild(context.TODO(), &proto.CreateBuildRequest{
