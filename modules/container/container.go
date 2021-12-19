@@ -422,6 +422,7 @@ func (c *Container) AttachImage() error {
 func (c *Container) PullAndAttachImage(image string) error {
   c.SetImage(image)
 
+  c.Log.Infof("Pulling image %s...", image)
   if err := c.PullImage(); err != nil {
     return err
   }
