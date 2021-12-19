@@ -190,7 +190,7 @@ func (cm *CoreMap) FindCoreOnNumaNode(coreId, numaNodeId uint64) (*Core, error) 
     }
   }
 
-  return nil, fmt.Errorf("could not find core with id=%d", coreId)
+  return nil, fmt.Errorf("could not find core with id=%d on NUMA node with id=%d", coreId, numaNodeId)
 }
 
 // Find a core based on its ID
