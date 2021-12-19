@@ -94,6 +94,10 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
 // containers don't have time to exit, after signaling that work is done.
 // Most of the time this should complete in a single pass.
 func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
+  c.Log.Debugf("releasing cores: %s", strings.Trim(
+    strings.Join(strings.Fields(fmt.Sprint(coresToFree)), ", "), "[]",
+  ))
+
   for _, coreId := range coresToFree {
     retries := 0
     c.p.CoreMap().ReleaseCore(coreId)
