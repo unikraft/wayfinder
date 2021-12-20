@@ -41,8 +41,10 @@ import (
   libvirt "github.com/libvirt/libvirt-go"
   libvirtxml "github.com/libvirt/libvirt-go-xml"
 
+  "github.com/unikraft/wayfinder/pkg/sys"
   "github.com/unikraft/wayfinder/internal/bridge"
   "github.com/unikraft/wayfinder/internal/metrics"
+  "github.com/unikraft/wayfinder/internal/strutils"
 )
 
 const (
@@ -323,6 +325,28 @@ func (d *Domain) Init() error {
   }
 
   return d.domain.CreateWithFlags(libvirt.DOMAIN_START_PAUSED)
+}
+
+// Pin the VMM process to defined set of cores
+func (d *Domain) PinVMMToCores(cores []uint64) error {
+  pid, err := d.Pid()
+  if err != nil || pid <= 0 {
+    return fmt.Errorf("could not set VMM affinity, no PID: %s", err)
+  }
+
+  corelist := strutils.JoinUint64(cores, ",")
+  d.p.Log.Debugf("Pinning VMM (pid=%d) to cores [%s]", pid, corelist)
+
+  if _, err := sys.SetAffinity(cores, pid); err != nil {
+    return fmt.Errorf(
+      "could not set VMM affinity (pid=%d) to cores [%s]: %s",
+      pid,
+      corelist,
+      err,
+    )
+  }
+
+  return nil
 }
 
 // Start the libvirt domain
