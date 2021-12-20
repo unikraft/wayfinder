@@ -118,10 +118,11 @@ message TestResult {
 }
 
 message CreateTestRequest {
-  int64         jobId         = 2 [json_name = "job_id"];
-  int64         permutationId = 3 [json_name = "permutation_id"];
-  TestKernel    kernel        = 4 [json_name = "kernel"];
-  TestBenchTool benchTool     = 5 [json_name = "benchtool"];
+  int64           jobId         = 1 [json_name = "job_id"];
+  int64           permutationId = 2 [json_name = "permutation_id"];
+  repeated uint64 vmmCores      = 3 [json_name = "vmm_cores"];
+  TestKernel      kernel        = 4 [json_name = "kernel"];
+  TestBenchTool   benchTool     = 5 [json_name = "benchtool"];
 }
 
 message CreateTestResponse {

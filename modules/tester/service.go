@@ -168,6 +168,14 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
     }, status.Errorf(codes.Internal, "could not get initialise domain: %s", err)
   }
 
+  if len(req.VmmCores) > 0 {
+    if err = domain.PinVMMToCores(req.VmmCores); err != nil {
+      return &proto.CreateTestResponse{
+        Success: false,
+      }, status.Errorf(codes.Internal, "could not pin VMM to cores: %s", err)
+    }
+  }
+
   // Initialize the benchmark tool's container
   container, err := s.p.Container.NewContainer(uuid)
   if err != nil {

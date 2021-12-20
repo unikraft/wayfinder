@@ -320,33 +320,23 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   //
   test := test{}
 
-  // We add an extra core to be used for the QEMU VMM.
-  // TODO: Implement
-  testCoreIds := c.busyWaitForCores(
-    int(1 + task.Test.Kernel.Cores + task.Test.BenchTool.Cores),
-    &test,
-  )
-
-  // Pop a core from our list of reserved cores.  Niiave!  VMM, VM and Bench
-  // tool locality matter!
-  var x uint64
-  var kernelCores []uint64
-  benchToolCores := append([]uint64(nil), testCoreIds...) // mem copy trick
-  for i := uint64(0); i < task.Test.Kernel.Cores; i++ {
-    // Pop from benchToolCores and push to kernelCores
-    x, benchToolCores = benchToolCores[len(benchToolCores)-1],
-                        benchToolCores[:len(benchToolCores)-1]
-    kernelCores = append(kernelCores, x)
-  }
+  // TODO: Scheduler needs to be aware of the NUMA node of these cores, as their
+  // location matters.
+  vmmCoreIds := c.busyWaitForCores(1, &test)
+  benchToolCoreIds := c.busyWaitForCores(int(task.Test.BenchTool.Cores), &test)
+  kernelCoreIds := c.busyWaitForCores(int(task.Test.Kernel.Cores), &test)
+  testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
+  testCoreIds = append(testCoreIds, kernelCoreIds...)
 
   // Create the test
   c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
   createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
     PermutationId:  int64(permutation.Id),
+    VmmCores:       vmmCoreIds,
     Kernel:        &proto.TestKernel{
       Image:        saveBuildOutputsResp.Outputs.Kernel,
       InitRd:       saveBuildOutputsResp.Outputs.InitRd,
-      Cores:        kernelCores,
+      Cores:        kernelCoreIds,
       Args:         task.Test.Kernel.Args,
       Memory:       task.Test.Kernel.Memory,
     },
@@ -355,7 +345,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
       Devices:      task.Test.BenchTool.Devices,
       Capabilities: task.Test.BenchTool.Capabilities,
       Commands:     task.Test.BenchTool.Commands,
-      Cores:        benchToolCores,
+      Cores:        benchToolCoreIds,
       StartDelay:   task.Test.BenchTool.StartDelay,
     },
   })
