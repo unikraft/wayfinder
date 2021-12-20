@@ -52,12 +52,9 @@ func NewTestsRepository(db *gorm.DB) *TestsRepository {
 
 // CreateTestForPermutation adds a new test row to the Tests table in the
 // database
-func (repo *TestsRepository) CreateTestForPermutation(permId uint) (*models.Test, error) {
-  test := &models.Test{
-    PermutationId:    permId,
-    Status:           proto.TestStatus_TEST_CREATED,
-    WayfinderVersion: version.String(),
-  }
+func (repo *TestsRepository) CreateTestForPermutation(test *models.Test) (*models.Test, error) {
+  test.Status = proto.TestStatus_TEST_CREATED
+  test.WayfinderVersion = version.String()
 
   if err := repo.db.Create(test).Error; err != nil {
     return nil, err

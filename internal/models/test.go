@@ -51,6 +51,9 @@ type Test struct {
   Runtime          time.Duration    `gorm:"column:runtime;default:0"  json:"runtime"`
   WayfinderVersion string           `gorm:"column:wayfinder_version" json:"wayfinder_version"`
   Results          []Result         `gorm:"foreignKey:test_id"        json:"results"`
+  VMMCores         string           `gorm:"column:vmm_cores"         json:"vmm_cores"`
+  KernelCores      string           `gorm:"column:kernel_cores"      json:"kernel_cores"`
+  BenchToolCores   string           `gorm:"column:benchtool_cores"   json:"benchtool_cores"`
 }
 
 func (u *Test) BeforeCreate(tx *gorm.DB) (err error) {

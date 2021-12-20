@@ -42,6 +42,7 @@ import (
   "github.com/unikraft/wayfinder/api/proto"
   "github.com/unikraft/wayfinder/modules/libvirt"
   "github.com/unikraft/wayfinder/internal/models"
+  "github.com/unikraft/wayfinder/internal/strutils"
   "github.com/unikraft/wayfinder/modules/container"
   "github.com/unikraft/wayfinder/pkg/common/errors"
 )
@@ -124,7 +125,12 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
   }
 
   // Create a new entry in the database for this test
-  testModel, err := s.p.DB.Repos().Tests().CreateTestForPermutation(uint(req.PermutationId))
+  testModel, err := s.p.DB.Repos().Tests().CreateTestForPermutation(&models.Test{
+    PermutationId: uint(req.PermutationId),
+    VMMCores:       strutils.JoinUint64(req.VmmCores, ","),
+    KernelCores:    strutils.JoinUint64(req.Kernel.Cores, ","),
+    BenchToolCores: strutils.JoinUint64(req.BenchTool.Cores, ","),
+  })
   if err != nil {
     return &proto.CreateTestResponse{
       Success: false,
