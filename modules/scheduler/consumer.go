@@ -33,7 +33,6 @@ package scheduler
 import (
   "fmt"
   "time"
-  "strings"
   "context"
   "encoding/json"
 
@@ -43,6 +42,7 @@ import (
   "github.com/unikraft/wayfinder/api/proto"
   "github.com/erda-project/erda-infra/base/logs"
   "github.com/unikraft/wayfinder/internal/coremap"
+  "github.com/unikraft/wayfinder/internal/strutils"
 )
 
 type TaskConsumer struct {
@@ -95,9 +95,7 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
 // containers don't have time to exit, after signaling that work is done.
 // Most of the time this should complete in a single pass.
 func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
-  c.Log.Debugf("releasing cores: %s", strings.Trim(
-    strings.Join(strings.Fields(fmt.Sprint(coresToFree)), ", "), "[]",
-  ))
+  c.Log.Debugf("releasing cores: %s", strutils.JoinUint64(coresToFree, ","))
 
   for _, coreId := range coresToFree {
     retries := 0
@@ -161,9 +159,7 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
     time.Sleep(c.p.Cfg.GraceTime)
   }
 
-  c.Log.Debugf("Reserved cores: %s", strings.Trim(
-    strings.Join(strings.Fields(fmt.Sprint(buildCoreIds)), ","), "[]",
-  ))
+  c.Log.Debugf("Reserved cores: %s", strutils.JoinUint64(buildCoreIds, ", "))
 
   return buildCoreIds;
 }
