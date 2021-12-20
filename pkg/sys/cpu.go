@@ -34,8 +34,11 @@ import (
   "os"
   "fmt"
   "bytes"
+  "runtime"
   "io/ioutil"
   "path/filepath"
+
+  "golang.org/x/sys/unix"
 )
 
 // SysCPU reflects cpu system information from /sys/devices/system/cpu/cpu*
@@ -86,4 +89,36 @@ func GetSysCPU(cpuSets string) []SysCPU {
   }
 
   return stats
+}
+
+// SetAffinity pins a set of CPUs to a process ID
+func SetAffinity(set []uint64, pid int) ([]uint64, error) {
+  if len(set) == 0 {
+    return set, nil
+  }
+
+  var filteredSet []uint64
+  num := runtime.NumCPU()
+  for _, index := range set {
+    if index == 0 || int(index) >= num {
+      continue
+    }
+    filteredSet = append(filteredSet, index)
+  }
+
+  if len(filteredSet) == 0 {
+    return filteredSet, fmt.Errorf("unable to set affinity: no valid cpu ids specified")
+  }
+
+  cpuset := unix.CPUSet{}
+  for _, index := range filteredSet {
+    cpuset.Set(int(index))
+  }
+
+  err := unix.SchedSetaffinity(0, &cpuset)
+  if err != nil {
+    return filteredSet, err
+  }
+
+  return filteredSet, nil
 }
