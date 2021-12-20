@@ -53,6 +53,7 @@ type Build struct {
   KernelPath       string            `gorm:"column:kernel_path"       json:"kernel_path"`
   InitRdPath       string            `gorm:"column:initrd_path"       json:"initrd_path"`
   LogPath          string            `gorm:"column:log_path"          json:"log_path"`
+  Cores            string            `gorm:"column:cores"             json:"cores"`
 }
 
 func (u *Build) BeforeCreate(tx *gorm.DB) (err error) {

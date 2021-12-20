@@ -41,6 +41,7 @@ import (
   
   "github.com/unikraft/wayfinder/api/proto"
   "github.com/unikraft/wayfinder/internal/models"
+  "github.com/unikraft/wayfinder/internal/strutils"
   "github.com/unikraft/wayfinder/modules/container"
   "github.com/unikraft/wayfinder/pkg/common/errors"
 )
@@ -89,7 +90,10 @@ func (s *Service) CreateBuild(ctx context.Context, req *proto.CreateBuildRequest
   }
 
   // Create a new entry in the database for this build
-  buildModel, err := s.p.DB.Repos().Builds().CreateBuildForPermutation(uint(req.PermutationId))
+  buildModel, err := s.p.DB.Repos().Builds().CreateBuildForPermutation(&models.Build{
+    PermutationId: uint(req.PermutationId),
+    Cores: strutils.JoinUint64(req.Cores, ","),
+  })
   if err != nil {
     return &proto.CreateBuildResponse{
       Success: false,
