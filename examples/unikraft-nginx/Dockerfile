@@ -41,8 +41,8 @@ RUN set -xe; \
       -u newlib@staging \
       -u lwip@staging \
       -u nginx@staging; \
-    kraft build --no-progress --fast; \
     sed -i "s/dT/T/g" ../../unikraft/plat/kvm/Linker.uk; \
-    rm -f /bin/ld; \
-    ln -s /usr/bin/lld /bin/ld; \
+    rm -f /x86_64-linux-gnu/bin/ld; \
+    ln -s /usr/bin/lld /x86_64-linux-gnu/bin/ld; \
+    kraft build --no-progress --fast; \
     unset UK_KRAFT_GITHUB_TOKEN
