@@ -106,10 +106,13 @@ func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}
 }
 
 func (p *provider) PushMetrics(testUuid string, metrics map[string]string) error {
+  // Each metric is registered as a "string: string" map
+  type measuredMetrics map[string]string
+
   metrics["test_uuid"] = testUuid
 
-  // TODO: This is a bit ugly
-  jsonBytes, err := json.Marshal(map[string]map[string]string{
+  // Creates a JSON from a map of "string: measuredMetrics"
+  jsonBytes, err := json.Marshal(map[string]measuredMetrics{
     "domain": metrics,
   })
   if err != nil {
