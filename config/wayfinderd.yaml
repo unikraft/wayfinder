@@ -78,8 +78,6 @@ postgres:
 # isolated and controlled experiments on job permutations.
 #
 hostconfig:
-  # TODO: Use this number in scheduler's coremap by evicting cores not in this
-  # list/var
   cpu_sets: 20-30
   scaling_governor: performance
   procfs:
@@ -238,7 +236,6 @@ container:
 #
 builder:
   # Path on the host to output artifacts from a build.
-  # TODO: Save this in an object store?
   outputdir: /tmp/wayfinder/builds/
 
   # Timeout for killing a build (which may take too long).  Setting this to zero
