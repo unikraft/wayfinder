@@ -297,7 +297,6 @@ func (c *Container) SetCommands(commands string) error {
     return fmt.Errorf("could not create temporary cmd file: %s", err)
   }
 
-  // TODO: does sh support bash?
   _, err = f.WriteString("#!/usr/bin/env bash\n")
   if err != nil {
     return fmt.Errorf("could not write to temporary cmd file: %s", err)
