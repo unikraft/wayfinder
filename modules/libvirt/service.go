@@ -266,7 +266,7 @@ func (d *Domain) Wait() (time.Duration, error) {
     if err != nil {
       getStateRetries--
       if getStateRetries == 0 {
-        return time.Duration(0), fmt.Errorf("could not get state after reties: %s", err)
+        return time.Duration(0), fmt.Errorf("could not get state after retries: %s", err)
       }
       // TODO: Measure impact of temporal buffer on test runtime and libvirt
       // daemon connectivity.  E.g. tcp libvirt daemon may need it, unix may not
@@ -280,15 +280,38 @@ func (d *Domain) Wait() (time.Duration, error) {
            libvirt.DOMAIN_SHUTOFF:
         return time.Since(d.timer), nil
 
-      // Domain lifecycle has ended abruptly with an non-running state.
-      // TODO: The `reason` variable are well-defined enums, these should be
-      // encoded to provide a better error message by splitting up this switch
-      // into more cases and interpreting the reason.
-      case libvirt.DOMAIN_NOSTATE,
-           libvirt.DOMAIN_BLOCKED,
-           libvirt.DOMAIN_CRASHED,
-           libvirt.DOMAIN_PMSUSPENDED:
-        return time.Duration(0), fmt.Errorf("domain exited with state: %d, and code: %d", state, reason)
+      // Domain finished unsuccessfully (e.g. crashed)
+      // Most of these states do not have a reason, so it remains unknown
+      case libvirt.DOMAIN_NOSTATE:
+        switch libvirt.DomainNostateReason(reason) {
+          case libvirt.DOMAIN_NOSTATE_UNKNOWN:
+            return time.Duration(0), fmt.Errorf("domain is in no state for an unknown reason; state: %d, code: %d", state, reason)
+          default:
+            return time.Duration(0), fmt.Errorf("domain exited with state: %d, code: %d", state, reason)
+        }
+      case libvirt.DOMAIN_BLOCKED:
+        switch libvirt.DomainBlockedReason(reason) {
+          case libvirt.DOMAIN_BLOCKED_UNKNOWN:
+            return time.Duration(0), fmt.Errorf("domain blocked with an unknown reason; state: %d, code: %d", state, reason)
+          default:
+            return time.Duration(0), fmt.Errorf("domain exited with state: %d, code: %d", state, reason)
+        }
+      case libvirt.DOMAIN_CRASHED:
+        switch libvirt.DomainCrashedReason(reason) {
+          case libvirt.DOMAIN_CRASHED_UNKNOWN:
+            return time.Duration(0), fmt.Errorf("domain crashed with an unknown reason; state: %d, code: %d", state, reason)
+          case libvirt.DOMAIN_CRASHED_PANICKED:
+            return time.Duration(0), fmt.Errorf("domain crashed with a panic; state: %d, code: %d", state, reason)
+          default:
+            return time.Duration(0), fmt.Errorf("domain crashed and exited with state: %d, code: %d", state, reason)
+        }
+      case libvirt.DOMAIN_PMSUSPENDED:
+        switch libvirt.DomainPMSuspendedReason(reason) {
+          case libvirt.DOMAIN_PMSUSPENDED_UNKNOWN:
+            return time.Duration(0), fmt.Errorf("domain suspended with an unknown reason; state: %d, code: %d", state, reason)
+          default:
+            return time.Duration(0), fmt.Errorf("domain suspended and exited with state: %d, code: %d", state, reason)
+        }
     }
   }
 }
