@@ -34,7 +34,9 @@ import (
   "fmt"
   "strconv"
   "gorm.io/gorm"
+  "strings"
 
+  "github.com/Knetic/govaluate"
   "github.com/unikraft/wayfinder/spec"
   "github.com/unikraft/wayfinder/internal/models"
 )
@@ -59,6 +61,49 @@ func (repo *PermutationsRepository) CreateParam(param *models.Param) (*models.Pa
   return param, nil
 }
 
+// Extracts all params and formats them in an evaluable way
+func (r *PermutationsRepository) CreateParamMapForEval(params []spec.ParamPermutation) map[string]string {
+  paramsForCond := make(map[string]string)
+  for _, param := range params {
+    var value string
+    if param.Value == "y" {
+      value = "true"
+    } else if param.Value == "n" {
+      value = "false"
+    } else {
+      value = param.Value
+    }
+    paramsForCond[param.Name] = value
+  }
+  return paramsForCond
+}
+
+// Replace all the params in the condition with their values
+func (r *PermutationsRepository) ReplaceSymbols(unformattedCond string, permMap map[string]string) string {
+  cond := unformattedCond
+
+  for k, v := range permMap {
+    cond = strings.Replace(cond, k, v, -1)
+  }
+
+  return cond
+}
+
+// Create an expression from the condition and evaluate it to true/false
+// If the expression evaluation fails the param is ignored
+func (r *PermutationsRepository) EvalExpression(cond string) (bool, error) {
+  expression, err := govaluate.NewEvaluableExpression(cond)
+  if err != nil {
+      return false, fmt.Errorf("could not parse condition: %s", err)
+  }
+
+  expResult, err := expression.Evaluate(nil);
+  if err != nil {
+      return false, fmt.Errorf("could not evaluate condition: %s", err)
+  }
+
+  return expResult.(bool), nil
+}
 
 // FindOrCreateFromJobSpec is a multi-table function which creates the
 // desired permutation as well as all the parameters needed for this
