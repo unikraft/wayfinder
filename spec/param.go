@@ -51,12 +51,14 @@ type ParamSpec struct {
   // Child parameters
   Params   *ParamSpec `yaml:"params"`
   When      string    `yaml:"when"`
+  If        string    `yaml:"if"`
 }
 
 type ParamPermutation struct {
   Name  string `yaml:"name"`
   Type  string `yaml:"type"`
   Value string `yaml:"value"`
+  Cond  string `yaml:"cond"`
 }
 
 // parseParamInt attends to string parameters and its possible permutations
@@ -69,6 +71,7 @@ func parseParamStr(param *ParamSpec) ([]ParamPermutation, error) {
         Name:  param.Name,
         Type:  param.Type,
         Value: val,
+        Cond:  param.If,
       })
     }
   } else if len(param.Default) > 0 {
@@ -76,6 +79,7 @@ func parseParamStr(param *ParamSpec) ([]ParamPermutation, error) {
       Name:  param.Name,
       Type:  param.Type,
       Value: param.Default,
+      Cond:  param.If,
     })
   }
 
@@ -132,6 +136,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
           Name:  param.Name,
           Type:  param.Type,
           Value: strconv.Itoa(i),
+          Cond:  param.If,
         })
       }
 
@@ -142,6 +147,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
           Name:  param.Name,
           Type:  param.Type,
           Value: strconv.Itoa(i),
+          Cond:  param.If,
         })
         i = int(math.Pow(float64(step), float64(j)))
       }
@@ -158,6 +164,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
       Name:  param.Name,
       Type:  param.Type,
       Value: param.Default,
+      Cond:  param.If,
     })
 
   } else {
