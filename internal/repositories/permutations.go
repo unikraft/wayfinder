@@ -121,8 +121,23 @@ func (r *PermutationsRepository) FindOrCreateFromJobSpec(job *spec.JobSpec) (*mo
   permutation.JobId = job.Id
   permutation.Checksum = job.CurrentPerm.Checksum
 
+  // Creates a key-value map for evaluating conditionals
+  paramMap := r.CreateParamMapForEval(job.CurrentPerm.Params)
+
   // Populate the list of parameters (and their values) for this permutation
   for _, param := range job.CurrentPerm.Params {
+    // Check for conditions and evaluate them if they exist
+    if param.Cond != "" {
+        shouldEval, err := r.EvalExpression(r.ReplaceSymbols(param.Cond, paramMap))
+        if err != nil {
+            return nil, fmt.Errorf("could not evaluate expression for param %v: %s", param, err)
+        }
+        if !shouldEval {
+          // TODO is this okay? What happens when skipping it for a permutation?
+          continue
+        }
+    }
+
     p := &models.Param{
       Name: param.Name,
       Type: param.Type,
