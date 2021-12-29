@@ -71,7 +71,11 @@ func (r *PermutationsRepository) CreateParamMapForEval(params []spec.ParamPermut
     } else if param.Value == "n" {
       value = "false"
     } else {
-      value = param.Value
+      if (param.Type == "str") {
+        value = "'" + param.Value + "'"
+      } else {
+        value = param.Value
+      }
     }
     paramsForCond[param.Name] = value
   }
