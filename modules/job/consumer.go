@@ -119,8 +119,7 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
       jobSpec.CurrentPerm = *perm
 
       // Check if the permutation is unique, if it isn't skip it
-      if _, ok := uniquePermutations[perm.Checksum]; ok {
-        fmt.Printf("DEBUG: skipping permutation %#v\n", perm)
+      if _, notUnqiue := uniquePermutations[perm.Checksum]; notUnqiue {
         continue
       } else {
         uniquePermutations[perm.Checksum] = true
