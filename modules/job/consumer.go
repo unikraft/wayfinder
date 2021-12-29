@@ -99,7 +99,7 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 
   totalPermutations := 0
   permutations, errors, done := jobSpec.Permutations(jobSpec.PermutationLimit)
-
+  uniquePermutations := make(map[string]bool)
   for {
     select {
     // Error occured during permutation calculation
@@ -118,17 +118,24 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
       perm.JobId = jobSpec.Id
       jobSpec.CurrentPerm = *perm
 
-      taskBytes, err := json.Marshal(*jobSpec)
-      if err != nil {
-        // Or should we just drop the permutation?
-        errors <- fmt.Errorf("could not marshal permutation: %s", err)
+      // Check if the permutation is unique, if it isn't skip it
+      if _, ok := uniquePermutations[perm.Checksum]; ok {
+        fmt.Printf("DEBUG: skipping permutation %#v\n", perm)
+        continue
+      } else {
+        uniquePermutations[perm.Checksum] = true
+        taskBytes, err := json.Marshal(*jobSpec)
+        if err != nil {
+          // Or should we just drop the permutation?
+          errors <- fmt.Errorf("could not marshal permutation: %s", err)
+        }
+
+        totalPermutations++
+
+        // Publish permutation to the task queue.  This will be picked up by the
+        // scheduler.
+        c.p.TaskQueue.PublishBytes(taskBytes)
       }
-
-      totalPermutations++
-
-      // Publish permutation to the task queue.  This will be picked up by the
-      // scheduler.
-      c.p.TaskQueue.PublishBytes(taskBytes)
     }
   }
 }

@@ -205,25 +205,13 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
   build := build{}
 
-  // Creates a key-value map for evaluating conditionals
-  paramMap := c.p.DB.Repos().Permutations().CreateParamMapForEval(task.CurrentPerm.Params)
-
   buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build)
 
   var buildEnvVars []*proto.BuildEnvVar
   for _, param := range task.CurrentPerm.Params {
-    value := param.Value
-    if param.Cond != "" {
-      result, err := c.p.DB.Repos().Permutations().EvalExpression(
-        c.p.DB.Repos().Permutations().ReplaceSymbols(param.Cond, paramMap))
-      if !result || err != nil {
-        // TODO is this okay? What happens when using it
-        value = ""
-      }
-    }
     buildEnvVars = append(buildEnvVars, &proto.BuildEnvVar{
       Name: param.Name,
-      Value: value,
+      Value: param.Value,
     })
   }
 

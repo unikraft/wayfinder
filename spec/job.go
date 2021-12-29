@@ -36,7 +36,9 @@ import (
   "io"
   "fmt"
   "crypto/md5"
+  "strings"
 
+  "github.com/Knetic/govaluate"
   "gopkg.in/yaml.v2"
   "github.com/evolbioinfo/gotree/tree"
 
@@ -134,6 +136,54 @@ func ParseJobSpec(spec string) (*JobSpec, error) {
 //   return perms, nil
 // }
 
+// Extracts all params and formats them in an evaluable way
+func createParamMapForEval(params []ParamPermutation) map[string]string {
+  paramsForCond := make(map[string]string)
+  for _, param := range params {
+    var value string
+    if param.Value == "y" {
+      value = "true"
+    } else if param.Value == "n" {
+      value = "false"
+    } else {
+      if (param.Type == "str") {
+        value = "'" + param.Value + "'"
+      } else {
+        value = param.Value
+      }
+    }
+    paramsForCond[param.Name] = value
+  }
+  return paramsForCond
+}
+
+// Replace all the params in the condition with their values
+func replaceSymbols(unformattedCond string, permMap map[string]string) string {
+  cond := unformattedCond
+
+  for k, v := range permMap {
+    cond = strings.Replace(cond, k, v, -1)
+  }
+
+  return cond
+}
+
+// Create an expression from the condition and evaluate it to true/false
+// If the expression evaluation fails the param is ignored
+func evalExpression(cond string) (bool, error) {
+  expression, err := govaluate.NewEvaluableExpression(cond)
+  if err != nil {
+      return false, fmt.Errorf("could not parse condition: %s", err)
+  }
+
+  expResult, err := expression.Evaluate(nil);
+  if err != nil {
+      return false, fmt.Errorf("could not evaluate condition: %s", err)
+  }
+
+  return expResult.(bool), nil
+}
+
 // next recursively iterates across paramters to generate a set of tasks
 func (j *JobSpec) next(i int, permutations chan *JobPermutation,
                        errors chan error, done chan bool, all []*JobPermutation,
@@ -171,6 +221,27 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
         Params: p,
       }
       
+      // Remove value from false conditions. This will generate tasks with duplicate checksums.
+      // They will need to be uniqued after the whole generation is done.
+      var paramMap map[string]string
+      shouldBuildMap := true
+      for i, param := range perm.Params {
+        if param.Cond != "" {
+          // Creates a key-value map for evaluating conditionals when the first conditional is detected
+          if shouldBuildMap {
+            paramMap = createParamMapForEval(perm.Params)
+            shouldBuildMap = false
+          }
+          shouldEval, err := evalExpression(replaceSymbols(param.Cond, paramMap))
+          if err != nil {
+              return nil, fmt.Errorf("could not evaluate expression for param %v: %s", param, err)
+          }
+          if !shouldEval {
+            perm.Params[i].Value = ""
+          }
+        }
+      }
+
       perm.Checksum = perm.checksum()
 
       // Save permutation
