@@ -97,6 +97,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
         Name:  param.Name,
         Type:  param.Type,
         Value: val,
+        Cond:  param.If,
       })
     }
 
