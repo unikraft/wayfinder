@@ -1,7 +1,5 @@
-# Not done
-
 params:
-  # Unikraft-specific
+  # Unikraft-specific:
   - name: LWIP_NUM_TCPCON
     type: int
     only: [8, 16, 32, 64]
@@ -19,7 +17,6 @@ params:
     only: ["y", "n"]
 
   # Platform options:
-
   # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
   - name: HZ
     type: int
@@ -28,44 +25,44 @@ params:
   # Allocator options:
   - name: ALLOCATOR
     type: string
-    only: ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
+    only: ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"]
 
   - name: LIBTINYALLOC_DISABLE_SPLIT
-    when: "tinyalloc"
     type: string
     only: ["n", "y"]
+    if:   ALLOCATOR=='tinyalloc'
 
   - name: LIBTINYALLOC_SPLIT_THRESH
-    when: "n"
     type: int
     only: [8, 16, 24, 32]
+    if:   ALLOCATOR=='tinyalloc'
 
   - name: LIBTINYALLOC_DISABLE_COMPACT
-    when: "tinyalloc"
     type: string
     only: ["n", "y"]
+    if:   ALLOCATOR=='tinyalloc'
 
   - name: LIBTINYALLOC_ALIGNMENT
-    when: "tinyalloc"
     type: int
     only: [8, 16, 32, 64, 128]
+    if:   ALLOCATOR=='tinyalloc'
   
   # Mimalloc options:
   - name: LIBMIMALLOC_MIMALLOC_DEBUG
-    when: "mimalloc"
     type: int
     only: [0, 1, 2]
+    if:   ALLOCATOR=='mimalloc'
 
   - name: LIBMIMALLOC_ASSERT
-    when: "mimalloc"
     type: string
     only: ["n", "y"]
+    if:   ALLOCATOR=='mimalloc'
 
   # TLSF specific options:
   - name: LIBTLSF_TLSF_LOG2_SLI
-    when: "tlsf"
     type: int
     only: [4, 5, 6, 7]
+    if:   ALLOCATOR=='tlsf'
 
   # LWIP options:
   - name: LWIP_TCP_QUEUE_OOSEQ
@@ -160,31 +157,80 @@ build:
 
     cd /usr/src/unikraft/apps/nginx
 
+    # Conditioned configurations to be given to kraft
+    # LIBS    == libs to be configured
+    # ENABLE  == used for enabling/disabling libs
+    # OPTIONS == options for selected libs
+    KRAFT_CONFIGURE_COND_LIBS=()
+    KRAFT_CONFIGURE_COND_ENABLE=()
     KRAFT_CONFIGURE_COND_OPTIONS=()
 
     if [[ ${ALLOCATOR} == "tinyalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_ALIGNMENT=${LIBTINYALLOC_ALIGNMENT}")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_DISABLE_COMPACT=${LIBTINYALLOC_DISABLE_COMPACT}")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_SPLIT_THRESH=${LIBTINYALLOC_SPLIT_THRESH}")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_DISABLE_SPLIT=${LIBTINYALLOC_DISABLE_SPLIT}")
     fi
     if [[ ${ALLOCATOR} == "bbuddy" ]]; then
-      # TODO Fill
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
     fi
     if [[ ${ALLOCATOR} == "poolalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
     fi
     if [[ ${ALLOCATOR} == "regalloc" ]]; then
-      # TODO Fill
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
     fi
     if [[ ${ALLOCATOR} == "tinyalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_DISABLE_SPLIT=${LIBTINYALLOC_DISABLE_SPLIT}")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u tinyalloc@staging")
     fi
     if [[ ${ALLOCATOR} == "mimalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBMIMALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBMIMALLOC_ASSERT=${LIBMIMALLOC_ASSERT}")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBMIMALLOC_MIMALLOC_DEBUG=${LIBMIMALLOC_MIMALLOC_DEBUG}")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u mimalloc@staging")
     fi
     if [[ ${ALLOCATOR} == "tlsf" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTLSF_TLSF_LOG2_SLI=${LIBTLSF_TLSF_LOG2_SLI}")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u tlsf@staging")
     fi
 
     # Configure Image for Nginx
@@ -194,6 +240,7 @@ build:
       -u newlib@staging \
       -u pthread-embedded@staging \
       -u lwip@staging \
+      ${KRAFT_CONFIGURE_COND_LIBS[@]} \
       --arch x86_64 \
       --plat kvm \
       --set HZ=$HZ \
@@ -212,14 +259,15 @@ build:
       --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
       --set LWIP_POOLS=$LWIP_POOLS \
       --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
-      "${KRAFT_CONFIGURE_OPTIONS[@]}" \
+      ${KRAFT_CONFIGURE_COND_OPTIONS[@]} \
       --yes LIBVFSCORE_ROOTFS_INITRD \
       --yes LIBCPIO \
+      ${KRAFT_CONFIGURE_COND_ENABLE[@]} \
       --no  LIB9PFS \
       --no  LIBUK9P
 
     # Build the image
-    kraft build --no-progress --fast
+    kraft build --no-fetch --no-progress
 
     # Modify values inside the configuration
     cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
