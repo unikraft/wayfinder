@@ -26,12 +26,18 @@ RUN set -xe; \
     kraft list add https://github.com/unikraft/lib-pthread-embedded.git; \
     kraft list add https://github.com/unikraft/lib-newlib.git; \
     kraft list add https://github.com/unikraft/lib-nginx.git; \
+    kraft list add https://github.com/unikraft/lib-tinyalloc.git; \
+    kraft list add https://github.com/unikraft/lib-mimalloc.git; \
+    kraft list add https://github.com/unikraft/lib-tlsf.git; \
     kraft list add https://github.com/unikraft/app-nginx.git; \
     kraft list update; \
     kraft list pull unikraft@staging; \
     kraft list pull lib/pthread-embedded@staging; \
     kraft list pull lib/newlib@staging; \
     kraft list pull lib/lwip@staging; \
+    kraft list pull lib/tinyalloc@staging; \
+    kraft list pull lib/mimalloc@staging; \
+    kraft list pull lib/tlsf@staging; \
     kraft list pull lib/nginx@staging; \
     kraft list pull --no-deps app/nginx; \
     cd /usr/src/unikraft/apps/nginx; \
