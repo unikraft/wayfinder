@@ -320,7 +320,7 @@ build:
 test:
   kernel:
     memory: 20M
-    args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_SUBNET netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK --
+    args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_GW_ADDR netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK --
     cores: 1
   benchtool:
     image: ghcr.io/unikraft/wayfinder/wrk:latest
