@@ -172,12 +172,43 @@ func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
     case CoreOptionSameNUMA:
       return cm.findFreeCoresOnSameNumaNode()
     case CoreOptionSameCache:
-      return nil // TODO
+      return cm.findFreeCoresOnSameCache()
     case CoreOptionSameCacheAndNUMA:
       return nil // TODO
     default:
       return nil
   }
+}
+
+// Returns a list of cores sharing the same cache
+func (cm *CoreMap) findFreeCoresOnSameCache() ([]*Core) {
+  var freeCores [][]*Core
+
+  cm.RLock()
+  defer cm.RUnlock()
+
+  // Create list of all free cores for each cache group
+  for _, socket := range cm.sockets {
+    for cacheCrt, cacheGroup := range socket.cacheGroups {
+      for _, core := range cacheGroup.cores {
+        if !core.busy {
+          freeCores[cacheCrt] = append(freeCores[cacheCrt], core)
+        }
+      }
+    }
+  }
+
+  // Find the cache group with the most free cores and return it
+  maxCores := 0
+  var maxCoresList []*Core
+  for _, cores := range freeCores {
+    if len(cores) > maxCores {
+      maxCores = len(cores)
+      maxCoresList = cores
+    }
+  }
+
+  return maxCoresList
 }
 
 // Returns a list of cores on the same NUMA node
