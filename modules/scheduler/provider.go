@@ -98,17 +98,13 @@ func (p *provider) Init(ctx servicehub.Context) error {
     return fmt.Errorf("cannot start consuming jobs: %s", err)
   }
 
-  cpuInfo, err := sys.GetCpuInfo()
+  cpuLayoutInfo, err := sys.GetCpuLayoutInfo()
   if err != nil {
     return fmt.Errorf("could not get host CPU information: %s", err)
   }
 
   // Initialize the coremap
-  p.coreMap, err = coremap.NewFromStr([]string{
-    cpuInfo.NUMANode0CPUs,
-    cpuInfo.NUMANode1CPUs,
-  },
-  p.HostConfig.Cfg.CpuSets)
+  p.coreMap, err = coremap.New(p.HostConfig.Cfg.CpuSets, cpuLayoutInfo)
 
   if err != nil {
     return fmt.Errorf("could not initialize core map: %s", err)
