@@ -168,7 +168,7 @@ func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
     case CoreOptionNoRestriction:
       return cm.findAllFreeCoresAcrossAllNumaNodes()
     case CoreOptionSameSocket:
-      return nil // TODO
+      return cm.findFreeCoresOnSameSocket()
     case CoreOptionSameNUMA:
       return cm.findFreeCoresOnSameNumaNode()
     case CoreOptionSameCache:
@@ -178,6 +178,37 @@ func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
     default:
       return nil
   }
+}
+
+// Returns a list of cores sharing the same socket
+func (cm *CoreMap) findFreeCoresOnSameSocket() ([]*Core) {
+  var freeCores [][]*Core
+
+  cm.RLock()
+  defer cm.RUnlock()
+
+  // Create list of all free cores for each socket
+  for socketCrt, socket := range cm.sockets {
+    for _, cacheGroup := range socket.cacheGroups {
+      for _, core := range cacheGroup.cores {
+        if !core.busy {
+          freeCores[socketCrt] = append(freeCores[socketCrt], core)
+        }
+      }
+    }
+  }
+
+  // Find the socket with the most free cores and return it
+  maxCores := 0
+  var maxCoresList []*Core
+  for _, cores := range freeCores {
+    if len(cores) > maxCores {
+      maxCores = len(cores)
+      maxCoresList = cores
+    }
+  }
+
+  return maxCoresList
 }
 
 // Returns a list of cores sharing the same cache
