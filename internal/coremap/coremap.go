@@ -35,13 +35,22 @@ import (
   "sync"
 
   "github.com/unikraft/wayfinder/internal/parsecpusets"
+  "github.com/unikraft/wayfinder/pkg/sys"
 )
 
 type Core struct {
-  id          uint64
-  numaNodeId  uint64
-  busy        bool
-  activity    interface{}
+  id           uint64
+  numaNodeId   uint64
+  socketId     uint64
+  cacheGroupId uint64
+  busy         bool
+  activity     interface{}
+}
+
+type CPUCacheGroup struct {
+  id         uint64
+  cores      map[uint64]*Core
+  totalCores int
 }
 
 type NumaNode struct {
@@ -50,9 +59,15 @@ type NumaNode struct {
   totalCores int
 }
 
+type CPUSocket struct {
+  id          uint64
+  numaNodes   map[uint64]*NumaNode
+  cacheGroups map[uint64]*CPUCacheGroup
+}
+
 type CoreMap struct {
   sync.RWMutex
-  numaNodes map[uint64]*NumaNode
+  sockets map[uint64]*CPUSocket
 }
 
 // Restriction level:
@@ -79,60 +94,69 @@ func contains(array []uint64, element uint64) bool {
   return false
 }
 
-// NumaNode creates a fixed-length map of cores with their ID as index.
-func NewNumaNode(id uint64, cores []uint64, availableCores []uint64) *NumaNode {
-  numaNode := &NumaNode{
-    id:         id,
-    cores:      make(map[uint64]*Core, len(cores)),
-    totalCores: len(cores),
+// Create a new CoreMap with pre-populated socket/numa/cache groups
+func New(availableCpuSet string, cpuLayoutInfo *[]sys.CPULayoutInfo) (*CoreMap, error) {
+  if cpuLayoutInfo == nil {
+    return nil, fmt.Errorf("no cpu layout available")
   }
 
-  // Add the core ID as index to the map
-  for i := 0; i < len(cores); i++ {
-    if contains(availableCores, cores[i]) {
-      numaNode.cores[cores[i]] = &Core{
-        id:         cores[i],
-        numaNodeId: id,
-        busy:       false,
-        activity:   nil,
+  availableCores, _ := parsecpusets.ParseCpuSets(availableCpuSet)
+
+  // Create and populate the sockets with their numa nodes and cache groups
+  sockets := make(map[uint64]*CPUSocket)
+  for _, cpu := range *cpuLayoutInfo {
+    if _, ok := sockets[cpu.Socket]; !ok {
+      sockets[cpu.Socket] = &CPUSocket{
+        id:          cpu.Socket,
+        numaNodes:   make(map[uint64]*NumaNode),
+        cacheGroups: make(map[uint64]*CPUCacheGroup),
       }
     }
   }
 
-  return numaNode
-}
-
-// Create a new CoreMap with pre-populated NumaNode array
-func New(numaNodes map[uint64]*NumaNode) *CoreMap {
-  return &CoreMap{
-    numaNodes: numaNodes,
-  }
-}
-
-// Create a new CoreMap based on string array of CPU set notation
-func NewFromStr(numaNodesStr []string, availableCpuSet string) (*CoreMap, error) {
-  if len(numaNodesStr) == 0 {
-    return nil, fmt.Errorf("no NUMA node strings provided")
-  }
-
-  availableCores, _ := parsecpusets.ParseCpuSets(availableCpuSet)
-  numaNodes := make(map[uint64]*NumaNode, len(numaNodesStr))
-
-  for i, numaNodeStr := range numaNodesStr {
-    cores, err := parsecpusets.ParseCpuSets(numaNodeStr)
-    if err != nil {
-      return nil, fmt.Errorf("could not parse NUMA node string: %s", err)
+  // Create and populate the numa nodes with their cores
+  for _, cpu := range *cpuLayoutInfo {
+    if _, ok := sockets[cpu.Socket].numaNodes[cpu.Node]; !ok {
+      sockets[cpu.Socket].numaNodes[cpu.Node] = &NumaNode{
+        id:         cpu.Node,
+        cores:      make(map[uint64]*Core),
+        totalCores: 0,
+      }
+    } else {
+      if contains(availableCores, cpu.CPU) {
+        sockets[cpu.Socket].numaNodes[cpu.Node].totalCores++
+        sockets[cpu.Socket].numaNodes[cpu.Node].cores[cpu.CPU] = &Core{
+          id:           cpu.CPU,
+          numaNodeId:   cpu.Node,
+          socketId:     cpu.Socket,
+          cacheGroupId: cpu.L3Cache,
+          busy:         false,
+          activity:     nil,
+        }
+      }
     }
-
-    numaNodes[uint64(i)] = NewNumaNode(uint64(i), cores, availableCores)
   }
 
-  return New(numaNodes), nil
-}
+  // Create and populate the cache groups with their cores (reuse cores from numa nodes)
+  for _, cpu := range *cpuLayoutInfo {
+    if _, ok := sockets[cpu.Socket].cacheGroups[cpu.L3Cache]; !ok {
+      sockets[cpu.Socket].cacheGroups[cpu.L3Cache] = &CPUCacheGroup{
+        id:         cpu.L3Cache,
+        cores:      make(map[uint64]*Core),
+        totalCores: 0,
+      }
+    } else {
+      if contains(availableCores, cpu.CPU) {
+        sockets[cpu.Socket].cacheGroups[cpu.L3Cache].totalCores++
+        sockets[cpu.Socket].cacheGroups[cpu.L3Cache].cores[cpu.CPU] =
+          sockets[cpu.Socket].numaNodes[cpu.Node].cores[cpu.CPU]
+      }
+    }
+  }
 
-// Get the core's numa node map
-func (cm *CoreMap) NumaNodes() map[uint64]*NumaNode {
-  return cm.numaNodes
+  return &CoreMap{
+    sockets: sockets,
+  }, nil
 }
 
 // Returns a list of cores based on the given level of restriction
@@ -160,10 +184,12 @@ func (cm *CoreMap) findFreeCoresOnSameNumaNode() ([]*Core) {
   defer cm.RUnlock()
 
   // Create list of all free cores for each NUMA mode
-  for numaCrt, numaNode := range cm.numaNodes {
-    for _, core := range numaNode.cores {
-      if !core.busy {
-        freeCores[numaCrt] = append(freeCores[numaCrt], core)
+  for _, socket := range cm.sockets {
+    for numaCrt, numaNode := range socket.numaNodes {
+      for _, core := range numaNode.cores {
+        if !core.busy {
+          freeCores[numaCrt] = append(freeCores[numaCrt], core)
+        }
       }
     }
   }
@@ -182,8 +208,8 @@ func (cm *CoreMap) findFreeCoresOnSameNumaNode() ([]*Core) {
 }
 
 // Retrieve a list of cores which are free
-func (cm *CoreMap) FindAllFreeCoresOnNumaNode(numaNodeId uint64) ([]*Core, error) {
-  if _, ok := cm.numaNodes[numaNodeId]; !ok {
+func (cm *CoreMap) FindAllFreeCoresOnNumaNode(numaNodeId uint64, socketId uint64) ([]*Core, error) {
+  if _, ok := cm.sockets[socketId].numaNodes[numaNodeId]; !ok {
     return nil, fmt.Errorf("could not find NUMA node with id=%d", numaNodeId)
   }
 
@@ -191,7 +217,7 @@ func (cm *CoreMap) FindAllFreeCoresOnNumaNode(numaNodeId uint64) ([]*Core, error
   defer cm.RUnlock()
 
   var freeCores []*Core
-  for _, core := range cm.numaNodes[numaNodeId].cores {
+  for _, core := range cm.sockets[socketId].numaNodes[numaNodeId].cores {
     if !core.busy {
       freeCores = append(freeCores, core)
     }
@@ -206,10 +232,12 @@ func (cm *CoreMap) findAllFreeCoresAcrossAllNumaNodes() []*Core {
   defer cm.RUnlock()
 
   var freeCores []*Core
-  for _, numaNode := range cm.numaNodes {
-    for _, core := range numaNode.cores {
-      if !core.busy {
-        freeCores = append(freeCores, core)
+  for _, socket := range cm.sockets {
+    for _, numaNode := range socket.numaNodes {
+      for _, core := range numaNode.cores {
+        if !core.busy {
+          freeCores = append(freeCores, core)
+        }
       }
     }
   }
@@ -221,17 +249,19 @@ func (cm *CoreMap) findAllFreeCoresAcrossAllNumaNodes() []*Core {
 func (cm *CoreMap) FindAllFreeNumaNodes() ([]*NumaNode, error) {
   var freeNumaNodes []*NumaNode
   
-  for _, numaNode := range cm.numaNodes {
-    freeCores := []*Core{}
-
-    for _, core := range numaNode.cores {
-      if !core.busy {
-        freeCores = append(freeCores, core)
+  for _, socket := range cm.sockets {
+    for _, numaNode := range socket.numaNodes {
+      freeCores := []*Core{}
+  
+      for _, core := range numaNode.cores {
+        if !core.busy {
+          freeCores = append(freeCores, core)
+        }
       }
-    }
-
-    if len(freeCores) == numaNode.totalCores {
-      freeNumaNodes = append(freeNumaNodes, numaNode)
+  
+      if len(freeCores) == numaNode.totalCores {
+        freeNumaNodes = append(freeNumaNodes, numaNode)
+      }
     }
   }
 
@@ -239,12 +269,12 @@ func (cm *CoreMap) FindAllFreeNumaNodes() ([]*NumaNode, error) {
 }
 
 // Find a core on a NUMA node
-func (cm *CoreMap) FindCoreOnNumaNode(coreId, numaNodeId uint64) (*Core, error) {
-  if _, ok := cm.numaNodes[numaNodeId]; !ok {
+func (cm *CoreMap) FindCoreOnNumaNode(coreId, numaNodeId uint64, socketId uint64) (*Core, error) {
+  if _, ok := cm.sockets[socketId].numaNodes[numaNodeId]; !ok {
     return nil, fmt.Errorf("could not find NUMA node with id=%d", numaNodeId)
   }
 
-  for _, core := range cm.numaNodes[numaNodeId].cores {
+  for _, core := range cm.sockets[socketId].numaNodes[numaNodeId].cores {
     if core.id == coreId {
       return core, nil
     }
@@ -255,10 +285,12 @@ func (cm *CoreMap) FindCoreOnNumaNode(coreId, numaNodeId uint64) (*Core, error) 
 
 // Find a core based on its ID
 func (cm *CoreMap) FindCore(coreId uint64) (*Core, error) {
-  for _, numaNode := range cm.numaNodes {
-    for _, core := range cm.numaNodes[numaNode.id].cores {
-      if core.id == coreId {
-        return core, nil
+  for _, socket := range cm.sockets {
+    for _, numaNode := range socket.numaNodes {
+      for _, core := range numaNode.cores {
+        if core.id == coreId {
+          return core, nil
+        }
       }
     }
   }
@@ -267,8 +299,8 @@ func (cm *CoreMap) FindCore(coreId uint64) (*Core, error) {
 }
 
 // Set the activity of a core on a NUMA node
-func (cm *CoreMap) SetCoreActivityOnNumaNode(coreId, numaNodeId uint64, activity interface{}) error {
-  core, err := cm.FindCoreOnNumaNode(coreId, numaNodeId)
+func (cm *CoreMap) SetCoreActivityOnNumaNode(coreId, numaNodeId uint64, socketId uint64, activity interface{}) error {
+  core, err := cm.FindCoreOnNumaNode(coreId, numaNodeId, socketId)
   if err != nil {
     return fmt.Errorf("could not set activity: %s", err)
   }
@@ -279,8 +311,8 @@ func (cm *CoreMap) SetCoreActivityOnNumaNode(coreId, numaNodeId uint64, activity
 
   cm.RLock()
 
-  cm.numaNodes[numaNodeId].cores[coreId].activity = activity
-  cm.numaNodes[numaNodeId].cores[coreId].busy = true
+  cm.sockets[socketId].numaNodes[numaNodeId].cores[coreId].activity = activity
+  cm.sockets[socketId].numaNodes[numaNodeId].cores[coreId].busy = true
 
   cm.RUnlock()
 
@@ -294,23 +326,23 @@ func (cm *CoreMap) SetCoreActivity(coreId uint64, activity interface{}) error {
     return fmt.Errorf("could not set core activity for id=%d: %s", coreId, err)
   }
 
-  return cm.SetCoreActivityOnNumaNode(coreId, core.numaNodeId, activity)
+  return cm.SetCoreActivityOnNumaNode(coreId, core.numaNodeId, core.socketId, activity)
 }
 
 // Release a core from its activity
-func (cm *CoreMap) ReleaseCoreOnNumaNode(coreId, numaNodeId uint64) error {
-  if _, ok := cm.numaNodes[numaNodeId]; !ok {
+func (cm *CoreMap) ReleaseCoreOnNumaNode(coreId, numaNodeId uint64, socketId uint64) error {
+  if _, ok := cm.sockets[socketId].numaNodes[numaNodeId]; !ok {
     return fmt.Errorf("invalid NUMA node id=%d", numaNodeId)
   }
 
-  if _, ok := cm.numaNodes[numaNodeId].cores[coreId]; !ok {
+  if _, ok := cm.sockets[socketId].numaNodes[numaNodeId].cores[coreId]; !ok {
     return fmt.Errorf("invalid core id=%d for NUMA node with id=%d", coreId, numaNodeId)
   }
 
   cm.RLock()
   
-  cm.numaNodes[numaNodeId].cores[coreId].activity = nil
-  cm.numaNodes[numaNodeId].cores[coreId].busy = false
+  cm.sockets[socketId].numaNodes[numaNodeId].cores[coreId].activity = nil
+  cm.sockets[socketId].numaNodes[numaNodeId].cores[coreId].busy = false
 
   cm.RUnlock()
 
@@ -324,17 +356,17 @@ func (cm *CoreMap) ReleaseCore(coreId uint64) error {
     return fmt.Errorf("could not find core with id=%d: %s", coreId, err)
   }
 
-  return cm.ReleaseCoreOnNumaNode(coreId, core.numaNodeId)
+  return cm.ReleaseCoreOnNumaNode(coreId, core.numaNodeId, core.socketId)
 }
 
 // Release an entire NUMA node of all core activities
-func (cm *CoreMap) ReleaseNumaNode(numaNodeId uint64) error {
-  if _, ok := cm.numaNodes[numaNodeId]; !ok {
+func (cm *CoreMap) ReleaseNumaNode(numaNodeId uint64, socketId uint64) error {
+  if _, ok := cm.sockets[socketId].numaNodes[numaNodeId]; !ok {
     return fmt.Errorf("could not find NUMA node with id=%d", numaNodeId)
   }
 
-  for coreId, _ := range cm.numaNodes[numaNodeId].cores {
-    err := cm.ReleaseCoreOnNumaNode(coreId, numaNodeId)
+  for coreId, _ := range cm.sockets[socketId].numaNodes[numaNodeId].cores {
+    err := cm.ReleaseCoreOnNumaNode(coreId, numaNodeId, socketId)
     if err != nil {
       return fmt.Errorf("could not release numa node with id=%d: %s", numaNodeId, err)
     }
@@ -343,40 +375,59 @@ func (cm *CoreMap) ReleaseNumaNode(numaNodeId uint64) error {
   return nil
 }
 
+// Release an entire socket of all core activities
+func (cm *CoreMap) ReleaseSocket(socketId uint64) error {
+  if _, ok := cm.sockets[socketId]; !ok {
+    return fmt.Errorf("could not find socket with id=%d", socketId)
+  }
+
+  for numaNodeId, _ := range cm.sockets[socketId].numaNodes {
+    err := cm.ReleaseNumaNode(numaNodeId, socketId)
+    if err != nil {
+      return fmt.Errorf("could not release socket with id=%d: %s", socketId, err)
+    }
+  }
+
+  return nil
+}
+
 // Set a core by overwritting it
 func (cm *CoreMap) SetCore(newCore *Core) error {
-  for numaNodeId, numaNode := range cm.numaNodes {
-    for coreId, oldCore := range numaNode.cores {
-      if coreId == newCore.id {
-        if oldCore.busy {
-          return fmt.Errorf("cannot overwrite busy core with id=%d", coreId)
+  for socketId, socket := range cm.sockets {
+    for numaNodeId, numaNode := range socket.numaNodes {
+      for coreId, oldCore := range numaNode.cores {
+        if coreId == newCore.id {
+          if oldCore.busy {
+            return fmt.Errorf("cannot overwrite busy core with id=%d", coreId)
+          }
+  
+          if newCore.numaNodeId != oldCore.numaNodeId {
+            return fmt.Errorf("cannot overwrite core, mismatch NUMA node ids %d and %d", newCore.numaNodeId, oldCore.numaNodeId)
+          }
+          
+          cm.RLock()
+  
+          cm.sockets[socketId].numaNodes[numaNodeId].cores[coreId] = newCore
+  
+          cm.RUnlock()
+  
+          return nil
         }
-
-        if newCore.numaNodeId != oldCore.numaNodeId {
-          return fmt.Errorf("cannot overwrite core, mismatch NUMA node ids %d and %d", newCore.numaNodeId, oldCore.numaNodeId)
-        }
-        
-        cm.RLock()
-
-        cm.numaNodes[numaNodeId].cores[coreId] = newCore
-
-        cm.RUnlock()
-
-        return nil
       }
     }
   }
+
 
   return fmt.Errorf("could not set core")
 }
 
 // Get a NUMA node
-func (cm *CoreMap) SetCoreOnNumaNode(newCore *Core, numaNodeId uint64) error {
-  if _, ok := cm.numaNodes[numaNodeId]; !ok {
+func (cm *CoreMap) SetCoreOnNumaNode(newCore *Core, numaNodeId uint64, socketId uint64) error {
+  if _, ok := cm.sockets[socketId].numaNodes[numaNodeId]; !ok {
     return fmt.Errorf("could not find NUMA node with id=%d", numaNodeId)
   }
 
-  for coreId, oldCore := range cm.numaNodes[numaNodeId].cores {
+  for coreId, oldCore := range cm.sockets[socketId].numaNodes[numaNodeId].cores {
     if coreId == newCore.id {
       if oldCore.busy {
         return fmt.Errorf("cannot overwrite busy core with id=%d", coreId)
@@ -388,7 +439,7 @@ func (cm *CoreMap) SetCoreOnNumaNode(newCore *Core, numaNodeId uint64) error {
       
       cm.RLock()
 
-      cm.numaNodes[numaNodeId].cores[coreId] = newCore
+      cm.sockets[socketId].numaNodes[numaNodeId].cores[coreId] = newCore
 
       cm.RUnlock()
 
@@ -413,17 +464,19 @@ func (cm *CoreMap) Print() {
   i := 1
   cols := 3
   fmt.Printf("Core map:\n")
-  for _, numaNode := range cm.numaNodes {
-    for _, core := range numaNode.cores {
-      busy := ""
-      if core.busy {
-        busy = fmt.Sprintf("%p", &core.activity)
+  for _, socket := range cm.sockets {
+    for _, numaNode := range socket.numaNodes {
+      for _, core := range numaNode.cores {
+        busy := ""
+        if core.busy {
+          busy = fmt.Sprintf("%p", &core.activity)
+        }
+        fmt.Printf(" %2d|%2d|%2d: [%12s] ", socket.id, numaNode.id, core.Id(), busy)
+        if int(i) % cols == 0 {
+          fmt.Printf("\n")
+        }
+        i++
       }
-      fmt.Printf(" %2d|%2d: [%12s] ", numaNode.id, core.Id(), busy)
-      if int(i) % cols == 0 {
-        fmt.Printf("\n")
-      }
-      i++
     }
   }
   fmt.Printf("\n\n")
