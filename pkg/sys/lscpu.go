@@ -68,6 +68,14 @@ type CpuInfo struct {
   Flags                string  `json:"flags"`
 }
 
+type CPULayoutInfo struct {
+  CPU                  uint64    `json:"cpu"`
+  Core                 uint64    `json:"core"`
+  Socket               uint64    `json:"socket"`
+  Node                 uint64    `json:"node"`
+  L3Cache              uint64    `json:"l3_cache"`
+}
+
 func GetCpuInfo() (*CpuInfo, error) {
   out, err := exec.Command("lscpu").Output()
   if err != nil {
@@ -241,4 +249,33 @@ func GetCpuInfo() (*CpuInfo, error) {
   }
 
   return c, nil
+}
+
+func GetCpuLayoutInfo() (*[]CPULayoutInfo, error) {
+  out, err := exec.Command("lscpu", "--all", "--parse").Output()
+  if err != nil {
+    return nil, fmt.Errorf("could not execute \"lscpu --all --parse\": %s", err)
+  }
+
+  outstring := strings.TrimSpace(string(out))
+  lines := strings.Split(outstring, "\n")
+  c := make([]CPULayoutInfo, 0)
+
+  for i := 4; i < len(lines); i++ {
+    fields          := strings.Split(lines[i], ",")
+    CPUValue, _     := strconv.ParseUint(fields[0], 10, 64)
+    CoreValue, _    := strconv.ParseUint(fields[1], 10, 64)
+    SocketValue, _  := strconv.ParseUint(fields[2], 10, 64)
+    NodeValue, _    := strconv.ParseUint(fields[3], 10, 64)
+    L3CacheValue, _ := strconv.ParseUint(fields[8], 10, 64)
+    c = append(c, CPULayoutInfo{
+      CPU:     CPUValue,
+      Core:    CoreValue,
+      Socket:  SocketValue,
+      Node:    NodeValue,
+      L3Cache: L3CacheValue,
+    })
+  }
+
+  return &c, nil
 }
