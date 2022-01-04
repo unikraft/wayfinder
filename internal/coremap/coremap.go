@@ -55,6 +55,20 @@ type CoreMap struct {
   numaNodes map[uint64]*NumaNode
 }
 
+// Restriction level:
+const (
+  // Any core will do
+  CoreOptionNoRestriction = iota
+  // Only cores from the same socket will do
+  CoreOptionSameSocket
+  // Only cores from the same NUMA node and the same socket will do
+  CoreOptionSameNUMA
+  // Only cores sharing the same cache/NUMA node/socket will do
+  CoreOptionSameCache
+)
+
+type CoreRestriction int
+
 // Helper function
 func contains(array []uint64, element uint64) bool {
   for _, a := range array {
