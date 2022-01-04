@@ -134,8 +134,7 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 
     c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
 
-    // TODO: Logic on whether the build needs to be numa/socket/cache/core aware
-    cores := c.p.CoreMap().FindAllFreeCoresAcrossAllNumaNodes()
+    cores := c.p.CoreMap().FindFreeCores(coremap.CoreOptionNoRestriction)
     for _, core := range cores {
       // Immediately reserve this core
       if err := c.p.CoreMap().SetCoreActivity(core.Id(), activity); err != nil {
