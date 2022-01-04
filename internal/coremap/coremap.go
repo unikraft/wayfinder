@@ -33,6 +33,8 @@ package coremap
 import (
   "fmt"
   "sync"
+  "strconv"
+  "strings"
 
   "github.com/unikraft/wayfinder/internal/parsecpusets"
   "github.com/unikraft/wayfinder/pkg/sys"
@@ -174,10 +176,47 @@ func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
     case CoreOptionSameCache:
       return cm.findFreeCoresOnSameCache()
     case CoreOptionSameCacheAndNUMA:
-      return nil // TODO
+      return cm.findFreeCoresOnSameCacheAndNUMA()
     default:
       return nil
   }
+}
+
+// Find the cores on a socket which use the same cache and numa node
+func (cm *CoreMap) findFreeCoresOnSameCacheAndNUMA() ([]*Core) {
+  var freeCores []*Core
+  pairOccurences := make(map[string]int)
+  freeCoresSocket := cm.findFreeCoresOnSameSocket()
+
+  // Create pairs with the numaId and the cacheId
+  for _, coreSocket := range freeCoresSocket {
+    pair := fmt.Sprintf("%d/%d", coreSocket.numaNodeId, coreSocket.cacheGroupId)
+    pairOccurences[pair]++
+  }
+
+  // Calculate the pair with the most cores
+  maxPair := ""
+  maxOccurences := 0
+  for pair, occurences := range pairOccurences {
+    if occurences > maxOccurences {
+      maxOccurences = occurences
+      maxPair = pair
+    }
+  }
+
+  // Split back the pair and find the cores on the socket
+  if (maxOccurences > 0) {
+    pair := strings.Split(maxPair, "/")
+    numaId, _ := strconv.ParseUint(pair[0], 10, 64)
+    cacheGroup, _ := strconv.ParseUint(pair[1], 10, 64)
+    for _, core := range freeCoresSocket {
+      if core.numaNodeId == numaId && core.cacheGroupId == cacheGroup {
+        freeCores = append(freeCores, core)
+      }
+    }
+  }
+
+  return freeCores
 }
 
 // Returns a list of cores sharing the same socket
