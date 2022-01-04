@@ -135,6 +135,23 @@ func (cm *CoreMap) NumaNodes() map[uint64]*NumaNode {
   return cm.numaNodes
 }
 
+// Returns a list of cores based on the given level of restriction
+// This should be used when requesting free cores from the coremap
+func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
+  switch(level) {
+    case CoreOptionNoRestriction:
+      return cm.FindAllFreeCoresAcrossAllNumaNodes()
+    case CoreOptionSameSocket:
+      return nil // TODO
+    case CoreOptionSameNUMA:
+      return nil // TODO
+    case CoreOptionSameCache:
+      return nil // TODO
+    default:
+      return nil
+  }
+}
+
 // Retrieve a list of cores which are free
 func (cm *CoreMap) FindAllFreeCoresOnNumaNode(numaNodeId uint64) ([]*Core, error) {
   if _, ok := cm.numaNodes[numaNodeId]; !ok {
