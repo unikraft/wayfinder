@@ -168,7 +168,7 @@ func New(availableCpuSet string, cpuLayoutInfo *[]sys.CPULayoutInfo) (*CoreMap, 
 func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
   switch(level) {
     case CoreOptionNoRestriction:
-      return cm.findAllFreeCoresAcrossAllNumaNodes()
+      return cm.findAllFreeCores()
     case CoreOptionSameSocket:
       return cm.findFreeCoresOnSameSocket()
     case CoreOptionSameNUMA:
@@ -336,7 +336,7 @@ func (cm *CoreMap) FindAllFreeCoresOnNumaNode(numaNodeId uint64, socketId uint64
 }
 
 // Retrieve a list of cores which are free
-func (cm *CoreMap) findAllFreeCoresAcrossAllNumaNodes() []*Core {
+func (cm *CoreMap) findAllFreeCores() []*Core {
   cm.RLock()
   defer cm.RUnlock()
 
