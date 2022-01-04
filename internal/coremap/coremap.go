@@ -78,8 +78,10 @@ const (
   CoreOptionSameSocket
   // Only cores from the same NUMA node and the same socket will do
   CoreOptionSameNUMA
-  // Only cores sharing the same cache/NUMA node/socket will do
+  // Only cores sharing the same cache/socket will do
   CoreOptionSameCache
+  // Only cores sharing the same cache/NUMA node/socket will do
+  CoreOptionSameCacheAndNUMA
 )
 
 type CoreRestriction int
@@ -170,6 +172,8 @@ func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
     case CoreOptionSameNUMA:
       return cm.findFreeCoresOnSameNumaNode()
     case CoreOptionSameCache:
+      return nil // TODO
+    case CoreOptionSameCacheAndNUMA:
       return nil // TODO
     default:
       return nil
