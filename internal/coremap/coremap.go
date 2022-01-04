@@ -218,14 +218,16 @@ func (cm *CoreMap) findFreeCoresOnSameCache() ([]*Core) {
   cm.RLock()
   defer cm.RUnlock()
 
+  coreCrt := 0
   // Create list of all free cores for each cache group
   for _, socket := range cm.sockets {
-    for cacheCrt, cacheGroup := range socket.cacheGroups {
+    for _, cacheGroup := range socket.cacheGroups {
       for _, core := range cacheGroup.cores {
         if !core.busy {
-          freeCores[cacheCrt] = append(freeCores[cacheCrt], core)
+          freeCores[coreCrt] = append(freeCores[coreCrt], core)
         }
       }
+      coreCrt++
     }
   }
 
@@ -249,14 +251,16 @@ func (cm *CoreMap) findFreeCoresOnSameNumaNode() ([]*Core) {
   cm.RLock()
   defer cm.RUnlock()
 
+  coreCrt := 0
   // Create list of all free cores for each NUMA mode
   for _, socket := range cm.sockets {
-    for numaCrt, numaNode := range socket.numaNodes {
+    for _, numaNode := range socket.numaNodes {
       for _, core := range numaNode.cores {
         if !core.busy {
-          freeCores[numaCrt] = append(freeCores[numaCrt], core)
+          freeCores[coreCrt] = append(freeCores[coreCrt], core)
         }
       }
+      coreCrt++
     }
   }
 
