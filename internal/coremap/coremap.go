@@ -140,16 +140,45 @@ func (cm *CoreMap) NumaNodes() map[uint64]*NumaNode {
 func (cm *CoreMap) FindFreeCores(level CoreRestriction) ([]*Core) {
   switch(level) {
     case CoreOptionNoRestriction:
-      return cm.FindAllFreeCoresAcrossAllNumaNodes()
+      return cm.findAllFreeCoresAcrossAllNumaNodes()
     case CoreOptionSameSocket:
       return nil // TODO
     case CoreOptionSameNUMA:
-      return nil // TODO
+      return cm.findFreeCoresOnSameNumaNode()
     case CoreOptionSameCache:
       return nil // TODO
     default:
       return nil
   }
+}
+
+// Returns a list of cores on the same NUMA node
+func (cm *CoreMap) findFreeCoresOnSameNumaNode() ([]*Core) {
+  var freeCores [][]*Core
+
+  cm.RLock()
+  defer cm.RUnlock()
+
+  // Create list of all free cores for each NUMA mode
+  for numaCrt, numaNode := range cm.numaNodes {
+    for _, core := range numaNode.cores {
+      if !core.busy {
+        freeCores[numaCrt] = append(freeCores[numaCrt], core)
+      }
+    }
+  }
+
+  // Find the NUMA node with the most free cores and return it
+  maxCores := 0
+  var maxCoresList []*Core
+  for _, cores := range freeCores {
+    if len(cores) > maxCores {
+      maxCores = len(cores)
+      maxCoresList = cores
+    }
+  }
+
+  return maxCoresList
 }
 
 // Retrieve a list of cores which are free
@@ -172,7 +201,7 @@ func (cm *CoreMap) FindAllFreeCoresOnNumaNode(numaNodeId uint64) ([]*Core, error
 }
 
 // Retrieve a list of cores which are free
-func (cm *CoreMap) FindAllFreeCoresAcrossAllNumaNodes() []*Core {
+func (cm *CoreMap) findAllFreeCoresAcrossAllNumaNodes() []*Core {
   cm.RLock()
   defer cm.RUnlock()
 
