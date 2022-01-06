@@ -221,7 +221,7 @@ func (cm *CoreMap) findFreeCoresOnSameCacheAndNUMA() ([]*Core) {
 
 // Returns a list of cores sharing the same socket
 func (cm *CoreMap) findFreeCoresOnSameSocket() ([]*Core) {
-  var freeCores [][]*Core
+  freeCores := make([][]*Core, len(cm.sockets))
 
   cm.RLock()
   defer cm.RUnlock()
@@ -252,7 +252,7 @@ func (cm *CoreMap) findFreeCoresOnSameSocket() ([]*Core) {
 
 // Returns a list of cores sharing the same cache
 func (cm *CoreMap) findFreeCoresOnSameCache() ([]*Core) {
-  var freeCores [][]*Core
+  freeCores := make([][]*Core, len(cm.sockets) * len(cm.sockets[0].cacheGroups))
 
   cm.RLock()
   defer cm.RUnlock()
@@ -285,7 +285,7 @@ func (cm *CoreMap) findFreeCoresOnSameCache() ([]*Core) {
 
 // Returns a list of cores on the same NUMA node
 func (cm *CoreMap) findFreeCoresOnSameNumaNode() ([]*Core) {
-  var freeCores [][]*Core
+  freeCores := make([][]*Core, len(cm.sockets) * len(cm.sockets[0].numaNodes))
 
   cm.RLock()
   defer cm.RUnlock()
