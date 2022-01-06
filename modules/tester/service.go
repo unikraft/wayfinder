@@ -296,6 +296,31 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
     }
   }()
 
+  collectData := make(chan bool)
+  
+  // Start measuring the domain's resources, after the start delay
+  // NOTE: The benchtool may have a warm up time too, the resources should
+  // only be started to measure after this warm up time.  How do we calculate
+  // the warm up time? Is it a spec option?
+  go func() {
+    pushMetrics := <- collectData
+
+    for pushMetrics {
+      time.Sleep(s.p.Cfg.MetricsFreq)
+      if err := s.p.PushMetrics(req.Uuid, test.domain.GetResourceMeasurements()); err != nil {
+        s.p.Log.Errorf("could not push metrics: %s", err)
+      }
+      select {
+        case pushMetrics, ok = <- collectData:
+          if !ok {
+            pushMetrics = false
+          }
+        default:
+          continue
+      }
+    }
+  }()
+
   // Start a threat which oversees the running benchmark tool's container
   go func(){
     // Give the container a delay in its startup, so we can wait for kernel
@@ -303,25 +328,12 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
     s.p.Log.Debugf("Waiting %d seconds before starting benchtool...", test.startDelay / 1000000000)
     time.Sleep(time.Duration(test.startDelay))
 
-    pushMetrics := true
-
-    // Start measuring the domain's resources, after the start delay
-    // NOTE: The benchtool may have a warm up time too, the resources should
-    // only be started to measure after this warm up time.  How do we calculate
-    // the warm up time? Is it a spec option?
-    // TODO: Nested threading...
-    go func() {
-      for pushMetrics {
-        time.Sleep(s.p.Cfg.MetricsFreq)
-        if err := s.p.PushMetrics(req.Uuid, test.domain.GetResourceMeasurements()); err != nil {
-          s.p.Log.Errorf("could not push metrics: %s", err)
-        }
-      }
-    }()
+    // The other thread can start pushing metrics now
+    collectData <- true
 
     // Now start the container.  On return, the benchtool has exited.
     runtime, err := test.container.StartAndWait()
-    pushMetrics = false
+    collectData <- false
 
     test.RLock()
     defer test.RUnlock()
