@@ -186,13 +186,13 @@ func evalExpression(cond string) (bool, error) {
 
 // next recursively iterates across paramters to generate a set of tasks
 func (j *JobSpec) next(i int, permutations chan *JobPermutation,
-                       errors chan error, done chan bool, all []*JobPermutation,
-                       limit int64, curr []ParamPermutation) ([]*JobPermutation, error) {
+                       errors chan error, done chan bool, allNr int64,
+                       limit int64, curr []ParamPermutation) (int64, error) {
   // List all permutations for this parameter
   params, err := paramPermutations(&j.Params[i])
   if err != nil {
     errors <- err
-    return nil, err
+    return 0, err
   }
 
   // TODO: Use gotree
@@ -234,7 +234,7 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
           }
           shouldEval, err := evalExpression(replaceSymbols(param.Cond, paramMap))
           if err != nil {
-              return nil, fmt.Errorf("could not evaluate expression for param %v: %s", param, err)
+              return 0, fmt.Errorf("could not evaluate expression for param %v: %s", param, err)
           }
           if !shouldEval {
             perm.Params[i].Value = ""
@@ -246,29 +246,29 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
 
       // Save permutation
       permutations <- perm
-      all = append(all, perm)
+      allNr++
 
-      if len(all) >= int(limit) {
+      if allNr >= limit {
         done <- true
-        return all, nil
+        return 0, nil
       }
 
     // Otherwise, recursively parse parameters in-order    
     } else {
-      nextPerms, err := j.next(i + 1, permutations, errors, done, nil, limit, curr)
+      nextPNr, err := j.next(i + 1, permutations, errors, done, 0, limit, curr)
       if err != nil {
         // If this has occured, we've already sent the error to the channel
-        return nil, err
+        return 0, err
       }
 
-      all = append(all, nextPerms...)
+      allNr += nextPNr
     }
   }
 
-  if len(all) >= int(limit) {
+  if allNr >= limit {
     done <- true
   }
-  return all, nil
+  return allNr, nil
 }
 
 // func (j *JobSpec) Permutations(ch chan []*JobPermutation, limit int64) (error) {
@@ -294,10 +294,10 @@ func (j *JobSpec) Permutations(limit int64) (chan *JobPermutation, chan error, c
   errors := make(chan error)
   permutations := make(chan *JobPermutation)
 
-  var all []*JobPermutation
+  var allNr int64
 
   go func() {
-    j.next(0, permutations, errors, done, all, limit, nil)
+    j.next(0, permutations, errors, done, allNr, limit, nil)
   }()
 
   return permutations, errors, done
