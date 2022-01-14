@@ -35,6 +35,9 @@ import (
   "time"
   "context"
   "encoding/json"
+  "compress/zlib"
+  "bytes"
+  "io"
 
   "github.com/adjust/rmq/v4"
   
@@ -66,8 +69,15 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
   taskBytes := delivery.Payload()
   task := spec.JobSpec{}
 
+  var compressed bytes.Buffer
+  compressed = *bytes.NewBuffer([]byte(taskBytes))
+  var decompressed bytes.Buffer
+  r, _ := zlib.NewReader(&compressed)
+  io.Copy(&decompressed, r)
+  r.Close()
+
   // Check if we received the full job specification
-  err := json.Unmarshal([]byte(taskBytes), &task)
+  err := json.Unmarshal(decompressed.Bytes(), &task)
   if err != nil {
     c.p.Log.Errorf("could not unmarshal job: %s", err)
     if err := delivery.Reject(); err != nil {

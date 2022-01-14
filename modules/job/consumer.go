@@ -33,6 +33,8 @@ package job
 import (
   "fmt"
   "encoding/json"
+  "compress/zlib"
+  "bytes"
 
   "github.com/adjust/rmq/v4"
   "github.com/erda-project/erda-infra/base/logs"
@@ -130,10 +132,14 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
         }
 
         totalPermutations++
+        var compressedBytes bytes.Buffer
+        w := zlib.NewWriter(&compressedBytes)
+        w.Write(taskBytes)
+        w.Close()
 
         // Publish permutation to the task queue.  This will be picked up by the
         // scheduler.
-        c.p.TaskQueue.PublishBytes(taskBytes)
+        c.p.TaskQueue.PublishBytes(compressedBytes.Bytes())
       }
     }
   }
