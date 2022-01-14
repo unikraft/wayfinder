@@ -39,26 +39,26 @@ import (
 )
 
 type ParamSpec struct {
-  Name      string    `yaml:"name"`
-  Type      string    `yaml:"type"`
-  Default   string    `yaml:"default"`
-  Only    []string    `yaml:"only"`
-  Min       string    `yaml:"min"`
-  Max       string    `yaml:"max"`
-  Step      string    `yaml:"step"`
-  StepMode  string    `yaml:"step_mode"`
+  Name      string    `json:"Name,omitempty"      yaml:"name,omitempty"`
+  Type      string    `json:"Type,omitempty"      yaml:"type,omitempty"`
+  Default   string    `json:"Default,omitempty"   yaml:"default,omitempty"`
+  Only    []string    `json:"Only,omitempty"      yaml:"only,omitempty"`
+  Min       string    `json:"Min,omitempty"       yaml:"min,omitempty"`
+  Max       string    `json:"Max,omitempty"       yaml:"max,omitempty"`
+  Step      string    `json:"Step,omitempty"      yaml:"step,omitempty"`
+  StepMode  string    `json:"Step_mode,omitempty" yaml:"step_mode,omitempty"`
 
   // Child parameters
   Params   *ParamSpec `yaml:"params"`
-  When      string    `yaml:"when"`
-  If        string    `yaml:"if"`
+  When      string    `json:"When,omitempty" yaml:"when,omitempty"`
+  If        string    `json:"If,omitempty"   yaml:"if,omitempty"`
 }
 
 type ParamPermutation struct {
   Name  string `yaml:"name"`
   Type  string `yaml:"type"`
   Value string `yaml:"value"`
-  Cond  string `yaml:"cond"`
+  Cond  string `json:"Cond,omitempty" yaml:"cond,omitempty"`
 }
 
 // parseParamInt attends to string parameters and its possible permutations
