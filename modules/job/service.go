@@ -111,9 +111,9 @@ func (s *service) StartJob(ctx context.Context, req *proto.StartJobRequest) (*pr
 
   // Set the permutation limit to the maximum if set to 0
   if req.PermutationLimit == 0 {
-    parsed.PermutationLimit = int64(job.TotalPermutations)
+    parsed.PermutationLimit = uint64(job.TotalPermutations)
   } else {
-    parsed.PermutationLimit = req.PermutationLimit
+    parsed.PermutationLimit = uint64(req.PermutationLimit)
   }
 
   specBytes, err := json.Marshal(parsed)

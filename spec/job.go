@@ -37,6 +37,7 @@ import (
   "fmt"
   "crypto/md5"
   "strings"
+  "math/rand"
 
   "github.com/Knetic/govaluate"
   "gopkg.in/yaml.v2"
@@ -57,7 +58,7 @@ type JobSpec struct {
   Scheduler        proto.JobScheduler `json:"scheduler"`
   IsolLevel        proto.JobIsolLevel `json:"isol_level"`
   IsolSplit        proto.JobIsolSplit `json:"isol_split"`
-  PermutationLimit int64              `json:"permutation_limit"`
+  PermutationLimit uint64             `json:"permutation_limit"`
   CurrentPerm      JobPermutation     `json:"current"`
 }
 
@@ -67,6 +68,12 @@ type JobPermutation struct {
   Params   []ParamPermutation `json:"params"`
   Checksum   string           `json:"checksum"`
 }
+
+const (
+  Grid = iota
+  Random
+  Guided
+)
 
 // ParseJobSpec accepts a YAML string input and returns a parsed object
 func ParseJobSpec(spec string) (*JobSpec, error) {  
@@ -186,8 +193,8 @@ func evalExpression(cond string) (bool, error) {
 
 // next recursively iterates across paramters to generate a set of tasks
 func (j *JobSpec) next(i int, permutations chan *JobPermutation,
-                       errors chan error, done chan bool, allNr int64,
-                       limit int64, curr []ParamPermutation) (int64, error) {
+                       errors chan error, done chan bool, allNr uint64,
+                       limit uint64, curr []ParamPermutation) (uint64, error) {
   // List all permutations for this parameter
   params, err := paramPermutations(&j.Params[i])
   if err != nil {
@@ -271,36 +278,111 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
   return allNr, nil
 }
 
-// func (j *JobSpec) Permutations(ch chan []*JobPermutation, limit int64) (error) {
-//   if j.permutations != nil {
-//     return j.permutations, nil
-//   }
+// Generate random permutations of the parameters until limit is reached,
+// then wait to see if more are needed (in the case when there are colisions)
+func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
+                          done chan bool, remaining chan uint64, limit uint64) (uint64, error) {
+  var params [][]ParamPermutation = make([][]ParamPermutation, len(j.Params))
+  var err error
 
-//   var perm []*JobPermutation
+  // Extract all parameters and prepare them for permutations
+  for i, param := range j.Params {
+    params[i], err = paramPermutations(&param)
+    if err != nil {
+      errors <- err
+      return 0, err
+    }
+  }
 
-//   perm, err := j.next(0, limit, perm, nil)
-//   if err != nil {
-//     return nil, err
-//   }
+  var paramMap map[string]string
+  shouldBuildMap := true
+  var i uint64 = 0
+  for {
+    // Generate the given number of random permutations
+    for ; i < limit; i++ {
+      var p []ParamPermutation = make([]ParamPermutation, len(j.Params))
 
-//   j.permutations = perm
+      // First generate a random permutation for each parameter
+      for j, param := range params {
+        p[j] = param[rand.Intn(len(param))]
+      }
 
-//   return perm, nil
-// }
+      // Fill the permutation to be returned
+      permFinal := &JobPermutation{
+        JobId:  j.Id,
+        Params: p,
+      }
+
+      // Evaluate all conditions
+      for j, param := range permFinal.Params {
+        if param.Cond != "" {
+          if shouldBuildMap {
+            paramMap = createParamMapForEval(permFinal.Params)
+            shouldBuildMap = false
+          }
+          shouldEval, err := evalExpression(replaceSymbols(permFinal.Params[j].Cond, paramMap))
+          if err != nil {
+            err = fmt.Errorf("could not evaluate expression for param %v: %s", param, err)
+            errors <- err
+            return 0, err
+          }
+          if !shouldEval {
+            permFinal.Params[j].Value = ""
+          }
+        }
+      }
+
+      // Calculate checksum
+      permFinal.Checksum = permFinal.checksum()
+
+      // Send the permutation
+      permutations <- permFinal
+    }
+
+    // Inform the receiver that the generation is done
+    done <- true
+
+    // Wait for the receiver to confirm that the generation is done
+    var remainingToGenerate uint64 = <- remaining
+    if remainingToGenerate == 0 {
+      break
+    } else {
+      i = limit - remainingToGenerate
+    }
+  }
+
+  return 0, nil
+}
 
 // Permutations returns a list of all possible tasks based on parameterisation
-func (j *JobSpec) Permutations(limit int64) (chan *JobPermutation, chan error, chan bool) {
+func (j *JobSpec) Permutations(schedulerType uint,
+    limit, maxPerm uint64) (chan *JobPermutation, chan error, chan bool, chan uint64, error) {
   done := make(chan bool)
   errors := make(chan error)
   permutations := make(chan *JobPermutation)
+  remaining := make(chan uint64)
 
-  var allNr int64
+  var allNr uint64
+
+  // Reject generation if random and the job wants more than 0.75 of permutations generated
+  if schedulerType == Random && limit > 0 && maxPerm > 0 && (float64(limit) / float64(maxPerm) > 0.75) {
+    return nil, nil, nil, nil, fmt.Errorf("too many permutations requested")
+  }
 
   go func() {
-    j.next(0, permutations, errors, done, allNr, limit, nil)
+    switch schedulerType {
+      case Grid:
+        j.next(0, permutations, errors, done, allNr, limit, nil)
+      case Random:
+        j.random(permutations, errors, done, remaining, limit)
+      case Guided:
+        // TODO implement Bayesian guided scheduling
+      default:
+        errors <- fmt.Errorf("unknown scheduler type: %d", schedulerType)
+    }
   }()
 
-  return permutations, errors, done
+  return permutations, errors, done, remaining, nil
 }
 
 // TotalPermutations calculates the total number of permutations for the job

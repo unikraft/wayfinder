@@ -103,8 +103,12 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 
   c.Log.Info("calculating all permutation values...")
 
-  totalPermutations := 0
-  permutations, errors, done := jobSpec.Permutations(jobSpec.PermutationLimit)
+  permutations, errors, done, remaining, err := jobSpec.Permutations(
+    uint(jobSpec.Scheduler), jobSpec.PermutationLimit, maxPerm)
+  if err != nil {
+    return fmt.Errorf("could not calculate permutations: %s", err)
+  }
+  var totalPermutations uint64 = 0
   uniquePermutations := make(map[string]bool)
   for {
     select {
@@ -114,6 +118,10 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 
     // All permutations calculated
     case <-done:
+      if (totalPermutations < jobSpec.PermutationLimit) {
+        remaining <- jobSpec.PermutationLimit - totalPermutations
+        continue
+      }
       c.Log.Infof("calculated number of permutations: %d", totalPermutations)
       return nil
 
