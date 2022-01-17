@@ -304,13 +304,13 @@ func (j *JobSpec) Permutations(limit int64) (chan *JobPermutation, chan error, c
 }
 
 // TotalPermutations calculates the total number of permutations for the job
-func (j *JobSpec) TotalPermutations() (uint, error) {
+func (j *JobSpec) TotalPermutations() (uint64, error) {
   
   if len(j.Params) == 0 {
     return 0, fmt.Errorf("no parameters")
   }
 
-  var total uint = 1
+  var total uint64 = 1
 
   for _, param := range j.Params {
     params, err := paramPermutations(&param)
@@ -318,7 +318,7 @@ func (j *JobSpec) TotalPermutations() (uint, error) {
       return 0, fmt.Errorf("could not parse parameter: %s", err)
     }
 
-    total *= uint(len(params))
+    total *= uint64(len(params))
   }
 
   return total, nil

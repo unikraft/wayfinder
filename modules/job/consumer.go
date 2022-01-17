@@ -97,6 +97,10 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
     return fmt.Errorf("could not update job state: %s", err)
   }
 
+  // Calculate max possible number of permutations (unconditioned)
+  maxPerm, _ := jobSpec.TotalPermutations()
+  c.Log.Infof("Calculated max number of permutations: %d", maxPerm)
+
   c.Log.Info("calculating all permutation values...")
 
   totalPermutations := 0
