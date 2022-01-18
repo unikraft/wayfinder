@@ -335,9 +335,15 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
   // TODO Add test variables (currently only duration is added)
   var testEnvVars []*proto.TestEnvVar
+  var duration string
+  if task.Test.BenchTool.Duration == 0 {
+    duration = "30"
+  } else {
+    duration = fmt.Sprint(task.Test.BenchTool.Duration)
+  }
   testEnvVars = append(testEnvVars, &proto.TestEnvVar{
     Name: "DURATION",
-    Value: fmt.Sprint(task.Test.BenchTool.Duration),
+    Value: duration,
   })
 
   // Create the test
