@@ -144,7 +144,7 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 
     c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
 
-    cores := c.p.CoreMap().FindFreeCores(coremap.CoreOptionNoRestriction)
+    cores := c.p.CoreMap().FindFreeCores(coremap.CoreOptionSameCacheAndNUMA)
     for _, core := range cores {
       // Immediately reserve this core
       if err := c.p.CoreMap().SetCoreActivity(core.Id(), activity); err != nil {
@@ -333,6 +333,13 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
   testCoreIds = append(testCoreIds, kernelCoreIds...)
 
+  // TODO Add test variables (currently only duration is added)
+  var testEnvVars []*proto.TestEnvVar
+  testEnvVars = append(testEnvVars, &proto.TestEnvVar{
+    Name: "DURATION",
+    Value: fmt.Sprint(task.Test.BenchTool.Duration),
+  })
+
   // Create the test
   c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
   createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
@@ -352,6 +359,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
       Commands:     task.Test.BenchTool.Commands,
       Cores:        benchToolCoreIds,
       StartDelay:   task.Test.BenchTool.StartDelay,
+      EnvVars:      testEnvVars,
     },
   })
   if err != nil {

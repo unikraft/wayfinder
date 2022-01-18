@@ -43,6 +43,7 @@ type TestBenchToolSpec struct {
   Commands       string            `yaml:"commands"`
   Cores          uint64            `yaml:"cores"`
   StartDelay     uint64            `yaml:"boot_delay"` // in seconds
+  Duration       uint64            `yaml:"duration"`   // in seconds
   Environment    map[string]string `yaml:"environment"`
 }
 
