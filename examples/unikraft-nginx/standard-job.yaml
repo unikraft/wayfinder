@@ -141,6 +141,7 @@ test:
     commands: /test.sh
     cores: 1
     start_delay: 5
+    duration: 30
   results:
     - name: throughput
       path: /results/throughput.txt
