@@ -11,7 +11,7 @@ UNIKERNEL_INITRD=${UNIKERNEL_INITRD:-"/usr/src/unikraft/apps/nginx/initramfs.cpi
 UNIKERNEL_IMAGE=${UNIKERNEL_IMAGE:-"/usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64"}
 UNIKERNEL_IP="172.${WAYFINDER_CORE_ID0}.${WAYFINDER_CORE_ID1}.2"
 NUM_PARALLEL_CONNS=${NUM_PARALLEL_CONNS:-30}
-DURATION=${DURATION:-10}
+DURATION=${DURATION:-30}
 
 if [[ ! -f $UNIKERNEL_IMAGE ]]; then
   echo "Missing unikernel image!"
