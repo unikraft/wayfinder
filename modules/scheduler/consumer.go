@@ -138,9 +138,6 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
   
   // Wait until we have some free cores.
   for {
-    if len(buildCores) >= requiredNumCores {
-      break
-    }
 
     c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
 
@@ -165,7 +162,11 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
       }
     }
 
-    time.Sleep(c.p.Cfg.GraceTime)
+    if len(buildCores) >= requiredNumCores {
+      break
+    } else {
+      time.Sleep(c.p.Cfg.GraceTime)
+    }
   }
 
   c.Log.Debugf("Reserved cores: %s", strutils.JoinUint64(buildCoreIds, ", "))
