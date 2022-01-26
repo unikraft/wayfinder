@@ -54,21 +54,19 @@ const (
 type IsolLevelType enumflag.Flag
 
 const (
-  // The task can run co-located with any other task on this level.  E.g. on the
-  // same Hyper-Thread (HT) of the same core.
+  // Tasks can be scheduled on any core
   NoIsol IsolLevelType = iota
 
-  // If HT is enabled, tasks at this level will run in different HTs on the same
-  // core.
-  DiffCoreIsol
-
-  // Tasks at this level will not run on cores sharing a cache.
-  DiffCacheIsol
-
-  // On multi-socket (i.e. CPU chips), tasks will not be co-located.
+  // Tasks will be scheduled on cores belonging to the same socket
   DiffSocketIsol
 
-  // No other task can run at the same time on the system.
+  // Tasks will only be scheduled on the same numa node
+  DiffNumaIsol
+
+  // Tasks will be scheduled on cores sharing the same L3 cache
+  DiffCacheIsol
+
+  // Tasks will be scheduled on cores on the same Socket/NUMA/L3 cache
   FullIsol
 )
 
@@ -85,7 +83,7 @@ type StartJobConfig struct {
   IsolLevel        proto.JobIsolLevel
   IsolSplit        proto.JobIsolSplit
   PermutationLimit int
-  Repeats           int
+  Repeats          int
 }
 
 var (
@@ -113,7 +111,7 @@ var (
   // (value identifiers).
   IsolLevelTypeIds = map[IsolLevelType][]string{
     NoIsol:         {"none"},
-    DiffCoreIsol:   {"core"},
+    DiffNumaIsol:   {"numa"},
     DiffCacheIsol:  {"cache"},
     DiffSocketIsol: {"socket"},
     FullIsol:       {"full"},
