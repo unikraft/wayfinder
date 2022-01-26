@@ -53,6 +53,13 @@ type TaskConsumer struct {
   Log      logs.Logger
 }
 
+const (
+  stageBuild = iota
+  stageTest
+)
+
+type stage int
+
 type build struct {
   uuid string
 }
@@ -127,12 +134,26 @@ func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
   return nil
 }
 
+// Returns the restriction level asked for when it corresponds to the isolated stage
+// Otherwise, reserve cores with no restriction
+func (c *TaskConsumer) calculateCoremap(taskStage stage, level proto.JobIsolLevel,
+                        split proto.JobIsolSplit) coremap.CoreRestriction {
+  if (split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BOTH) ||
+    (taskStage == stageBuild && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BUILDS) ||
+    (taskStage == stageTest && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_TESTS) {
+    return coremap.CoreRestriction(level)
+  }
+
+  return coremap.CoreOptionNoRestriction
+}
+
 // Busy-waits to reserve a core.  This method is required for builds and tests
 // which have allocated core requirements.  An arbitrary number of cores which
 // are required can be entered as input, as well as a pointer to an interface
 // which will be assigned to the core, and the list of core IDs which are then
 // reserved will be returned.
-func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface{}) ([]uint64) {
+func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface{}, taskStage stage,
+                        level proto.JobIsolLevel, split proto.JobIsolSplit) ([]uint64) {
   var buildCoreIds []uint64
   var buildCores []*coremap.Core
   
@@ -141,7 +162,8 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 
     c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
 
-    cores := c.p.CoreMap().FindFreeCores(coremap.CoreOptionSameCacheAndNUMA)
+    restriction := c.calculateCoremap(taskStage, level, split)
+    cores := c.p.CoreMap().FindFreeCores(restriction)
     for _, core := range cores {
       // Immediately reserve this core
       if err := c.p.CoreMap().SetCoreActivity(core.Id(), activity); err != nil {
@@ -215,7 +237,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
   build := build{}
 
-  buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build)
+  buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit)
 
   var buildEnvVars []*proto.BuildEnvVar
   for _, param := range task.CurrentPerm.Params {
@@ -326,11 +348,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   //
   test := test{}
 
-  // TODO: Scheduler needs to be aware of the NUMA node of these cores, as their
-  // location matters.
-  vmmCoreIds := c.busyWaitForCores(1, &test)
-  benchToolCoreIds := c.busyWaitForCores(int(task.Test.BenchTool.Cores), &test)
-  kernelCoreIds := c.busyWaitForCores(int(task.Test.Kernel.Cores), &test)
+  vmmCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
+  benchToolCoreIds := c.busyWaitForCores(int(task.Test.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
+  kernelCoreIds := c.busyWaitForCores(int(task.Test.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
   testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
   testCoreIds = append(testCoreIds, kernelCoreIds...)
 
