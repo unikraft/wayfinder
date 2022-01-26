@@ -59,6 +59,7 @@ type JobSpec struct {
   IsolLevel        proto.JobIsolLevel `json:"isol_level"`
   IsolSplit        proto.JobIsolSplit `json:"isol_split"`
   PermutationLimit uint64             `json:"permutation_limit"`
+  Repeats          uint64             `json:"repeats"`
   CurrentPerm      JobPermutation     `json:"current"`
 }
 

@@ -85,7 +85,7 @@ type StartJobConfig struct {
   IsolLevel        proto.JobIsolLevel
   IsolSplit        proto.JobIsolSplit
   PermutationLimit int
-  Reruns           int
+  Repeats           int
 }
 
 var (
@@ -142,11 +142,11 @@ func init() {
   )
 
   startCmd.PersistentFlags().IntVarP(
-    &jobCfg.Reruns,
-    "reruns",
+    &jobCfg.Repeats,
+    "repeats",
     "r",
     0,
-    "Number of times to rerun a permutation. Useful for random search. (default 0)",
+    "Number of times to repeat a permutation. Useful for random search. (default 0)",
   )
 
   startCmd.PersistentFlags().VarP(
@@ -209,6 +209,7 @@ func doStartCmd(cmd *cobra.Command, args []string) {
     IsolLevel:        jobCfg.IsolLevel,
     IsolSplit:        jobCfg.IsolSplit,
     PermutationLimit: int64(jobCfg.PermutationLimit),
+    Repeats:          uint64(jobCfg.Repeats),
   })
   if err != nil {
     fmt.Printf("could not start job: %s\n", err)

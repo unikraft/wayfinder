@@ -122,6 +122,7 @@ message StartJobRequest {
   JobIsolLevel isolLevel        = 4;
   JobIsolSplit isolSplit        = 5;
   int64        permutationLimit = 6;
+  uint64        repeats         = 7;
 }
 
 message StartJobResponse {
