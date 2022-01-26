@@ -151,7 +151,9 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 
         // Publish permutation to the task queue.  This will be picked up by the
         // scheduler.
-        c.p.TaskQueue.PublishBytes(compressedBytes.Bytes())
+        for i := 0; i < 1 + int(jobSpec.Repeats); i++ {
+          c.p.TaskQueue.PublishBytes(compressedBytes.Bytes())
+        }
       }
     }
   }
