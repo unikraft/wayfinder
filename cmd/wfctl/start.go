@@ -85,6 +85,7 @@ type StartJobConfig struct {
   IsolLevel        proto.JobIsolLevel
   IsolSplit        proto.JobIsolSplit
   PermutationLimit int
+  Reruns           int
 }
 
 var (
@@ -140,6 +141,14 @@ func init() {
     "Specify the scheduler for job permutations.",
   )
 
+  startCmd.PersistentFlags().IntVarP(
+    &jobCfg.Reruns,
+    "reruns",
+    "r",
+    0,
+    "Number of times to rerun a permutation. Useful for random search. (default 0)",
+  )
+
   startCmd.PersistentFlags().VarP(
     enumflag.New(
       &jobCfg.IsolLevel,
@@ -169,7 +178,7 @@ func init() {
     "permutation-limit",
     "l",
     0,
-    "Number of permutations to iterate over before stopping (powers of 2).  Zero means all.",
+    "Number of permutations to iterate over (grid - powers of 2; random - exact).  Zero means all.",
   )
 
   // TODO: Flag to skip existing permutations of this job seen in the database
