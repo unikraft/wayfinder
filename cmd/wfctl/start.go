@@ -161,7 +161,7 @@ func init() {
 
   startCmd.PersistentFlags().VarP(
     enumflag.New(
-      &jobCfg.IsolLevel,
+      &jobCfg.IsolSplit,
       "both",
       IsolSplitTypeIds,
       enumflag.EnumCaseInsensitive,
