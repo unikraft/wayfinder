@@ -131,3 +131,21 @@ func (s *service) StartJob(ctx context.Context, req *proto.StartJobRequest) (*pr
     Success: true,
   }, nil
 }
+
+func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.GetJobResponse, error) {
+  s.p.Log.Infof("requested to get job %d...", req.Id)
+
+  return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
+
+func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsRequest) (*proto.GetJobResultsResponse, error) {
+  s.p.Log.Infof("requested to get job %d...", req.Id)
+
+  return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
+
+func (s *service) ListJobs(ctx context.Context, req *proto.ListJobsRequest) (*proto.ListJobsResponse, error) {
+  s.p.Log.Infof("requested to list jobs...")
+
+  return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
