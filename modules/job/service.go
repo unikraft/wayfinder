@@ -135,7 +135,20 @@ func (s *service) StartJob(ctx context.Context, req *proto.StartJobRequest) (*pr
 func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.GetJobResponse, error) {
   s.p.Log.Infof("requested to get job %d...", req.Id)
 
-  return nil, status.Errorf(codes.Unimplemented, "not implemented")
+  job := &models.Job{}
+  if err := s.p.DB.Repos().Jobs().FindJob(uint(req.Id), job); err != nil {
+    return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
+  }
+
+  jobBytes, err := json.Marshal(job)
+  if err != nil {
+    return nil, status.Errorf(codes.Internal, "could not marshal job: %s", err)
+  }
+
+  return &proto.GetJobResponse{
+    Success: true,
+    Data:   jobBytes,
+  }, nil
 }
 
 func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsRequest) (*proto.GetJobResultsResponse, error) {
