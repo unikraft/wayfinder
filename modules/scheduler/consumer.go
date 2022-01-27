@@ -196,6 +196,34 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
   return buildCoreIds;
 }
 
+// Formats the environment variables for the test
+// The duration is added to the environment variables
+func (c *TaskConsumer) packEnvVars(task *spec.JobSpec) []*proto.TestEnvVar {
+  var envVars []*proto.TestEnvVar
+
+  var duration string
+  if task.Test.BenchTool.Duration == 0 {
+    duration = "30"
+  } else {
+    duration = fmt.Sprint(task.Test.BenchTool.Duration)
+  }
+
+
+  envVars = append(envVars, &proto.TestEnvVar{
+    Name: "DURATION",
+    Value: duration,
+  })
+
+  for name, value := range task.Test.BenchTool.Environment {
+    envVars = append(envVars, &proto.TestEnvVar{
+      Name: name,
+      Value: value,
+    })
+  }
+
+  return envVars
+}
+
 func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   // TODO: Implement a *real* scheduler.  For now this consumer accepts any task
   // it receives and attempts to complete it.  This method should essentially
@@ -354,19 +382,6 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
   testCoreIds = append(testCoreIds, kernelCoreIds...)
 
-  // TODO Add test variables (currently only duration is added)
-  var testEnvVars []*proto.TestEnvVar
-  var duration string
-  if task.Test.BenchTool.Duration == 0 {
-    duration = "30"
-  } else {
-    duration = fmt.Sprint(task.Test.BenchTool.Duration)
-  }
-  testEnvVars = append(testEnvVars, &proto.TestEnvVar{
-    Name: "DURATION",
-    Value: duration,
-  })
-
   // Create the test
   c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
   createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
@@ -386,7 +401,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
       Commands:     task.Test.BenchTool.Commands,
       Cores:        benchToolCoreIds,
       StartDelay:   task.Test.BenchTool.StartDelay,
-      EnvVars:      testEnvVars,
+      EnvVars:      c.packEnvVars(task),
     },
   })
   if err != nil {
