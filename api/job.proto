@@ -50,7 +50,29 @@ service JobService {
   // start job
   rpc StartJob (StartJobRequest) returns (StartJobResponse)  {
     option (google.api.http) = {
-      post: "/api/job/start/{id}",
+      post: "/api/job/{id}/start",
+    };
+  }
+
+
+  // list jobs
+  rpc ListJobs (ListJobsRequest) returns (ListJobsResponse)  {
+    option (google.api.http) = {
+      get: "/api/jobs",
+    };
+  }
+
+  // get a job
+  rpc GetJob (GetJobRequest) returns (GetJobResponse)  {
+    option (google.api.http) = {
+      get: "/api/job/{id}",
+    };
+  }
+
+  // get job results
+  rpc GetJobResults (GetJobResultsRequest) returns (GetJobResultsResponse)  {
+    option (google.api.http) = {
+      get: "/api/job/{id}/results",
     };
   }
 }
@@ -118,13 +140,42 @@ message CreateJobResponse {
 
 message StartJobRequest {
   int64        id               = 1;
-  JobScheduler scheduler        = 3;
-  JobIsolLevel isolLevel        = 4;
-  JobIsolSplit isolSplit        = 5;
-  int64        permutationLimit = 6;
-  uint64       repeats          = 7;
+  JobScheduler scheduler        = 2;
+  JobIsolLevel isolLevel        = 3;
+  JobIsolSplit isolSplit        = 4;
+  int64        permutationLimit = 5;
+  uint64       repeats          = 6;
 }
 
 message StartJobResponse {
   bool success = 1;
+}
+
+message ListJobsRequest {
+  int64 offset = 1;
+  int64 limit  = 2;
+}
+
+message ListJobsResponse {
+  int64  count   = 1;
+  bytes  data    = 2;
+  bool   success = 3;
+}
+
+message GetJobRequest {
+  int64 id = 1;
+}
+
+message GetJobResponse {
+  bytes data    = 1;
+  bool  success = 2;
+}
+
+message GetJobResultsRequest {
+  int64 id = 1;
+}
+
+message GetJobResultsResponse {
+  bytes data    = 1;
+  bool  success = 2;
 }
