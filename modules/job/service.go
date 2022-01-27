@@ -152,9 +152,24 @@ func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.
 }
 
 func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsRequest) (*proto.GetJobResultsResponse, error) {
-  s.p.Log.Infof("requested to get job %d...", req.Id)
+  s.p.Log.Infof("requested to get job %d results...", req.Id)
 
-  return nil, status.Errorf(codes.Unimplemented, "not implemented")
+  results, err := s.p.DB.Repos().Results().FindResults(uint(req.Id))
+
+  if err != nil {
+    return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
+  }
+
+  resultsBytes, err := json.Marshal(results)
+
+  if err != nil {
+    return nil, status.Errorf(codes.Internal, "could not marshal results: %s", err)
+  }
+
+  return &proto.GetJobResultsResponse{
+    Success: true,
+    Data:    resultsBytes,
+  }, nil
 }
 
 func (s *service) ListJobs(ctx context.Context, req *proto.ListJobsRequest) (*proto.ListJobsResponse, error) {
