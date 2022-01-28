@@ -56,7 +56,7 @@ from grpclib.client import Channel
 from typing import Optional, Type, List
 
 try:
-  import proto.wayfinder as wayfinder
+  from .proto import wayfinder
 except ImportError as e:
   raise RuntimeError("Please run setuptools for pywfsdk for code generation")
 

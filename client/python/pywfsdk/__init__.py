@@ -36,6 +36,7 @@ from pkg_resources import DistributionNotFound
 from pkg_resources import get_distribution
 
 from .client import *
+from .proto.wayfinder import *
 
 __package__ = 'pywfsdk'
 

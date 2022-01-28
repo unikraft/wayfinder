@@ -9,7 +9,7 @@ __pycache__/
 client/python/build/
 client/python/dist/
 client/python/vendor/
-client/python/src/proto/
+client/python/pywfsdk/proto/
 client/python/*.py[cod]
 
 # due to using tox and pytest
