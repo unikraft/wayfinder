@@ -162,6 +162,13 @@ class WayfinderClient:
     return self.__jobs
 
   @property
+  def tester(self) -> wayfinder.TesterServiceStub:
+    """
+    Returns an instantiate `wayfinder.TesterServiceStub` stub.
+    """
+    return self.__tester
+
+  @property
   def channel(self) -> Channel:
     """
     The `grpc.Channel` object which gRPC connections are handled over.
