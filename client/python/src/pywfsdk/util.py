@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Authors: Alexander Jung <a.jung@lancs.ac.uk>
+# Authors: Alexander Jung <alex@unikraft.io>
 #
-# Copyright (c) 2020, Lancaster University.  All rights reserved.
+# Copyright (c) 2022, Unikraft UG.  All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -29,33 +29,18 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-ARG GO_VERSION=1.17
-FROM golang:${GO_VERSION}-bullseye AS base
+"""
+pywfsdk.utils
+~~~~~~~~~~~~~~~~
+This module implements utilities.
+:copyright: (c) 2022 by Unikraft UG.
+:license: BSD-3-Clause, see LICENSE.md for more details.
+"""
 
-ARG ORG=unikraft
-ARG REPO=wayfinder
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
-RUN set -xe; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-      build-essential \
-      make \
-      libvirt-dev \
-      python3 \
-      python3-pip \
-      python3-setuptools \
-      protobuf-compiler \
-      libprotobuf-dev \
-      git; \
-    go get -u github.com/erda-project/erda-infra/tools/gohub; \
-    go get -u github.com/cosmtrek/air
+import logging
+import sys
 
-
-COPY . /go/src/github.com/${ORG}/${REPO}
-WORKDIR /go/src/github.com/${ORG}/${REPO}
-ENV GOROOT=/usr/local/go
-
-EXPOSE 5000
-
-# for live reloading of go container
-CMD air -c .air.toml
+log = logging.getLogger(sys.modules[__name__].__name__)

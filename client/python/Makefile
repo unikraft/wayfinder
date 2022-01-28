@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Authors: Alexander Jung <a.jung@lancs.ac.uk>
+# Authors: Alexander Jung <alex@unikraft.io>
 #
-# Copyright (c) 2020, Lancaster University.  All rights reserved.
+# Copyright (c) 2022, Unikraft UG.  All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -29,33 +29,24 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-ARG GO_VERSION=1.17
-FROM golang:${GO_VERSION}-bullseye AS base
+WORKDIR ?= $(CURDIR)
 
-ARG ORG=unikraft
-ARG REPO=wayfinder
+SNAKE   ?= python3
+GIT     ?= git
+MKDIR   ?= mkdir
+PIP     ?= pip3
 
-RUN set -xe; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-      build-essential \
-      make \
-      libvirt-dev \
-      python3 \
-      python3-pip \
-      python3-setuptools \
-      protobuf-compiler \
-      libprotobuf-dev \
-      git; \
-    go get -u github.com/erda-project/erda-infra/tools/gohub; \
-    go get -u github.com/cosmtrek/air
+.PHONY: install
+install: vendor
+	$(PIP) install -r $(WORKDIR)/requirements.txt
+	$(SNAKE) $(WORKDIR)/setup.py install
 
+.PHONY: vendor
+vendor: $(WORKDIR)/vendor $(WORKDIR)/vendor/googleapis
 
-COPY . /go/src/github.com/${ORG}/${REPO}
-WORKDIR /go/src/github.com/${ORG}/${REPO}
-ENV GOROOT=/usr/local/go
+$(WORKDIR)/vendor:
+	$(MKDIR) -p $@
 
-EXPOSE 5000
-
-# for live reloading of go container
-CMD air -c .air.toml
+$(WORKDIR)/vendor/googleapis:
+	$(GIT) clone https://fuchsia.googlesource.com/third_party/googleapis $@
+	$(GIT) -C $@ checkout c512b1a0a

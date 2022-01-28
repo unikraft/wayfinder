@@ -194,3 +194,7 @@ ci-test-rpm-package-install:
 ci-test-linux-run:
 	chmod 755 ./dist/$(BIN)_linux_amd64/$(BIN) && \
 	./dist/$(BIN)_linux_amd64/$(BIN) version
+
+.PHONY: install-python-sdk
+install-python-sdk:
+	$(MAKE) -C $(WORKDIR)/client/python install

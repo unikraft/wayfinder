@@ -1,3 +1,17 @@
 dist/
 client/go/
 api/proto/
+
+# general things to ignore
+*.egg-info
+*.egg[s]
+__pycache__/
+client/python/build/
+client/python/dist/
+client/python/vendor/
+client/python/src/proto/
+client/python/*.py[cod]
+
+# due to using tox and pytest
+client/python/.tox
+client/python/.cache
