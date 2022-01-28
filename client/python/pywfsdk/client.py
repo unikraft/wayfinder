@@ -141,6 +141,13 @@ class WayfinderClient:
     return self.__disable_ssl_verification
   
   @property
+  def builder(self) -> wayfinder.BuilderServiceStub:
+    """
+    Returns an instantiate `wayfinder.BuilderServiceStub` stub.
+    """
+    return self.__builder
+  
+  @property
   def jobs(self) -> wayfinder.JobServiceStub:
     """
     Returns an instantiate `wayfinder.JobServiceStub` stub.
