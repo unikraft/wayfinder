@@ -167,8 +167,8 @@ message GetJobRequest {
 }
 
 message GetJobResponse {
-  bytes data    = 1;
-  bool  success = 2;
+  bool success = 1 [json_name = "success"];
+  Job  job     = 2 [json_name = "job"];
 }
 
 message GetJobResultsRequest {
