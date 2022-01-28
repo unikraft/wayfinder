@@ -57,7 +57,7 @@ import (
   _ "github.com/unikraft/wayfinder/modules/scheduler"
   _ "github.com/unikraft/wayfinder/modules/hostconfig"
 
-  _ "github.com/unikraft/wayfinder/api/client"
+  _ "github.com/unikraft/wayfinder/client/go"
 )
 
 var (

@@ -100,7 +100,7 @@ $(.PROXY)all: $(BIN)
 api:
 	$(GOHUB) protoc protocol $(WORKDIR)/api/*.proto \
 		--service_out $(WORKDIR)/api/proto \
-		--client_out $(WORKDIR)/api/client \
+		--client_out $(WORKDIR)/client/go \
 		--msg_out $(WORKDIR)/api/proto
 
 ifeq ($(DEBUG),y)
