@@ -96,6 +96,14 @@ func (repo *JobsRepository) FindJob(id uint, job *models.Job) error {
   return nil
 }
 
+// List all jobs
+func (repo *JobsRepository) ListJobs(offset, limit int) (*[]models.Job, error) {
+  var jobs []models.Job
+  repo.db.Offset(offset).Limit(limit).Preload("jobs").Find(&jobs)
+
+  return &jobs, nil
+}
+
 // SetStatusJobById sets the state of the job to the desired state by the Job's
 // ID.
 func (repo *JobsRepository) SetStatusByJobId(id uint, status proto.JobStatus) error {
