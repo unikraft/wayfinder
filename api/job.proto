@@ -157,9 +157,9 @@ message ListJobsRequest {
 }
 
 message ListJobsResponse {
-  int64  count   = 1;
-  bytes  data    = 2;
-  bool   success = 3;
+  bool         success = 1 [json_name = "success"];
+  int64        total   = 2 [json_name = "total"];
+  repeated Job jobs    = 3 [json_name = "jobs"];
 }
 
 message GetJobRequest {
