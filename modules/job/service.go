@@ -154,7 +154,10 @@ func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.
 func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsRequest) (*proto.GetJobResultsResponse, error) {
   s.p.Log.Infof("requested to get job %d results...", req.Id)
 
-  results, err := s.p.DB.Repos().Results().FindResults(uint(req.Id))
+  offset := int(req.Offset)
+  limit  := int(req.Limit)
+
+  results, err := s.p.DB.Repos().Results().FindResults(uint(req.Id), offset, limit)
 
   if err != nil {
     return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)

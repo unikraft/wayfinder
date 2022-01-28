@@ -173,6 +173,8 @@ message GetJobResponse {
 
 message GetJobResultsRequest {
   int64 id = 1;
+  int64 offset = 2;
+  int64 limit  = 3;
 }
 
 message GetJobResultsResponse {
