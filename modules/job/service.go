@@ -175,5 +175,23 @@ func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsReq
 func (s *service) ListJobs(ctx context.Context, req *proto.ListJobsRequest) (*proto.ListJobsResponse, error) {
   s.p.Log.Infof("requested to list jobs...")
 
-  return nil, status.Errorf(codes.Unimplemented, "not implemented")
+  offset := int(req.Offset)
+  limit  := int(req.Limit)
+
+  jobs, err := s.p.DB.Repos().Jobs().ListJobs(offset, limit)
+
+  if err != nil {
+    return nil, status.Errorf(codes.Internal, "could not list jobs: %s", err)
+  }
+
+  jobsBytes, err := json.Marshal(jobs)
+
+  if err != nil {
+    return nil, status.Errorf(codes.Internal, "could not marshal jobs: %s", err)
+  }
+
+  return &proto.ListJobsResponse{
+    Success: true,
+    Data:    jobsBytes,
+  }, nil
 }
