@@ -108,7 +108,7 @@ class WayfinderClient:
     return self.__host
   
   @property
-  def port(self) -> str:
+  def port(self) -> int:
     return self.__port
 
   @property
