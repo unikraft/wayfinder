@@ -57,11 +57,11 @@ class build_proto(setuptools.Command):
 
     def run(self):
         try:
-            os.makedirs(os.path.join(SETUP_DIR, "src/pywfsdk/proto"), exist_ok = True)
+            os.makedirs(os.path.join(SETUP_DIR, "pywfsdk/proto"), exist_ok = True)
             cmd = [
                 "protoc",
                 "-I" + os.path.join(SETUP_DIR, "../../api"),
-                "--python_betterproto_out=" + os.path.join(SETUP_DIR, "src/pywfsdk/proto"),
+                "--python_betterproto_out=" + os.path.join(SETUP_DIR, "pywfsdk/proto"),
                 "-I" + os.path.join(SETUP_DIR, "vendor/googleapis"),
                 os.path.join(SETUP_DIR, "../../api/*.proto")
             ]
