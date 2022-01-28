@@ -49,35 +49,35 @@ service HostConfigService {
 }
 
 message Host {
-  int64  id                   = 1;
-  string dmiUUID              = 2;
-  string hostname             = 3;
-  string architecture         = 4;
-  string byteOrder            = 5;
-  string addressSizesPhysical = 6;
-  string addressSizesVirtual  = 7;
-  int64  cPUs                 = 8;
-  int64  threadsPerCore       = 9;
-  int64  coresPerSocket       = 10;
-  int64  sockets              = 11;
-  int64  nUMAnodes            = 12;
-  string vendorID             = 13;
-  int64  cPUFamily            = 14;
-  int64  model                = 15;
-  string modelName            = 16;
-  int64  stepping             = 17;
-  float  cPUMHz               = 18;
-  float  cPUMaxMHz            = 19;
-  float  cPUMinMHz            = 20;
-  float  bogoMIPS             = 21;
-  string virtualization       = 22;
-  string l1dCache             = 23;
-  string l1iCache             = 24;
-  string l2Cache              = 25;
-  string l3Cache              = 26;
-  string nUMANode0CPUs        = 27;
-  string nUMANode1CPUs        = 28;
-  string flags                = 29;
+  int64  id                   = 1  [json_name = "id"];
+  string dmiUUID              = 2  [json_name = "dmi_uuid"];
+  string hostname             = 3  [json_name = "hostname"];
+  string architecture         = 4  [json_name = "architecture"];
+  string byteOrder            = 5  [json_name = "byte_order"];
+  string addressSizesPhysical = 6  [json_name = "address_sizes_physical"];
+  string addressSizesVirtual  = 7  [json_name = "address_sizes_virtual"];
+  int64  cPUs                 = 8  [json_name = "cpus"];
+  int64  threadsPerCore       = 9  [json_name = "threads_per_core"];
+  int64  coresPerSocket       = 10 [json_name = "cores_per_socket"];
+  int64  sockets              = 11 [json_name = "sockets"];
+  int64  nUMAnodes            = 12 [json_name = "num_anodes"];
+  string vendorID             = 13 [json_name = "vendor_id"];
+  int64  cPUFamily            = 14 [json_name = "cpu_family"];
+  int64  model                = 15 [json_name = "model"];
+  string modelName            = 16 [json_name = "model_name"];
+  int64  stepping             = 17 [json_name = "stepping"];
+  float  cPUMHz               = 18 [json_name = "cpu_mhz"];
+  float  cPUMaxMHz            = 19 [json_name = "cpu_max_mhz"];
+  float  cPUMinMHz            = 20 [json_name = "cpu_min_mhz"];
+  float  bogoMIPS             = 21 [json_name = "bogo_mips"];
+  string virtualization       = 22 [json_name = "virtualization"];
+  string l1dCache             = 23 [json_name = "l1d_cache"];
+  string l1iCache             = 24 [json_name = "l1i_cache"];
+  string l2Cache              = 25 [json_name = "l2_cache"];
+  string l3Cache              = 26 [json_name = "l3_cache"];
+  string nUMANode0CPUs        = 27 [json_name = "numa_node0_cpus"];
+  string nUMANode1CPUs        = 28 [json_name = "numa_node1_cpus"];
+  string flags                = 29 [json_name = "flags"];
 }
 
 message CreateHostRequest {
