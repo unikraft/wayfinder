@@ -148,6 +148,13 @@ class WayfinderClient:
     return self.__builder
   
   @property
+  def hosts(self) -> wayfinder.HostConfigServiceStub:
+    """
+    Returns an instantiate `wayfinder.HostConfigServiceStub` stub.
+    """
+    return self.__hosts
+  
+  @property
   def jobs(self) -> wayfinder.JobServiceStub:
     """
     Returns an instantiate `wayfinder.JobServiceStub` stub.
