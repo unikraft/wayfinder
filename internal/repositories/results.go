@@ -145,9 +145,9 @@ func (r *ResultsRepository) SaveResultBoolByTestUuid(testUuid, name string, valu
 }
 
 // Extract all results for a given job
-func (r *ResultsRepository) FindResults(jobId uint) (*[]models.Result, error) {
+func (r *ResultsRepository) FindResults(jobId uint, offset, limit int) (*[]models.Result, error) {
   var results []models.Result
-  r.db.Where("job_id = ?", jobId).
+  r.db.Offset(offset).Limit(limit).Where("job_id = ?", jobId).
       Joins("JOIN permutations ON results.permutation_id = permutations.id").
       Preload("results").Select("results.*").Find(&results)
 
