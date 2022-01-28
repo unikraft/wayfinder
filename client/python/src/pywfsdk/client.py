@@ -30,11 +30,21 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 """
-pywfsdk.client
-~~~~~~~~~~~~~~~~
-This module implements the main client utility.
-:copyright: (c) 2022 by Unikraft UG.
-:license: BSD-3-Clause, see LICENSE.md for more details.
+# pywfsdk.client
+
+This module implements the main Wayfinder client utility.
+
+## Basic Usage
+
+Create a `WayfinderClient` singleton:
+
+```python
+wf = WayfinderClient(
+  host='localhost',
+  port=5000,
+  disable_ssl_verification=True
+)
+```
 """
 
 from __future__ import absolute_import
@@ -53,13 +63,13 @@ except ImportError as e:
 from pywfsdk.util import log
 
 class WayfinderClient:
-  '''
+  """
   The Wayfinder SDK Client Object.
 
   Applications should configure the client at startup time and continue to use
   it throughout the lifetime of the application, rather than creating
   instances on the fly.
-  '''
+  """
   def __init__(self,
                host: str,
                port: int,
@@ -68,23 +78,6 @@ class WayfinderClient:
                client_key: Optional[str]=None,
                disable_ssl_verification: bool=False,
                channel: Optional[Channel]=None):
-    '''
-    :param host: The host address for the Wayfinder server.
-    :param port: The port of the Wayfinder server.
-    :param server_cert: If using a custom certificate authority, set this to the
-      file path of the certificate bundle.
-    :param client_cert: If using a custom client certificate, set this to the
-      file path of the certificate.
-    :param client_key: If using a custom client certificate, set this to the
-      file path of the key.
-    :param max_message_length: The maximum length of a gRPC message.
-    :param disable_ssl_verification: If true, completely disables SSL
-      verification and certificate verification for secure requests. This is
-      unsafe and should not be used in a production environment; instead, use a
-      self-signed certificate and set `ca_certs`.
-    :param channel: Provide an instantiated gRPC Channel object to use for
-      connections.
-    '''
     self.__host = host
     self.__port = port
     self.__server_cert = server_cert
@@ -103,45 +96,60 @@ class WayfinderClient:
 
   @property
   def host(self) -> str:
-    '''
-    '''
+    """
+    The remote host, such as an IP or FQDN, of the Wayfinder server.
+    """
     return self.__host
   
   @property
   def port(self) -> int:
+    """
+    The port the remote Wayfinder server is listeninig on.  Default is `5000`.
+    """
     return self.__port
 
   @property
   def server_cert(self) -> str:
+    """
+    The path to the server's public certificate should the connection requires
+    SSL.
+    """
     return self.__server_cert
 
   @property
   def client_key(self) -> str:
+    """
+    The path to the client's private key should the connection requires SSL.
+    """
     return self.__client_key
 
   @property
   def client_cert(self) -> str:
+    """
+    The path to the client's public certificate should the connection requires
+    SSL.
+    """
     return self.__client_cert
 
   @property
   def disable_ssl_verification(self) -> bool:
+    """
+    Whether the client should verify the SSL connection.
+    """
     return self.__disable_ssl_verification
   
   @property
   def jobs(self) -> wayfinder.JobServiceStub:
-    '''
-    Returns a list of all jobs.
-
-    :return: List of :pyclass:`Job <pywfsdk.proto.JobServiceStub>` objects.
-    :rtype: List of pywfsdk.proto.JobServiceStub
-    '''
+    """
+    Returns an instantiate `wayfinder.JobServiceStub` stub.
+    """
     return self.__jobs
 
   @property
   def channel(self) -> Channel:
-    '''
-
-    '''
+    """
+    The `grpc.Channel` object which gRPC connections are handled over.
+    """
     if self.__channel is not None:
       return self.__channel
     
@@ -172,8 +180,9 @@ class WayfinderClient:
     return self.__channel
 
   def create_stub(self, stub: Type[betterproto.ServiceStub]) -> betterproto.ServiceStub:
-    '''
-    '''
+    """
+    Instantiate a stub based on the client's configuration channel.
+    """
     return stub(channel=self.channel)
 
   # Magic methods allow a client object to be automatically cleaned up by the
@@ -185,10 +194,10 @@ class WayfinderClient:
     self.close()
 
   def close(self):
-    '''
+    """
     Releases the gRPC connection channel.  Do not attempt to use the client
     after calling this method.
-    '''
+    """
 
     log.info("Closing Wayfinder client...")
     if self.channel:
