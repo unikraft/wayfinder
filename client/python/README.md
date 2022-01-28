@@ -13,6 +13,8 @@ make install
 Create a `WayfinderClient` singleton:
 
 ```python
+from pywfsdk import WayfinderClient 
+
 wf = WayfinderClient(
   host='localhost',
   port=5000,

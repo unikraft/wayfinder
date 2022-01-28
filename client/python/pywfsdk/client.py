@@ -39,6 +39,8 @@ This module implements the main Wayfinder client utility.
 Create a `WayfinderClient` singleton:
 
 ```python
+from pywfsdk import WayfinderClient 
+
 wf = WayfinderClient(
   host='localhost',
   port=5000,
