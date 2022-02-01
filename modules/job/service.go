@@ -132,6 +132,74 @@ func (s *service) StartJob(ctx context.Context, req *proto.StartJobRequest) (*pr
   }, nil
 }
 
+func (s *service) createPermutation(job *models.Job) []*proto.Permutation {
+  var permutations []*proto.Permutation
+
+  for _, permutation := range job.Permutations {
+    var results []*proto.Result
+    var params  []*proto.Param
+    var builds  []*proto.Build
+    var tests   []*proto.Test
+
+    for _, result := range permutation.Results {
+      results = append(results, &proto.Result{
+        Name: result.Name,
+        Type: int32(result.Type),
+        ValueStr: result.ValueStr,
+        ValueInt: int64(result.ValueInt),
+        ValueBool: result.ValueBool,
+      })
+    }
+
+    for _, param := range permutation.Params {
+      params = append(params, &proto.Param{
+        Name:     param.Name,
+        Type:     param.Type,
+        ValueStr: param.ValueStr,
+        ValueInt: int64(param.ValueInt),
+      })
+    }
+
+    for _, build := range permutation.Builds {
+      builds = append(builds, &proto.Build{
+        PermutationId:    uint64(build.PermutationId),
+        Status:           int32(build.Status),
+        Runtime:          build.Runtime.String(),
+        WayfinderVersion: build.WayfinderVersion,
+        KernelPath:       build.KernelPath,
+        InitRdPath:       build.InitRdPath,
+        LogPath:          build.LogPath,
+        Cores:            build.Cores,
+      })
+    }
+
+    for _, test := range permutation.Tests {
+      tests = append(tests, &proto.Test{
+        PermutationId:    uint64(test.PermutationId),
+        Status:           int32(test.Status),
+        Runtime:          test.Runtime.String(),
+        WayfinderVersion: test.WayfinderVersion,
+        Results:          results,
+        VmmCores:         test.VMMCores,
+        KernelCores:      test.KernelCores,
+        BenchToolCores:   test.BenchToolCores,
+      })
+    }
+
+    permutations = append(permutations, &proto.Permutation{
+      Uuid:    permutation.UUID[:],
+      JobId:  int64(permutation.JobId),
+      Checksum: permutation.Checksum,
+      Status:  int64(permutation.Status),
+      Params: params,
+      Builds: builds,
+      Tests: tests,
+    })
+  }
+
+  return permutations
+}
+
 func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.GetJobResponse, error) {
   s.p.Log.Infof("requested to get job %d...", req.Id)
 
