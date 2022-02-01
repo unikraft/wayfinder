@@ -208,14 +208,19 @@ func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.
     return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
   }
 
-  jobBytes, err := json.Marshal(job)
-  if err != nil {
-    return nil, status.Errorf(codes.Internal, "could not marshal job: %s", err)
+  response := &proto.Job{
+    Id:                int64(job.Id),
+    Status:            job.Status,
+    HostId:            uint64(job.HostId),
+    Config:            job.Config,
+    CompletedAt:       job.CompletedAt.String(),
+    TotalPermutations: job.TotalPermutations,
+    Permutations:      s.createPermutation(job),
   }
 
   return &proto.GetJobResponse{
     Success: true,
-    Data:   jobBytes,
+    Job:     response,
   }, nil
 }
 
