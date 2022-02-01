@@ -101,6 +101,16 @@ func (repo *JobsRepository) ListJobs(offset, limit int) (*[]models.Job, error) {
   var jobs []models.Job
   repo.db.Offset(offset).Limit(limit).Preload("jobs").Find(&jobs)
 
+  for i := range jobs {
+    if base64.IsBase64(jobs[i].Config) {
+      decoded, err := base64.Decode(jobs[i].Config)
+      if err != nil {
+        return nil, err
+      }
+      jobs[i].Config = decoded
+    }
+  }
+
   return &jobs, nil
 }
 
