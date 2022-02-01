@@ -260,14 +260,23 @@ func (s *service) ListJobs(ctx context.Context, req *proto.ListJobsRequest) (*pr
     return nil, status.Errorf(codes.Internal, "could not list jobs: %s", err)
   }
 
-  jobsBytes, err := json.Marshal(jobs)
+  var jobsResponse []*proto.Job
 
-  if err != nil {
-    return nil, status.Errorf(codes.Internal, "could not marshal jobs: %s", err)
+  for _, job := range *jobs {
+    jobsResponse = append(jobsResponse, &proto.Job{
+      Id:                int64(job.Id),
+      Status:            job.Status,
+      HostId:            uint64(job.HostId),
+      Config:            job.Config,
+      CompletedAt:       job.CompletedAt.String(),
+      TotalPermutations: job.TotalPermutations,
+      Permutations:      s.createPermutation(&job),
+    })
   }
 
   return &proto.ListJobsResponse{
     Success: true,
-    Data:    jobsBytes,
+    Total:   int64(len(*jobs)),
+    Jobs:    jobsResponse,
   }, nil
 }
