@@ -236,15 +236,23 @@ func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsReq
     return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
   }
 
-  resultsBytes, err := json.Marshal(results)
+  var resultsResponse []*proto.Result
 
-  if err != nil {
-    return nil, status.Errorf(codes.Internal, "could not marshal results: %s", err)
+  for _, result := range *results {
+    resultsResponse = append(resultsResponse, &proto.Result{
+      Name:       result.Name,
+      Type:       int32(result.Type),
+      ValueStr:   result.ValueStr,
+      ValueInt:   result.ValueInt,
+      ValueFloat: result.ValueFloat,
+      ValueBool:  result.ValueBool,
+    })
   }
 
   return &proto.GetJobResultsResponse{
     Success: true,
-    Data:    resultsBytes,
+    Total:   int64(len(*results)),
+    Results: resultsResponse,
   }, nil
 }
 
