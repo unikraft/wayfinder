@@ -117,12 +117,15 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
       return fmt.Errorf("could not calculate permutation: %s", err)
 
     // All permutations calculated
-    case <-done:
+    case generatedTree := <-done:
       if (totalPermutations < jobSpec.PermutationLimit) {
         remaining <- jobSpec.PermutationLimit - totalPermutations
         continue
       }
       c.Log.Infof("calculated number of permutations: %d", totalPermutations)
+      if generatedTree != nil {
+        // TODO export generated tree
+      }
       return nil
 
     // New permutation
