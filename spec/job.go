@@ -52,6 +52,7 @@ type JobSpec struct {
   Build            BuildSpec          `json:"build"   yaml:"build"`
   Test             TestSpec           `json:"test"    yaml:"test"`
   tree            *tree.Tree
+  validPerms       int
   
   // Desired additional information by the scheduler
   Id               uint               `json:"id"`
@@ -194,19 +195,15 @@ func evalExpression(cond string) (bool, error) {
 
 // next recursively iterates across paramters to generate a set of tasks
 func (j *JobSpec) next(i int, permutations chan *JobPermutation,
-                       errors chan error, done chan bool, allNr uint64,
-                       limit uint64, curr []ParamPermutation) (uint64, error) {
+                       errors chan error, done chan *tree.Tree, allNr, limit uint64,
+                       curr []ParamPermutation, parentNode *tree.Node) (uint64, error) {
   // List all permutations for this parameter
-  params, err := paramPermutations(&j.Params[i])
+  params, err := paramPermutations(&j.Params[i - 1])
   if err != nil {
     errors <- err
     return 0, err
   }
 
-  // TODO: Use gotree
-  // func (t *Tree) tree.NewNode() *Node
-  // func (t *Tree) tree.ConnectNodes(parent *Node, child *Node) *Edge
-  
   for _, param := range params {
     if len(curr) > 0 {
       last := curr[len(curr)-1]
@@ -217,9 +214,17 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
 
     curr = append(curr, param)
 
+    // Create a node with the parameter
+    node := j.tree.NewNode()
+    node.SetDepth(i)
+    j.validPerms++
+    node.SetId(j.validPerms)
+    node.SetName(fmt.Sprintf("%s: %s", param.Name, param.Value))
+    j.tree.ConnectNodes(parentNode, node)
+
     // Break when there are no more parameters to iterate over, thus creating
     // the task.
-    if i + 1 == len(j.Params) {
+    if i == len(j.Params) {
       var p = make([]ParamPermutation, len(j.Params))
 
       copy(p, curr)
@@ -257,13 +262,13 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
       allNr++
 
       if allNr >= limit {
-        done <- true
+        done <- j.tree
         return 0, nil
       }
 
     // Otherwise, recursively parse parameters in-order    
     } else {
-      nextPNr, err := j.next(i + 1, permutations, errors, done, 0, limit, curr)
+      nextPNr, err := j.next(i + 1, permutations, errors, done, 0, limit, curr, node)
       if err != nil {
         // If this has occured, we've already sent the error to the channel
         return 0, err
@@ -274,7 +279,7 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
   }
 
   if allNr >= limit {
-    done <- true
+    done <- j.tree
   }
   return allNr, nil
 }
@@ -282,7 +287,7 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
 // Generate random permutations of the parameters until limit is reached,
 // then wait to see if more are needed (in the case when there are colisions)
 func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
-                          done chan bool, remaining chan uint64, limit uint64) (uint64, error) {
+                          done chan *tree.Tree, remaining chan uint64, limit uint64) (uint64, error) {
   var params [][]ParamPermutation = make([][]ParamPermutation, len(j.Params))
   var err error
 
@@ -341,7 +346,7 @@ func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
     }
 
     // Inform the receiver that the generation is done
-    done <- true
+    done <- j.tree
 
     // Wait for the receiver to confirm that the generation is done
     var remainingToGenerate uint64 = <- remaining
@@ -357,8 +362,8 @@ func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
 
 // Permutations returns a list of all possible tasks based on parameterisation
 func (j *JobSpec) Permutations(schedulerType uint,
-    limit, maxPerm uint64) (chan *JobPermutation, chan error, chan bool, chan uint64, error) {
-  done := make(chan bool)
+    limit, maxPerm uint64) (chan *JobPermutation, chan error, chan *tree.Tree, chan uint64, error) {
+  done := make(chan *tree.Tree)
   errors := make(chan error)
   permutations := make(chan *JobPermutation)
   remaining := make(chan uint64)
@@ -373,7 +378,14 @@ func (j *JobSpec) Permutations(schedulerType uint,
   go func() {
     switch schedulerType {
       case Grid:
-        j.next(0, permutations, errors, done, allNr, limit, nil)
+        j.tree = tree.NewTree()
+        node := j.tree.NewNode()
+        node.SetName("Root")
+        node.SetDepth(0)
+        node.SetId(0)
+        j.tree.SetRoot(node)
+
+        j.next(1, permutations, errors, done, allNr, limit, nil, node)
       case Random:
         j.random(permutations, errors, done, remaining, limit)
       case Guided:
