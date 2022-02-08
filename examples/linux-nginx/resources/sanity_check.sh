@@ -35,7 +35,7 @@ cp /root/linux-nginx.ext2 /root/nginx.ext2.disposible
 
 /root/qemu-guest -k /root/linux-nginx-qemu.kernel \
   -d /root/nginx.ext2.disposible \
-  -a "root=/dev/vda rw console=ttyS0 init=/guest_start.sh ${BASEIP}.2 ${BASEIP}.1 nginx" \
+  -a "root=/dev/vda rw console=ttyS0 init=/guest_start.sh -- ${BASEIP}.2 ${BASEIP}.1 nginx" \
   -m 1024 -b ${NETIF} -x
 
 # make sure that the server has properly started
