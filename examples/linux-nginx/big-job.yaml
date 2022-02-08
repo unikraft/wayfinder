@@ -57,14 +57,41 @@ build:
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
 
-    # Build the image
+    # 1. Configure
+    # Note: you can use my very neat /root/kconfig-set.sh utility, pass
+    # the pass to the kconfig file first ($MICROVM_CFG exported by the
+    # dockerfile), then the name of the variable, e.g., NETWORK_SECMARK,
+    # and then the value, e.g., y, n, 32, "somestring", etc.
+    /root/kconfig-set.sh $MICROVM_CFG NETWORK_SECMARK $NETWORK_SECMARK
+
+    # 2. Build the image
+    # Nothing to change here.
+    pushd $LUPINE_DIR
+    ./scripts/build-with-configs.sh nopatch $MICROVM_CFG $NGINX_CFG
+    cp $LUPINE_DIR/kernelbuild/microvm++nginx/vmlinuz-4.0.0 \
+          /root/linux-nginx-qemu.kernel
+    popd
+
+    # 3. Regenerate ext4 image
+    # Necessary if you want to change options inside of the filesystem.
+    mkdir -p /mnt/nginx-tmp
+    mount -o loop /root/linux-nginx.ext2 /mnt/nginx-tmp
+
+    # The filesystem is now mounted under /mnt/nginx-tmp, you can do any
+    # changes you like, it will automatically be updated in
+    # /root/linux-nginx.ext2.
+
+    # 3.1. Modify values inside the configuration (for Nginx)
+    # Nginx configuration is at /etc/nginx/nginx.conf
     # TODO
 
-    # Modify values inside the configuration
-    # TODO
-
-    # Generate ext4 image
-    # TODO
+    # 3.2. Modify values inside the configuration (for Linux, dynamic
+    # runtime variables)
+    # TODO we need to clarify how to do that
+ 
+    # 3.3. Cleanup the damn thing
+    umount /mnt/nginx-tmp
+    mkdir -p /mnt/nginx-tmp
 
     echo "Build Done!"
 

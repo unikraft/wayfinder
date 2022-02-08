@@ -20,9 +20,9 @@ built by the bash script `build-container.sh` beforehand, and that's
 because this part of the build requires docker and docker in docker is a
 pain. To interested readers: feel free to change this if you're motivated.
 
-### Changing the Nginx configuration
+### Changing the Nginx configuration (in the base filesystem)
 
-It's located under `resources/nginx.conf`.
+It's located here, under `resources/nginx.conf`.
 
 ## Testing the container image
 

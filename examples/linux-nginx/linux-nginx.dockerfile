@@ -77,3 +77,4 @@ RUN chmod a+x /root/qemu-guest
 RUN wget https://github.com/unikraft/eurosys21-artifacts/raw/master/tools/wrk
 RUN chmod u+x wrk
 COPY ./resources/sanity_check.sh /root/
+COPY ./resources/kconfig-set.sh /root/

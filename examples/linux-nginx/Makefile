@@ -13,3 +13,7 @@ properclean:
 sanitycheck:
 	docker run -it --privileged --security-opt seccomp:unconfined \
 		hlefeuvre/linux-nginx /root/sanity_check.sh
+
+dockershell:
+	docker run -it --privileged --security-opt seccomp:unconfined \
+		hlefeuvre/linux-nginx bash
