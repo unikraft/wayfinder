@@ -1,6 +1,21 @@
 params:
   # Linux-specific
-  - name: NETWORK_SECMARK
+  - name: CONFIG_NETWORK_SECMARK
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_CC_OPTIMIZE_FOR_SIZE
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_SECURITY_SELINUX
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_CPU_FREQ_STAT
     type: string
     only: ["y", "n"]
     when: build
@@ -59,10 +74,13 @@ build:
 
     # 1. Configure
     # Note: you can use my very neat /root/kconfig-set.sh utility, pass
-    # the pass to the kconfig file first ($MICROVM_CFG exported by the
+    # the path to the kconfig file first ($MICROVM_CFG exported by the
     # dockerfile), then the name of the variable, e.g., NETWORK_SECMARK,
     # and then the value, e.g., y, n, 32, "somestring", etc.
-    /root/kconfig-set.sh $MICROVM_CFG NETWORK_SECMARK $NETWORK_SECMARK
+    /root/kconfig-set.sh $MICROVM_CFG CONFIG_NETWORK_SECMARK $CONFIG_NETWORK_SECMARK
+    /root/kconfig-set.sh $MICROVM_CFG CONFIG_CC_OPTIMIZE_FOR_SIZE $CONFIG_CC_OPTIMIZE_FOR_SIZE
+    /root/kconfig-set.sh $MICROVM_CFG CONFIG_SECURITY_SELINUX $CONFIG_SECURITY_SELINUX
+    /root/kconfig-set.sh $MICROVM_CFG CONFIG_CPU_FREQ_STAT $CONFIG_CPU_FREQ_STAT
 
     # 2. Build the image
     # Nothing to change here.
