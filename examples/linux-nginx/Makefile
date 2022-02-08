@@ -9,3 +9,7 @@ clean:
 
 properclean:
 	docker image rm hlefeuvre/linux-nginx
+
+sanitycheck:
+	docker run -it --privileged --security-opt seccomp:unconfined \
+		hlefeuvre/linux-nginx bash

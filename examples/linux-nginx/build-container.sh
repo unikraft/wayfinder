@@ -14,7 +14,7 @@ SCRIPTS_PATH=$(cd "$SCRIPTS_PATH" && pwd)
 NGINX_CONF="${SCRIPTS_PATH}/resources/nginx.conf"
 # modified scripts with a few tweaks for our use-case
 GUEST_START="${SCRIPTS_PATH}/resources/guest_start.sh"
-GUEST_START="${SCRIPTS_PATH}/resources/guest_net.sh"
+GUEST_NET="${SCRIPTS_PATH}/resources/guest_net.sh"
 TMP_FOLDER="${SCRIPTS_PATH}/generated-data"
 mkdir -p $TMP_FOLDER
 
@@ -51,7 +51,7 @@ fi
 if [ ! -f "${TMP_FOLDER}/nginx.ext2" ]; then
   pushd ${LUPINE_DIR}
   cp ${GUEST_START} ./scripts/guest_start.sh
-  cp ${GUEST_START} ./scripts/guest_net.sh
+  cp ${GUEST_NET} ./scripts/guest_net.sh
 
   # reduce default size of images, 20G is way to much
   sed -i -e "s/seek=20G/seek=30M/" ./scripts/image2rootfs.sh

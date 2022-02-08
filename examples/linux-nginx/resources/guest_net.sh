@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -x
+
 ./busybox-x86_64 ip addr add ${1}/24 dev eth0
 ./busybox-x86_64 ip addr add 127.0.0.1/24 dev lo
 ./busybox-x86_64 ip link set eth0 up

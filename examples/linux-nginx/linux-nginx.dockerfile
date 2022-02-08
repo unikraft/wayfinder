@@ -71,7 +71,9 @@ RUN cp $LUPINE_DIR/kernelbuild/microvm++nginx/vmlinuz-4.0.0 \
 COPY ./generated-data/nginx.ext2 /root/linux-nginx.ext2
 
 # useful to have it here for debugging
-RUN apt install -y wget
+RUN apt install -y wget socat uuid-runtime bridge-utils net-tools psmisc vim
 RUN wget https://raw.githubusercontent.com/unikraft/kraft/6217d48668cbdf0847c7864bc6368a6adb94f6a6/scripts/qemu-guest
 RUN chmod a+x /root/qemu-guest
+RUN wget https://github.com/unikraft/eurosys21-artifacts/raw/master/tools/wrk
+RUN chmod u+x wrk
 COPY ./resources/sanity_check.sh /root/

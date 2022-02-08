@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -x
+
 export PATH="/usr/local/bin:$PATH"
 mount -t proc proc /proc
 ulimit -n 65535
