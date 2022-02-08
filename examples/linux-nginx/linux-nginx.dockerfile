@@ -66,6 +66,12 @@ RUN ./scripts/build-with-configs.sh nopatch $MICROVM_CFG $NGINX_CFG
 
 WORKDIR /root
 
-COPY $LUPINE_DIR/kernelbuild/microvm++nginx/vmlinuz-4.0.0 \
+RUN cp $LUPINE_DIR/kernelbuild/microvm++nginx/vmlinuz-4.0.0 \
                    /root/linux-nginx-qemu.kernel
-COPY $LUPINE_DIR/linux-nginx.ext2 /root/linux-nginx.ext2
+COPY ./generated-data/nginx.ext2 /root/linux-nginx.ext2
+
+# useful to have it here for debugging
+RUN apt install -y wget
+RUN wget https://raw.githubusercontent.com/unikraft/kraft/6217d48668cbdf0847c7864bc6368a6adb94f6a6/scripts/qemu-guest
+RUN chmod a+x /root/qemu-guest
+COPY ./resources/sanity_check.sh /root/

@@ -42,9 +42,10 @@ if [ ! -d "${LUPINE_DIR}" ]; then
   popd # $TMP_FOLDER
 fi
 
-
 # =============================================================================
 # FS images
+# Note: we have to do this here because it requires docker and docker in docker
+# is a pain.
 # =============================================================================
 
 if [ ! -f "${TMP_FOLDER}/nginx.ext2" ]; then
@@ -79,11 +80,3 @@ fi
 # =============================================================================
 
 docker build -t hlefeuvre/linux-nginx -f linux-nginx.dockerfile .
-
-exit 0 # no cleanup for now
-
-# =============================================================================
-# Cleanup
-# =============================================================================
-
-rm -rf $TMP_FOLDER
