@@ -1,0 +1,91 @@
+params:
+  # Linux-specific
+  - name: NETWORK_SECMARK
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  # Nginx-specific
+  #- name: ACCESS_LOG
+  #  type: string
+  #  only: ["y", "n"]
+  #  when: both
+  #
+  #- name: KEEPALIVE_TIMEOUT
+  #  type: int
+  #  only: [0, 30, 60, 300]
+  #  when: test
+  #
+  #- name: OPEN_FILE_CACHE
+  #  type: string
+  #  only: ["caching", "nocaching"]
+  #  when: test
+  #
+  # Client-specific
+  #- name: WORKER_CONNECTIONS
+  #  type: int
+  #  only: [63]
+  #  when: test
+  #
+  #- name: PAYLOAD_SIZE
+  #  type: int
+  #  only: [612] # bytes
+  #  when: test
+  #
+  #- name: NUM_PARALLEL_CONNS
+  #  type: int
+  #  only: [5, 10, 30, 64]
+  #  when: test
+
+build:
+  image: hlefeuvre/linux-nginx:latest
+  outputs:
+    kernel: /root/linux-nginx-qemu.kernel
+    initrd: /root/nginx.ext2
+    arch: x86_64
+    plat: kvm
+  devices:
+    - /dev/urandom
+  capabilities:
+    - CAP_NET_ADMIN
+  cores: 2
+  commands:
+    |
+    set -ex
+    env
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+    # Build the image
+    # TODO
+
+    # Modify values inside the configuration
+    # TODO
+
+    # Generate ext4 image
+    # TODO
+
+    echo "Build Done!"
+
+test:
+  kernel:
+    memory: 100M
+    args: "root=/dev/vda rw console=ttyS0 init=/guest_start.sh $WAYFINDER_DOMAIN_IP_ADDR nginx"
+    cores: 1
+  benchtool:
+    image: ghcr.io/unikraft/wayfinder/wrk:latest
+    devices:
+      - /dev/urandom
+      - /dev/kvm
+      - /dev/net/tun
+    capabilities:
+      - CAP_NET_ADMIN
+    commands: /test.sh
+    cores: 1
+    start_delay: 5
+    duration: 30
+  results:
+    - name: throughput
+      path: /results/throughput.txt
+      type: float
