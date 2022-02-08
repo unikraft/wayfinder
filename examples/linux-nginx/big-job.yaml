@@ -71,7 +71,7 @@ build:
 test:
   kernel:
     memory: 100M
-    args: "root=/dev/vda rw console=ttyS0 init=/guest_start.sh $WAYFINDER_DOMAIN_IP_ADDR nginx"
+    args: "root=/dev/vda rw console=ttyS0 init=/guest_start.sh -- $WAYFINDER_DOMAIN_IP_ADDR $WAYFINDER_DOMAIN_IP_GW_ADDR nginx"
     cores: 1
   benchtool:
     image: ghcr.io/unikraft/wayfinder/wrk:latest
