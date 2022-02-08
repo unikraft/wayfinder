@@ -1,4 +1,4 @@
-FROM debian:10
+FROM debian:jessie-slim
 
 # =============================================================================
 # Setup, dependencies
@@ -39,8 +39,8 @@ ENV NGINX_CFG="${LUPINE_DIR}/configs/apps/nginx.config"
 WORKDIR $BUILD_FOLDER
 # clone Lupine, we use their scripts as they're convenient even though we're
 # actually building microvm and not lupine per se
-RUN git clone https://github.com/hlef/Lupine-Linux.git
-RUN git checkout b9dc99bbd09180b0a3548583d58f9c003d4576e8
+# RUN git clone https://github.com/hlef/Lupine-Linux.git
+COPY ./generated-data/Lupine-Linux Lupine-Linux
 
 WORKDIR $LUPINE_DIR
 RUN git checkout $LUPINE_HASH
@@ -53,10 +53,12 @@ RUN echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> $MICROVM_CFG
 RUN echo "CONFIG_VIRTIO_PCI=y"        >> $MICROVM_CFG
 RUN echo "CONFIG_VGA_ARB_MAX_GPUS=16" >> $MICROVM_CFG
 
+# no need to build in docker
+RUN sed -i -e "s/docker run -it -v \"\$(PWD)\/linux\":\/linux-volume --rm linuxbuild:latest//" Makefile
+RUN sed -i -e "s/linux-volume/root\/generated-data\/Lupine-Linux\/linux/" Makefile
+
 # only build for microvm
 RUN ./scripts/build-with-configs.sh nopatch $MICROVM_CFG $NGINX_CFG
-
-RUN cd ./load_entropy && make
 
 # =============================================================================
 # Cleanup

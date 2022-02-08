@@ -24,50 +24,61 @@ mkdir -p $TMP_FOLDER
 
 LUPINE_DIR="${SCRIPTS_PATH}/generated-data/Lupine-Linux"
 
-pushd $TMP_FOLDER
-git clone https://github.com/hlef/Lupine-Linux.git
-git checkout b9dc99bbd09180b0a3548583d58f9c003d4576e8
+if [ ! -d "${LUPINE_DIR}" ]; then
+  pushd $TMP_FOLDER
+  git clone https://github.com/hlef/Lupine-Linux.git
+  git checkout b9dc99bbd09180b0a3548583d58f9c003d4576e8
 
-pushd $LUPINE_DIR
-git checkout $LUPINE_HASH
-git submodule update --init
-popd
-popd
+  pushd $LUPINE_DIR
+  git checkout $LUPINE_HASH
+  git submodule update --init
+
+  pushd ./load_entropy
+  make
+  popd # ./load_entropy
+
+  popd # $LUPINE_DIR
+
+  popd # $TMP_FOLDER
+fi
+
 
 # =============================================================================
 # FS images
 # =============================================================================
 
-pushd ${LUPINE_DIR}
-cp ${GUEST_START} ./scripts/guest_start.sh
-cp ${GUEST_START} ./scripts/guest_net.sh
+if [ ! -f "${TMP_FOLDER}/nginx.ext2" ]; then
+  pushd ${LUPINE_DIR}
+  cp ${GUEST_START} ./scripts/guest_start.sh
+  cp ${GUEST_START} ./scripts/guest_net.sh
 
-# reduce default size of images, 20G is way to much
-sed -i -e "s/seek=20G/seek=30M/" ./scripts/image2rootfs.sh
+  # reduce default size of images, 20G is way to much
+  sed -i -e "s/seek=20G/seek=30M/" ./scripts/image2rootfs.sh
 
-# build FS image from Alpine
-./scripts/image2rootfs.sh nginx 1.15.6-alpine ext2
-mv ${LUPINE_DIR}/nginx.ext2 ${TMP_FOLDER}/nginx.ext2
+  # build FS image from Alpine
+  $SUDO ./scripts/image2rootfs.sh nginx 1.15.6-alpine ext2
+  mv ${LUPINE_DIR}/nginx.ext2 ${TMP_FOLDER}/nginx.ext2
 
-# Cleanup a bit
-git checkout ./scripts/image2rootfs.sh
-git checkout ./scripts/guest_net.sh
-git checkout ./scripts/guest_start.sh
-popd
+  # Cleanup a bit
+  git checkout ./scripts/image2rootfs.sh
+  git checkout ./scripts/guest_net.sh
+  git checkout ./scripts/guest_start.sh
+  popd
 
-# set nginx configuration in the FS image
-$SUDO modprobe loop
-mkdir -p /mnt/nginx-tmp
-$SUDO mount -o loop ${TMP_FOLDER}/nginx.ext2 /mnt/nginx-tmp
-cp ${NGINX_CONF} /mnt/nginx-tmp/etc/nginx/nginx.conf
-$SUDO umount /mnt/nginx-tmp
-rm -rf /mnt/nginx-tmp
+  # set nginx configuration in the FS image
+  $SUDO modprobe loop
+  $SUDO mkdir -p /mnt/nginx-tmp
+  $SUDO mount -o loop ${TMP_FOLDER}/nginx.ext2 /mnt/nginx-tmp
+  $SUDO cp ${NGINX_CONF} /mnt/nginx-tmp/etc/nginx/nginx.conf
+  $SUDO umount /mnt/nginx-tmp
+  $SUDO rm -rf /mnt/nginx-tmp
+fi
 
 # =============================================================================
 # Docker image
 # =============================================================================
 
-docker build -t hlefeuvre/linux-nginx -f linux-nginx.dockerfile
+docker build -t hlefeuvre/linux-nginx -f linux-nginx.dockerfile .
 
 exit 0 # no cleanup for now
 
