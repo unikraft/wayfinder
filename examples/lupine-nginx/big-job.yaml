@@ -1,0 +1,246 @@
+params:
+  # Unikraft-specific:
+  - name: LWIP_NUM_TCPCON
+    type: int
+    only: [8, 16, 32, 64]
+    when: build
+
+  - name: LWIP_NUM_TCPLISTENERS
+    type: int
+    only: [8, 16, 32, 64]
+    when: build
+
+  - name: LWIP_UKNETDEV_POLLONLY
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: LWIP_POOLS
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  # Platform options:
+  # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
+  - name: HZ
+    type: int
+    only: [100, 250, 300, 1000]
+    when: build
+
+  # Allocator options:
+  - name: ALLOCATOR
+    type: string
+    only: ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"]
+    when: build
+
+  - name: LIBTINYALLOC_DISABLE_SPLIT
+    type: string
+    only: ["n", "y"]
+    if:   ALLOCATOR=='tinyalloc'
+    when: build
+
+  - name: LIBTINYALLOC_SPLIT_THRESH
+    type: int
+    only: [8, 16, 24, 32]
+    if:   ALLOCATOR=='tinyalloc'
+    when: build
+
+  - name: LIBTINYALLOC_DISABLE_COMPACT
+    type: string
+    only: ["n", "y"]
+    if:   ALLOCATOR=='tinyalloc'
+    when: build
+
+  - name: LIBTINYALLOC_ALIGNMENT
+    type: int
+    only: [8, 16, 32, 64, 128]
+    if:   ALLOCATOR=='tinyalloc'
+    when: build
+
+  # Mimalloc options:
+  - name: LIBMIMALLOC_MIMALLOC_DEBUG
+    type: int
+    only: [0, 1, 2]
+    if:   ALLOCATOR=='mimalloc'
+    when: build
+
+  - name: LIBMIMALLOC_ASSERT
+    type: string
+    only: ["n", "y"]
+    if:   ALLOCATOR=='mimalloc'
+    when: build
+
+  # TLSF specific options:
+  - name: LIBTLSF_TLSF_LOG2_SLI
+    type: int
+    only: [4, 5, 6, 7]
+    if:   ALLOCATOR=='tlsf'
+    when: build
+
+  # LWIP options:
+  - name: LWIP_TCP_QUEUE_OOSEQ
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: LWIP_TCPIP_THREAD_STACKSIZE
+    type: int
+    only: [0, 256, 512, 1024, 2048, 4096, 8192, 16384]
+    when: build
+
+  - name: LWIP_TCP_SND_BUF
+    type: int
+    only: [1048576, 256000, 524288, 1048576, 1572864, 2097152]
+    when: build
+
+  - name: LWIP_DNS_MAX_SERVERS
+    type: int
+    only: [1, 2, 5, 10]
+    when: build
+
+  - name: LWIP_DNS_LOCAL_HOST_LIST
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: LIBUKDEBUG_TRACEPOINTS
+    when: "y"
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: LIBUKDEBUG_ALL_TRACEPOINTS
+    when: "y"
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: LWIP_POOLS_TRY_BIGGER_POOL
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: MEMP_USE_CUSTOM_POOLS
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  # Nginx-specific
+  - name: ACCESS_LOG
+    type: string
+    only: ["y", "n"]
+    when: both
+
+  - name: KEEPALIVE_TIMEOUT
+    type: int
+    only: [0, 30, 60, 300]
+    when: test
+
+  - name: OPEN_FILE_CACHE
+    type: string
+    only: ["caching", "nocaching"]
+    when: test
+
+  # Client-specific
+  - name: WORKER_CONNECTIONS
+    type: int
+    only: [63]
+    when: test
+
+  - name: PAYLOAD_SIZE
+    type: int
+    only: [612] # bytes
+    when: test
+
+  - name: NUM_PARALLEL_CONNS
+    type: int
+    only: [5, 10, 30, 64]
+    when: test
+
+build:
+  image: ghcr.io/unikraft/wayfinder/lupine:latest
+  outputs:
+    kernel: "/Lupine-Linux/kernelbuild/lupine-djw-kml-qemu++nginx/vmlinuz-4.0.0-kml+"
+    initrd: "/Lupine-Linux/nginx.ext2"
+    arch: x86_64
+    plat: kvm
+  devices:
+    - /dev/urandom
+  capabilities:
+    - CAP_NET_ADMIN
+  cores: 2
+  commands:
+    |
+    set -ex
+    env
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+    cd /Lupine-Linux/
+    service docker start || true
+
+    # re-build image
+    make -C linux/ oldconfig
+    make -j8 -C linux/
+    mkdir -p kernelbuild/lupine-djw-kml-qemu++nginx/
+    cp linux/vmlinux  kernelbuild/lupine-djw-kml-qemu++nginx/
+    INSTALL_PATH=../kernelbuild/lupine-djw-kml-qemu++nginx/ make -C linux install
+    cd load_entropy
+    make
+    cd ../
+
+    # Modify the nginx config
+    cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > /nginx.conf
+    if [[ $ACCESS_LOG == "y" ]]; then \
+     export ACCESS_LOG="\/dev\/stdout"; \
+    else \
+     export ACCESS_LOG="off"; \
+    fi
+    sed -i "s/\$ACCESS_LOG/${ACCESS_LOG}/g" /nginx.conf
+    sed -i "s/\$KEEPALIVE_TIMEOUT/${KEEPALIVE_TIMEOUT}/g" /nginx.conf
+
+    cat /nginx.conf
+
+    # build the fs
+    sed -i -e "s/seek=20G/seek=30M/" ./scripts/image2rootfs.sh
+    cp /guest_start.sh ./scripts/guest_start.sh
+    ./scripts/image2rootfs.sh nginx 1.15.6-alpine ext2
+
+    mkdir -p /mnt/nginx-tmp
+    mount -o loop nginx.ext2 /mnt/nginx-tmp
+    cp /nginx.conf /mnt/nginx-tmp/etc/nginx/nginx.conf
+    # Generate payload
+    tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /mnt/nginx-tmp/usr/share/nginx/html/payload.txt
+
+    umount /mnt/nginx-tmp
+    rm -rf /mnt/nginx-tmp
+
+    echo "Build Done!"
+
+test:
+  kernel:
+    memory: 20M
+    args: root=/dev/vda rw console=ttyS0 init=/guest_start.sh -- $WAYFINDER_DOMAIN_IP_ADDR $WAYFINDER_DOMAIN_IP_GW_ADDR /trusted/nginx
+    cores: 1
+  benchtool:
+    image: ghcr.io/unikraft/wayfinder/wrk:latest
+    devices:
+      - /dev/urandom
+      - /dev/kvm
+      - /dev/net/tun
+    capabilities:
+      - CAP_NET_ADMIN
+    commands: /test.sh
+    cores: 1
+    start_delay: 5
+    duration: 30
+  results:
+    - name: throughput
+      path: /results/throughput.txt
+      type: float
