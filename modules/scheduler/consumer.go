@@ -341,6 +341,24 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
   c.Log.Infof("build container for permutation_id=%d exited!", permutation.Id)
 
+  disks := []*proto.BuildOutputDiskImage{}
+
+  // TODO: This is where spec/proto map, this should be done in proto or in spec
+  // and not here.  This, or spec should be derived from proto.  The problem is
+  // named enums.
+  for _, disk := range task.Build.Outputs.Disks {
+    outputDisk := &proto.BuildOutputDiskImage{
+      Path: disk.Path,
+      Name: disk.Name,
+    }
+    switch disk.Type {
+    case spec.OutputDiskImageTypeRaw:
+      outputDisk.Type = proto.BuildOutputDiskImageType_BUILD_OUTPUT_DISK_RAW
+    }
+
+    disks = append(disks, outputDisk)
+  }
+
   // Save the outputs from the build
   c.Log.Infof("saving outputs from permutation_id=%d", permutation.Id)
   saveBuildOutputsResp, err := c.p.Builder.SaveBuildOutputsToDisk(context.TODO(), &proto.SaveBuildOutputsToDiskRequest{
@@ -348,6 +366,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     Outputs:   &proto.BuildOutputs{
       Kernel:   task.Build.Outputs.Kernel,
       InitRd:   task.Build.Outputs.InitRd,
+      Disks:    disks,
     },
   })
   if err != nil {
@@ -390,6 +409,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     Kernel:        &proto.TestKernel{
       Image:        saveBuildOutputsResp.Outputs.Kernel,
       InitRd:       saveBuildOutputsResp.Outputs.InitRd,
+      Disks:        saveBuildOutputsResp.Outputs.Disks,
       Cores:        kernelCoreIds,
       Args:         task.Test.Kernel.Args,
       Memory:       task.Test.Kernel.Memory,

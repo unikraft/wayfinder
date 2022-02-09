@@ -76,9 +76,21 @@ service BuilderService {
   }
 }
 
+enum BuildOutputDiskImageType {
+  BUILD_OUTPUT_DISK_RAW   = 0;
+  BUILD_OUTPUT_DISK_QCOW2 = 1;
+}
+
+message BuildOutputDiskImage {
+  BuildOutputDiskImageType type = 1 [json_name = "type"];
+  string                   name = 2 [json_name = "name"];
+  string                   path = 3 [json_name = "path"];
+}
+
 message BuildOutputs {
-  string kernel = 1 [json_name = "kernel"];
-  string initRd = 2 [json_name = "initrd"];
+  string kernel                       = 1 [json_name = "kernel"];
+  string initRd                       = 2 [json_name = "initrd"];
+  repeated BuildOutputDiskImage disks = 3 [json_name = "disks"];
 }
 
 message BuildEnvVar {

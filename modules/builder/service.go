@@ -312,11 +312,39 @@ func (s *Service) SaveBuildOutputsToDisk(ctx context.Context, req *proto.SaveBui
     s.p.Log.Infof("Saved: %s", initrd)
   }
 
+  disks := []*proto.BuildOutputDiskImage{}
+
+  if len(req.Outputs.Disks) > 0 {
+    for _, disk := range req.Outputs.Disks {
+      diskPath, err := build.container.SaveOutput(s.p.Cfg.OutputDir, disk.Path)
+      if err != nil {
+        return &proto.SaveBuildOutputsToDiskResponse{
+          Success: false,
+        }, status.Errorf(codes.Internal, "build disk image could not be saved: %s", err)
+      }
+
+      if _, err := s.p.DB.Repos().Builds().AddDiskPathByBuildUuid(req.Uuid, &models.BuildOutputDisk{
+        Type: disk.Type,
+        Path: diskPath,
+      }); err != nil {
+        return &proto.SaveBuildOutputsToDiskResponse{
+          Success: false,
+        }, status.Errorf(codes.Internal, "build disk image path could not be saved database: %s", err)
+      }
+
+      disk.Path = diskPath
+      disks = append(disks, disk)
+
+      s.p.Log.Infof("Saved disk image: %s", diskPath)
+    }
+  }
+
   return &proto.SaveBuildOutputsToDiskResponse{
     Success: true,
     Outputs: &proto.BuildOutputs{
       Kernel: kernel,
       InitRd: initrd,
+      Disks:  disks,
     },
   }, nil
 }

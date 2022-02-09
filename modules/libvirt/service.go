@@ -42,6 +42,7 @@ import (
   libvirtxml "github.com/libvirt/libvirt-go-xml"
 
   "github.com/unikraft/wayfinder/pkg/sys"
+  "github.com/unikraft/wayfinder/api/proto"
   "github.com/unikraft/wayfinder/internal/bridge"
   "github.com/unikraft/wayfinder/internal/metrics"
   "github.com/unikraft/wayfinder/internal/strutils"
@@ -83,7 +84,7 @@ type Domain struct {
   measure  bool
 }
 
-func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, cores []uint64) (*Domain, error) {
+func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage, cores []uint64) (*Domain, error) {
   // This maintains an open door for debug purpose
   console := libvirtxml.DomainConsole{
     TTY: "/dev/pts/4",
@@ -102,6 +103,33 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, core
         Bridge: s.p.Cfg.Bridge,
       },
     },
+  }
+
+  disks := []libvirtxml.DomainDisk{}
+
+  for _, inputDisk := range inputDisks {
+    libvirtDisk := libvirtxml.DomainDisk{
+      Source: &libvirtxml.DomainDiskSource{
+        File: &libvirtxml.DomainDiskSourceFile{
+          File: inputDisk.Path,
+        },
+      },
+      Target: &libvirtxml.DomainDiskTarget{
+        Dev: inputDisk.Name,
+        Bus: "virtio",
+      },
+    }
+
+    switch inputDisk.Type {
+    case proto.BuildOutputDiskImageType_BUILD_OUTPUT_DISK_RAW:
+      libvirtDisk.Device = "disk"
+      libvirtDisk.Driver = &libvirtxml.DomainDiskDriver{
+        Name: "qemu",
+        Type: "raw",
+      }
+    }
+
+    disks = append(disks, libvirtDisk)
   }
 
   logDir := path.Join(s.p.Cfg.LogDir, uuid)
@@ -128,6 +156,7 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, core
       Consoles: []libvirtxml.DomainConsole{console},
       Serials:  []libvirtxml.DomainSerial{serial},
       Interfaces: []libvirtxml.DomainInterface{iface},
+      Disks:      disks,
     },
     OS:          &libvirtxml.DomainOS{
       Kernel:     kernel,

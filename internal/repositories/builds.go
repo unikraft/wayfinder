@@ -161,3 +161,20 @@ func (repo *BuildsRepository) SetInitRdPathByBuildUuid(uuid, path string) error 
   return nil;
 }
 
+
+// AddDiskPathByBuildUuid sets the location on disk of the initrd file
+func (repo *BuildsRepository) AddDiskPathByBuildUuid(uuid string, buildOutputDisk *models.BuildOutputDisk) (*models.BuildOutputDisk, error) {
+  build := &models.Build{}
+
+  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
+    return nil, err
+  }
+
+  buildOutputDisk.BuildId = build.ID
+
+  if err := repo.db.Create(buildOutputDisk).Error; err != nil {
+    return nil, err
+  }
+
+  return buildOutputDisk, nil
+}

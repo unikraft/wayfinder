@@ -32,11 +32,25 @@ package spec
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+type OutputDiskImageType string
+
+const (
+  OutputDiskImageTypeRaw   = "raw"
+  OutputDiskImageTypeQcow2 = "qcow2"
+)
+
+type OutputDiskImageSpec struct {
+  Type OutputDiskImageType `yaml:"type"`
+  Name string              `yaml:"name"`
+  Path string              `yaml:"path"`
+}
+
 type OutputSpec struct {
-  Kernel       string `yaml:"kernel"`
-  InitRd       string `yaml:"initrd"`
-  Architecture string `yaml:"arch"`
-  Platform     string `yaml:"plat"`
+  Kernel         string              `yaml:"kernel"`
+  InitRd         string              `yaml:"initrd"`
+  Disks        []OutputDiskImageSpec `yaml:"disks"`
+  Architecture   string              `yaml:"arch"`
+  Platform       string              `yaml:"plat"`
 }
 
 type BuildSpec struct {

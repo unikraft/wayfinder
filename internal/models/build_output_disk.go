@@ -3,7 +3,7 @@ package models
 //
 // Authors: Alexander Jung <alex@unikraft.io>
 //
-// Copyright (c) 2021, Unikraft UG.  All rights reserved.
+// Copyright (c) 2022, Unikraft UG.  All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -31,45 +31,16 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "gorm.io/gorm"
+  "github.com/unikraft/wayfinder/api/proto"
 )
 
-func AutoMigrate(db *gorm.DB) error {
-  // This query is only in mysql, but it does not change anything (as NO_ZERO_IN_DATE is already set)
-  mysqlError    := db.Exec("SET sql_mode = 'NO_ZERO_IN_DATE'").Error
+// BuildOutputDisk type that extends gorm.Model
+type BuildOutputDisk struct {
+  Base
 
-  // This query is only in postgres, as it can be seen from the pg_* prefix in the table name
-  postgresError := db.Exec("select * from pg_stat_activity").Error
+  BuildId uint                           `gorm:"column:build_id" json:"build_id"`
 
-  // Crash if the database is neither mysql nor postgres
-  if mysqlError != nil && postgresError != nil {
-    return fmt.Errorf("failed to detect a mysql or postgres database; mysql: %#v postgres: %#v", mysqlError, postgresError)
-  }
-
-  // Do extra work for postgres
-  if postgresError == nil && mysqlError != nil {
-    extensions := []string{
-      "uuid-ossp",
-      "tablefunc",
-    }
-    for _, extension := range extensions {
-      if err := db.Exec(
-          fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS \"%s\"", extension),
-        ).Error; err != nil {
-        return err
-      }
-    }
-  }
-
-  return db.AutoMigrate(
-    &Host{},
-    &Job{},
-    &Param{},
-    &Permutation{},
-    &Build{},
-    &BuildOutputDisk{},
-    &Test{},
-    &Result{},
-  )
+  Type    proto.BuildOutputDiskImageType `gorm:"column:type"     json:"type"`
+  Name    string                         `gorm:"column:name"     json:"name"`
+  Path    string                         `gorm:"column:path"     json:"path"`
 }

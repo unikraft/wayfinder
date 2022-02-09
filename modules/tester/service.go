@@ -158,6 +158,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
     req.Kernel.Image,
     req.Kernel.InitRd,
     req.Kernel.Args,
+    req.Kernel.Disks,
     req.Kernel.Cores,
   )
   if err != nil {
