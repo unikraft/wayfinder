@@ -79,6 +79,7 @@ service BuilderService {
 message BuildOutputs {
   string kernel = 1 [json_name = "kernel"];
   string initRd = 2 [json_name = "initrd"];
+  string image = 3 [json_name = "image"];
 }
 
 message BuildEnvVar {

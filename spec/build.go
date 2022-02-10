@@ -35,6 +35,7 @@ package spec
 type OutputSpec struct {
   Kernel       string `yaml:"kernel"`
   InitRd       string `yaml:"initrd"`
+  Image       string `yaml:"image"`
   Architecture string `yaml:"arch"`
   Platform     string `yaml:"plat"`
 }

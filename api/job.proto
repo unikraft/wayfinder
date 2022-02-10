@@ -157,8 +157,9 @@ message Build {
   string wayfinderVersion = 4 [json_name = "wayfinder_version"];
   string kernelPath       = 5 [json_name = "kernel_path"];
   string initRdPath       = 6 [json_name = "initrd_path"];
-  string logPath          = 7 [json_name = "log_path"];
-  string cores            = 8 [json_name = "cores"];
+   string imagePath       = 7 [json_name = "image_path"];
+  string logPath          = 8 [json_name = "log_path"];
+  string cores            = 9 [json_name = "cores"];
 }
 
 message Test {
