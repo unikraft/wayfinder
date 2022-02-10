@@ -34,6 +34,7 @@ syntax = "proto3";
 package wayfinder;
 
 import "google/api/annotations.proto";
+import "builder.proto";
 
 option go_package = "github.com/unikraft/wayfinder/api/proto";
 
@@ -99,6 +100,7 @@ message TestKernel {
   string          initRd    = 5 [json_name = "initrd"];
   string          arch      = 6 [json_name = "arch"];
   string          plat      = 7 [json_name = "plat"];
+  repeated BuildOutputDiskImage  disks   = 8 [json_name = "disks"];
 }
 
 message TestBenchTool {
