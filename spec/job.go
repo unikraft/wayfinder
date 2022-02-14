@@ -65,10 +65,11 @@ type JobSpec struct {
 }
 
 type JobPermutation struct {
-  Id         uint             `json:"id"`
-  JobId      uint             `json:"job_id"`
-  Params   []ParamPermutation `json:"params"`
-  Checksum   string           `json:"checksum"`
+  Id            uint             `json:"id"`
+  JobId         uint             `json:"job_id"`
+  Params      []ParamPermutation `json:"params"`
+  BuildChecksum string           `json:"build_checksum"`
+  Checksum      string           `json:"checksum"`
 }
 
 const (
@@ -266,6 +267,7 @@ func (j *JobSpec) next(
       }
 
       perm.Checksum = perm.checksum()
+      perm.BuildChecksum = perm.buildChecksum()
 
       // Save permutation
       permutationsChan <- perm
@@ -358,6 +360,7 @@ func (j * JobSpec) random(
 
       // Calculate checksum
       permFinal.Checksum = permFinal.checksum()
+      permFinal.BuildChecksum = permFinal.buildChecksum()
 
       // Send the permutation
       permutationsChan <- permFinal
@@ -460,3 +463,23 @@ func (jp *JobPermutation) checksum() string {
 
   return jp.Checksum
 }
+
+// Checksum of all `build` and `both` parameters
+func (jp *JobPermutation) buildChecksum() string {
+  if len(jp.BuildChecksum) == 0 {
+
+    // Calculate the UUID based on a reproducible md5 seed
+    md5val := md5.New()
+    for _, param := range jp.Params {
+      if param.When == "test" {
+        continue
+      }
+      io.WriteString(md5val, fmt.Sprintf("%s=%s\n", param.Name, param.Value))
+    }
+
+    jp.BuildChecksum = fmt.Sprintf("%x", md5val.Sum(nil))
+  }
+
+  return jp.BuildChecksum
+}
+
