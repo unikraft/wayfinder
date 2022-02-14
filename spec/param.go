@@ -59,6 +59,7 @@ type ParamPermutation struct {
   Type  string `yaml:"type"`
   Value string `yaml:"value"`
   Cond  string `json:"Cond,omitempty" yaml:"cond,omitempty"`
+  When  string `json:"when"`
 }
 
 // parseParamInt attends to string parameters and its possible permutations
@@ -72,6 +73,7 @@ func parseParamStr(param *ParamSpec) ([]ParamPermutation, error) {
         Type:  param.Type,
         Value: val,
         Cond:  param.If,
+        When:  param.When,
       })
     }
   } else if len(param.Default) > 0 {
@@ -80,6 +82,7 @@ func parseParamStr(param *ParamSpec) ([]ParamPermutation, error) {
       Type:  param.Type,
       Value: param.Default,
       Cond:  param.If,
+      When:  param.When,
     })
   }
 
@@ -98,6 +101,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
         Type:  param.Type,
         Value: val,
         Cond:  param.If,
+        When:  param.When,
       })
     }
 
@@ -138,6 +142,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
           Type:  param.Type,
           Value: strconv.Itoa(i),
           Cond:  param.If,
+          When:  param.When,
         })
       }
 
@@ -149,6 +154,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
           Type:  param.Type,
           Value: strconv.Itoa(i),
           Cond:  param.If,
+          When:  param.When,
         })
         i = int(math.Pow(float64(step), float64(j)))
       }
@@ -166,6 +172,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
       Type:  param.Type,
       Value: param.Default,
       Cond:  param.If,
+      When:  param.When,
     })
 
   } else {
