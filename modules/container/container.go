@@ -54,10 +54,6 @@ import (
 
 var (
   entrypointFile = "/entrypoint.sh"
-  defaultEnvironment = []string{
-    "TERM=xterm",
-    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-  }
   defaultMountFlags = unix.MS_NOEXEC | unix.MS_NOSUID | unix.MS_NODEV
   defaultCapabilities = []string{
     "CAP_CHOWN",
@@ -158,7 +154,7 @@ func (s *Service) NewContainer(id string) (*Container, error) {
 
   container := &Container{
     p:    s.P,
-    env:  defaultEnvironment,
+    env:  []string{},
     spec: proto.Container{
       Id: id,
     },
@@ -471,9 +467,16 @@ func (c *Container) Start() error {
     cwd = config.Config.WorkingDir
   }
 
+  env := c.env
+
+  // Add environmental variables defined within the container image
+  if err == nil {
+    env = append(env, config.Config.Env...)
+  }
+
   c.process = &libcontainer.Process{
     Cwd:      cwd,
-    Env:      c.env,
+    Env:      env,
     User:     "root",
     Stdout:   p,
     Stderr:   p,
