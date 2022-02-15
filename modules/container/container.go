@@ -54,6 +54,7 @@ import (
 
 var (
   entrypointFile = "/entrypoint.sh"
+  loopControl = "/dev/loop-control"
   defaultMountFlags = unix.MS_NOEXEC | unix.MS_NOSUID | unix.MS_NODEV
   defaultCapabilities = []string{
     "CAP_CHOWN",
@@ -120,6 +121,19 @@ var (
         Type:        configs.CharDevice,
         Major:       1,
         Minor:       9,
+        Permissions: "rwm",
+        Allow:       true,
+      },
+    },
+    loopControl: &configs.Device{
+      Path:       loopControl,
+      FileMode:   0444,
+      Uid:        0,
+      Gid:        104,
+      DeviceRule: configs.DeviceRule{
+        Type:        configs.CharDevice,
+        Major:       10,
+        Minor:       237,
         Permissions: "rwm",
         Allow:       true,
       },
@@ -346,11 +360,54 @@ func (c *Container) AddEnvVars(envvars []string) {
   }
 }
 
+func getFreeLoopID() (int, error) {
+	fd, err := os.OpenFile(loopControl, os.O_RDWR, 0644)
+	if err != nil {
+		return 0, err
+	}
+	defer fd.Close()
+
+	const _LOOP_CTL_GET_FREE = 0x4C82
+	r1, _, uerr := unix.Syscall(unix.SYS_IOCTL, fd.Fd(), _LOOP_CTL_GET_FREE, 0)
+	if uerr == 0 {
+		return int(r1), nil
+	}
+	return 0, fmt.Errorf("error getting free loop device: %v", uerr)
+}
+
 func (c *Container) SetDevices(devices []string) error {
+  usesLoop := false
   allDevices := specconv.AllowedDevices
   for _, device := range devices {
+    if device == loopControl {
+      usesLoop = true
+    }
+
     if val, ok := availableDevices[device]; ok {
       allDevices = append(allDevices, val)
+    }
+  }
+
+  if usesLoop {
+    loopID, err := getFreeLoopID()
+    if err != nil {
+      return fmt.Errorf("failed to get next free loop device: %v", err)
+    }
+
+    for i := 0; i <= loopID+7; i++ {
+      allDevices = append(allDevices, &configs.Device{
+        Path:       fmt.Sprintf("/dev/loop%d", i),
+        FileMode:   0444,
+        Uid:        0,
+        Gid:        104,
+        DeviceRule: configs.DeviceRule{
+          Type:        configs.BlockDevice,
+          Major:       7,
+          Minor:       int64(i),
+          Permissions: "rwm",
+          Allow:       true,
+        },
+      })
     }
   }
   
