@@ -346,7 +346,7 @@ func (c *Container) AddEnvVars(envvars []string) {
   }
 }
 
-func (c *Container) SetDevices(devices []string) {
+func (c *Container) SetDevices(devices []string) error {
   allDevices := specconv.AllowedDevices
   for _, device := range devices {
     if val, ok := availableDevices[device]; ok {
@@ -361,6 +361,8 @@ func (c *Container) SetDevices(devices []string) {
 
   c.config.Devices = allDevices
   c.config.Cgroups.Resources.Devices = allowedDeviceRules
+
+  return nil
 }
 
 func (c *Container) SetCapabilities(capabilities []string) {

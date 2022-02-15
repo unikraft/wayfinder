@@ -133,8 +133,11 @@ func (s *Service) CreateBuild(ctx context.Context, req *proto.CreateBuildRequest
 
   builder.SetCores(req.Cores)
 
-  if len(req.Devices) > 0 {
-    builder.SetDevices(req.Devices)
+  if err = builder.SetDevices(req.Devices); err != nil {
+    s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
+    return &proto.CreateBuildResponse{
+      Success: false,
+    }, status.Errorf(codes.Internal, "cannot attach devices to container: %s", err)
   }
 
   if len(req.Capabilities) > 0 {
