@@ -80,7 +80,7 @@ func (repo *JobsRepository) CreateJob(job *models.Job) (*models.Job, error) {
 }
 
 // FindJob finds a job and decodes its config
-func (repo *JobsRepository) FindJob(id uint, job *models.Job) error {
+func (repo *JobsRepository) FindJob(id int64, job *models.Job) error {
   if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
     return err
   }

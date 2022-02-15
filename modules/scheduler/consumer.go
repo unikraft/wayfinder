@@ -251,7 +251,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   // }
 
   // job := &models.Job{}
-  // if err := s.p.DB.Repos().Job().FindJob(uint(req.JobId), job); err != nil {
+  // if err := s.p.DB.Repos().Job().FindJob(req.JobId, job); err != nil {
   //   return &proto.CreateBuildResponse{
   //     Success: false,
   //     Status:  proto.BuildStatus_BUILD_FAILED,

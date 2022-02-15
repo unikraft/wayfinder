@@ -95,7 +95,7 @@ func (s *service) StartJob(ctx context.Context, req *proto.StartJobRequest) (*pr
   s.p.Log.Infof("requested to start job %d...", req.Id)
 
   job := &models.Job{}
-  if err := s.p.DB.Repos().Jobs().FindJob(uint(req.Id), job); err != nil {
+  if err := s.p.DB.Repos().Jobs().FindJob(req.Id, job); err != nil {
     return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
   }
 
@@ -204,7 +204,7 @@ func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.
   s.p.Log.Infof("requested to get job %d...", req.Id)
 
   job := &models.Job{}
-  if err := s.p.DB.Repos().Jobs().FindJob(uint(req.Id), job); err != nil {
+  if err := s.p.DB.Repos().Jobs().FindJob(req.Id, job); err != nil {
     return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
   }
 
