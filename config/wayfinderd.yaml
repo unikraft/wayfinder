@@ -68,6 +68,7 @@ postgres:
   host: "${POSTGRES_HOST:postgres}"
   port: ${POSTGRES_PORT:3306}
   user: "${POSTGRES_USER:wayfinder}"
+  log_queries: "${POSTGRES_LOG_QUERIES:false}"
   password: "${POSTGRES_PASSWORD:wayfinder}"
   database: "${POSTGRES_DATABASE:wayfinder}"
 

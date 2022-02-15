@@ -62,6 +62,7 @@ type config struct {
   Host          string        `file:"host"           env:"POSTGRES_HOST"         default:"localhost"`
   Port          string        `file:"port"           env:"POSTGRES_PORT"         default:"3306"`
   Username      string        `file:"username"       env:"POSTGRES_USER"         default:"root"`
+  LogQueries    bool          `file:"log_queries"    env:"POSTGRES_LOG_QUERIES"  default:"false"`
   Password      string        `file:"password"       env:"POSTGRES_PASSWORD"     default:""`
   Database      string        `file:"database"       env:"POSTGRES_DATABASE"`
   MaxIdleConns  uint64        `file:"max_idle_conns" env:"POSTGRES_MAXIDLECONNS" default:"1"`
@@ -114,10 +115,17 @@ func (p *provider) Init(ctx servicehub.Context) error {
   postgresDSN := p.Cfg.baseDSN() + " database=postgres"
   targetDSN := p.Cfg.baseDSN() + " database=" + p.Cfg.Database
 
-  defaultDB, err := gorm.Open(postgres.Open(postgresDSN), &gorm.Config{
+  cfg := &gorm.Config{
     FullSaveAssociations: true,
-    // Logger:               p.Log,
-  })
+  }
+  if p.Cfg.LogQueries {
+    cfg.Logger = gormlog.Default.LogMode(gormlog.Info)
+  }
+
+  defaultDB, err := gorm.Open(postgres.Open(postgresDSN), cfg)
+  if err != nil {
+    return fmt.Errorf("could not open default database: %s", err)
+  }
 
   // attempt to create the database
   if p.Cfg.Database != "" {
@@ -125,10 +133,7 @@ func (p *provider) Init(ctx servicehub.Context) error {
   }
 
   // open the database connection
-  res, err := gorm.Open(postgres.Open(targetDSN), &gorm.Config{
-    FullSaveAssociations: true,
-    // Logger:               p.Log,
-  })
+  res, err := gorm.Open(postgres.Open(targetDSN), cfg)
 
   // retry the connection
   retryCount := 0
@@ -137,10 +142,7 @@ func (p *provider) Init(ctx servicehub.Context) error {
   if err != nil {
     for {
       time.Sleep(timeout)
-      res, err = gorm.Open(postgres.Open(targetDSN), &gorm.Config{
-        FullSaveAssociations: true,
-        // Logger:               p.Log,
-      })
+      res, err = gorm.Open(postgres.Open(targetDSN), cfg)
 
       if retryCount > p.Cfg.MaxRetries {
         return err
