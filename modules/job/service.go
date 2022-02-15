@@ -148,6 +148,7 @@ func (s *service) createPermutation(job *models.Job) []*proto.Permutation {
         ValueStr: result.ValueStr,
         ValueInt: int64(result.ValueInt),
         ValueBool: result.ValueBool,
+        ValueFloat: result.ValueFloat,
       })
     }
 
@@ -221,6 +222,27 @@ func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.
   return &proto.GetJobResponse{
     Success: true,
     Job:     response,
+  }, nil
+}
+
+func (s *service) DeleteJob(ctx context.Context, req *proto.DeleteJobRequest) (*proto.DeleteJobResponse, error) {
+  s.p.Log.Infof("deleting job with id=%d...", req.Id)
+  
+  job := &models.Job{}
+  if err := s.p.DB.Repos().Jobs().FindJob(req.Id, job); err != nil {
+    return &proto.DeleteJobResponse{
+      Success: false,
+    }, status.Errorf(codes.NotFound, "job with id=%d not found", req.Id)
+  }
+
+  if err := s.p.DB.Repos().Jobs().DeleteJob(req.Id, req.Purge); err != nil {
+    return &proto.DeleteJobResponse{
+      Success: false,
+    }, status.Errorf(codes.Internal, "could not delete job with id=%d: %s", err)
+  }
+
+  return &proto.DeleteJobResponse{
+    Success: true,
   }, nil
 }
 
