@@ -228,6 +228,11 @@ container:
   # The subnet for containers to use
   subnet: ${CONTAINER_SUBNET:172.88.0.1/24}
 
+  # Default environmental variables to add to each container
+  environment:
+    - TERM=xterm
+    - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 # Builder Service
 # ===============
 #

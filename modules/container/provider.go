@@ -51,6 +51,7 @@ type config struct {
   Bridge            string `yaml:"bridge"           env:"CONTAINER_BRIDGE"          default:"wayfinder0"`
   BridgeStateDir    string `yaml:"bridge_statedir"  env:"CONTAINER_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
   Subnet            string `yaml:"subnet"           env:"CONTAINER_SUBNET"          default:"172.88.0.1/16"`
+  Environment     []string `yaml:"environment"`
 }
 
 type Provider struct {

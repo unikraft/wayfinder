@@ -469,6 +469,10 @@ func (c *Container) Start() error {
 
   env := c.env
 
+  // Add the default environment variables first, allowing them to be
+  // overwritten if desired
+  env = append(env, c.p.Cfg.Environment...)
+
   // Add environmental variables defined within the container image
   if err == nil {
     env = append(env, config.Config.Env...)
