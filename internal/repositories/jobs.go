@@ -97,8 +97,8 @@ func (repo *JobsRepository) FindJob(id uint, job *models.Job) error {
 }
 
 // List all jobs
-func (repo *JobsRepository) ListJobs(offset, limit int) (*[]models.Job, error) {
-  var jobs []models.Job
+func (repo *JobsRepository) ListJobs(offset, limit int) ([]*models.Job, error) {
+  var jobs []*models.Job
   repo.db.Offset(offset).Limit(limit).Preload("jobs").Find(&jobs)
 
   for i := range jobs {
@@ -111,7 +111,7 @@ func (repo *JobsRepository) ListJobs(offset, limit int) (*[]models.Job, error) {
     }
   }
 
-  return &jobs, nil
+  return jobs, nil
 }
 
 // SetStatusJobById sets the state of the job to the desired state by the Job's

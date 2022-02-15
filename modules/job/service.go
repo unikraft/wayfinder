@@ -238,7 +238,7 @@ func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsReq
 
   var resultsResponse []*proto.Result
 
-  for _, result := range *results {
+  for _, result := range results {
     resultsResponse = append(resultsResponse, &proto.Result{
       Name:       result.Name,
       Type:       int32(result.Type),
@@ -251,7 +251,7 @@ func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsReq
 
   return &proto.GetJobResultsResponse{
     Success: true,
-    Total:   int64(len(*results)),
+    Total:   int64(len(results)),
     Results: resultsResponse,
   }, nil
 }
@@ -270,7 +270,7 @@ func (s *service) ListJobs(ctx context.Context, req *proto.ListJobsRequest) (*pr
 
   var jobsResponse []*proto.Job
 
-  for _, job := range *jobs {
+  for _, job := range jobs {
     jobsResponse = append(jobsResponse, &proto.Job{
       Id:                int64(job.Id),
       Status:            job.Status,
@@ -278,13 +278,13 @@ func (s *service) ListJobs(ctx context.Context, req *proto.ListJobsRequest) (*pr
       Config:            job.Config,
       CompletedAt:       job.CompletedAt.String(),
       TotalPermutations: job.TotalPermutations,
-      Permutations:      s.createPermutation(&job),
+      Permutations:      s.createPermutation(job),
     })
   }
 
   return &proto.ListJobsResponse{
     Success: true,
-    Total:   int64(len(*jobs)),
+    Total:   int64(len(jobs)),
     Jobs:    jobsResponse,
   }, nil
 }
