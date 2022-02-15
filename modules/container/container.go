@@ -219,7 +219,7 @@ func (s *Service) NewContainer(id string) (*Container, error) {
           Source:      "tmpfs",
           Destination: "/dev",
           Device:      "tmpfs",
-          Flags:       unix.MS_NOSUID | unix.MS_STRICTATIME,
+          Flags:       unix.MS_NOEXEC | unix.MS_STRICTATIME,
           Data:        "mode=755",
         },
         {
