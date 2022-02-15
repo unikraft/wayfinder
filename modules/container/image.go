@@ -26,6 +26,7 @@ import (
   "errors"
   "strings"
   "runtime"
+  "encoding/json"
 
   "github.com/tidwall/gjson"
   "github.com/moby/moby/pkg/archive"
@@ -155,6 +156,30 @@ func PullImage(image, cacheDir, savedDir string) (v1.Image, string, error) {
   }
 
   return img, digest, nil
+}
+
+// Return the configuration for an image
+func ImageConfig(image string) (*v1.ConfigFile, error) {
+  var options []crane.Option
+
+  // Use current built OS and architecture
+  options = append(options, crane.WithPlatform(&v1.Platform{
+    OS: runtime.GOOS,
+    Architecture: runtime.GOARCH,
+  }))
+
+  // Grab the remote manifest
+  byt, err := crane.Config(image, options...)
+  if err != nil {
+    return nil, fmt.Errorf("failed fetching manifest for %s: %v", image, err)
+  }
+
+  var cfg v1.ConfigFile
+  if err := json.Unmarshal(byt, &cfg); err != nil {
+    return nil, fmt.Errorf("could not serialize v1.Config: %s", err)
+  }
+
+  return &cfg, nil
 }
 
 // UnpackImage takes a container image and writes its filesystem to outDir
