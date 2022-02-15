@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Usage: test.sh path/to/payload.html
+
+PAYLOAD_PATH=${1:-/payload.txt}
 NUM_PARALLEL_CONNS=${NUM_PARALLEL_CONNS:-30}
 CURL_MAX_CONNECTION_TIMEOUT=${CURL_MAX_CONNECTION_TIMEOUT:-20}
 DURATION=${DURATION:-10}
@@ -36,7 +39,7 @@ taskset -c ${WAYFINDER_CORE_ID0} \
   wrk \
     -d ${DURATION} --latency \
     -t ${NUM_PARALLEL_CONNS} \
-    -c ${NUM_PARALLEL_CONNS} http://${WAYFINDER_DOMAIN_IP_ADDR}:80/payload.txt |& tee /results.txt
+    -c ${NUM_PARALLEL_CONNS} http://${WAYFINDER_DOMAIN_IP_ADDR}:80/${PAYLOAD_PATH} |& tee /results.txt
 
 set +x
 
