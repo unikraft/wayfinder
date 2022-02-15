@@ -31,11 +31,13 @@ package postgres
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
+  "os"
   "fmt"
   "time"
   "reflect"
 
   "gorm.io/gorm"
+  gormlog "gorm.io/gorm/logger"
   "gorm.io/driver/postgres"
 
   "github.com/erda-project/erda-infra/base/logs"
@@ -68,7 +70,10 @@ type config struct {
   MaxIdleConns  uint64        `file:"max_idle_conns" env:"POSTGRES_MAXIDLECONNS" default:"1"`
   MaxOpenConns  uint64        `file:"max_open_conns" env:"POSTGRES_MAXOPENCONNS" default:"2"`
   MaxLifeTime   time.Duration `file:"max_lifetime"   env:"POSTGRES_MAXLIFETIME"  default:"30m"`
-  ForceSSL      bool          `file:"force_ssl"      env:"POSTGRES_FORCESSL"     default:"false"`
+  SSLEnable     bool          `file:"ssl_enable"     env:"POSTGRES_SSL_ENABLE"   default:"false"`
+  SSLRootCert   string        `file:"ssl_rootcert"   env:"POSTGRES_SSL_ROOTCERT"`
+  SSLCert       string        `file:"ssl_cert"       env:"POSTGRES_SSL_CERT"`
+  SSLKey        string        `file:"ssl_key"        env:"POSTGRES_SSL_KEY"`
   EncryptionKey string        `file:"encryption_key" env:"POSTGRES_ENCRYPTION_KEY"`
   MaxRetries    int           `file:"max_retries"    env:"POSTGRES_MAX_RETRIES"  default:"3"`
 }
@@ -88,7 +93,7 @@ func (p *provider) Repos() *repositories.Repositories {
   return p.repos
 }
 
-func (c *config) baseDSN() string {
+func (c *config) baseDSN() (string, error) {
   if c.BaseDSN != "" {
     return c.BaseDSN
   }
@@ -112,8 +117,13 @@ func (c *config) baseDSN() string {
 }
 
 func (p *provider) Init(ctx servicehub.Context) error {
-  postgresDSN := p.Cfg.baseDSN() + " database=postgres"
-  targetDSN := p.Cfg.baseDSN() + " database=" + p.Cfg.Database
+  baseDSN, err := p.Cfg.baseDSN()
+  if err != nil {
+    return fmt.Errorf("could not create base DSN: %s", err)
+  }
+
+  postgresDSN := baseDSN + " database=postgres"
+  targetDSN := baseDSN + " database=" + p.Cfg.Database
 
   cfg := &gorm.Config{
     FullSaveAssociations: true,

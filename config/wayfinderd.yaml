@@ -71,6 +71,10 @@ postgres:
   log_queries: "${POSTGRES_LOG_QUERIES:false}"
   password: "${POSTGRES_PASSWORD:wayfinder}"
   database: "${POSTGRES_DATABASE:wayfinder}"
+  ssl_enable: "${POSTGRES_SSL_ENABLE:false}"
+  ssl_rootcert: "${POSTGRES_SSL_ROOTCERT:}"
+  ssl_cert: "${POSTGRES_SSL_CERT:}"
+  ssl_key: "${POSTGRES_SSL_KEY:}"
 
 # Host Configurator
 # =================
