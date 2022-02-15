@@ -60,4 +60,5 @@ type BuildSpec struct {
   Capabilities []string     `yaml:"capabilities"`
   Cores          uint64     `yaml:"cores"`
   Commands       string     `yaml:"commands"`
+  Workdir        string     `yaml:"workdir"`
 }

@@ -144,6 +144,7 @@ type Container struct {
   bridge          *bridge.Bridge
   config          *configs.Config
   env            []string
+  workdir          string
   container       libcontainer.Container
   process         *libcontainer.Process
   timer            time.Time
@@ -437,6 +438,10 @@ func (c *Container) SetCores(cores []uint64) {
   )
 }
 
+func (c *Container) SetWorkdir(workdir string) {
+  c.workdir = workdir
+}
+
 func (c *Container) Init() error {
   var err error
 
@@ -456,8 +461,18 @@ func (c *Container) Start() error {
   // TODO: We need to create a logger so we can save the output
   p := printer.New(c.Log, path.Join(c.p.Cfg.LogDir, c.spec.Id))
 
+  // Set the working directory for the container
+  cwd := "/"
+  config, err := ImageConfig(c.spec.Image)
+
+  if len(c.workdir) > 0 {
+    cwd = c.workdir
+  } else if err != nil && config.Config.WorkingDir != "" {
+    cwd = config.Config.WorkingDir
+  }
+
   c.process = &libcontainer.Process{
-    Cwd:      "/",
+    Cwd:      cwd,
     Env:      c.env,
     User:     "root",
     Stdout:   p,

@@ -116,6 +116,7 @@ message CreateBuildRequest {
   repeated string      capabilities  = 6 [json_name = "capabilities"];
   repeated uint64      cores         = 7 [json_name = "cores"];
   string               commands      = 8 [json_name = "commands"];
+  string               workdir       = 9 [json_name = "workdir"];
 }
 
 message CreateBuildResponse {

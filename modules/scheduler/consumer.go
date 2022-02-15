@@ -283,6 +283,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     Devices:       task.Build.Devices,
     Capabilities:  task.Build.Capabilities,
     Cores:         buildCoreIds,
+    Workdir:       task.Build.Workdir,
     Commands:      task.Build.Commands,
     EnvVars:       buildEnvVars,
   })

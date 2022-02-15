@@ -141,6 +141,10 @@ func (s *Service) CreateBuild(ctx context.Context, req *proto.CreateBuildRequest
     builder.SetCapabilities(req.Capabilities)
   }
 
+  if len(req.Workdir) > 0 {
+    builder.SetWorkdir(req.Workdir)
+  }
+
   var envVars []string
   for _, env := range req.EnvVars {
     envVars = append(envVars, fmt.Sprintf("%s=%s", env.Name, env.Value))
