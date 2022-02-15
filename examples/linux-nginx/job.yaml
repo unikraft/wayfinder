@@ -1,0 +1,146 @@
+params:
+  # Linux-specific
+  - name: CONFIG_NETWORK_SECMARK
+    type: string
+    only: ["y", "n"]
+
+  - name: CONFIG_CC_OPTIMIZE_FOR_SIZE
+    type: string
+    only: ["y", "n"]
+
+  - name: CONFIG_SECURITY_SELINUX
+    type: string
+    only: ["y", "n"]
+
+  - name: CONFIG_CPU_FREQ_STAT
+    type: string
+    only: ["y", "n"]
+
+  # NGINX-specific
+  - name: PAYLOAD_SIZE
+    type: int
+    only: [612] # bytes
+    when: test
+
+build:
+  image: ghcr.io/unikraft/wayfinder/linux-nginx:latest
+  outputs:
+    kernel: /root/workspace/kernelbuild/microvm++nginx/vmlinuz-4.0.0
+    disks:
+      - name: vda
+        type: raw
+        path: /root/workspace/nginx.ext2
+  devices:
+    - /dev/urandom
+    - /dev/loop-control
+  capabilities:
+    - CAP_NET_ADMIN
+    - CAP_SYS_ADMIN
+  cores: 2
+  workdir: /root/workspace
+  commands:
+    |
+    set -xe
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+    env
+
+    #
+    # 1. Configure Linux
+    #
+    kconfig-set.sh ${MICROVM_CFG} CONFIG_NETWORK_SECMARK ${CONFIG_NETWORK_SECMARK}
+    kconfig-set.sh ${MICROVM_CFG} CONFIG_CC_OPTIMIZE_FOR_SIZE ${CONFIG_CC_OPTIMIZE_FOR_SIZE}
+    kconfig-set.sh ${MICROVM_CFG} CONFIG_SECURITY_SELINUX ${CONFIG_SECURITY_SELINUX}
+    kconfig-set.sh ${MICROVM_CFG} CONFIG_CPU_FREQ_STAT ${CONFIG_CPU_FREQ_STAT}
+
+    # Build the image
+    ./scripts/build-with-configs.sh nopatch ${MICROVM_CFG} ${NGINX_CFG}
+
+    #
+    # 2. Generate filesystem image
+    #
+    image2rootfs.sh nginx.tar
+    mkdir -p /tmp/nginx-ext2
+    mount -o loop ./nginx.ext2 /tmp/nginx-ext2
+
+    # Install network setup script here as we cannot run `u`/`mount` during the
+    # container's build.
+    cp -v ./scripts/busybox-x86_64 /tmp/nginx-ext2
+    cp -v ./scripts/guest* /tmp/nginx-ext2
+    cp -v ./load_entropy/load_entropy /tmp/nginx-ext2
+
+    # Install musl libc
+    mkdir -p /tmp/nginx-ext2/trusted
+    cp -v ./scripts/libc.so /tmp/nginx-ext2/trusted/libc.so
+
+    # Modify values inside the configuration (for NGINX)
+    cat <<EOF >/tmp/nginx-ext2/etc/nginx/nginx.conf
+    worker_processes 1;
+    error_log stderr;
+    pid /tmp/nginx.pid;
+    user daemon daemon;
+    daemon off;
+    master_process off;
+
+    events {
+      worker_connections 128;
+    }
+
+    http {
+      include       mime.types;
+      default_type  application/octet-stream;
+      log_format    main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+
+      access_log    /dev/null;
+
+      server {
+        listen       80;
+        listen       [::]:80;
+        server_name  localhost;
+
+        location / {
+          root   /data/www;
+          index  index.html;
+        }
+      }
+    }
+    EOF
+
+    # Generate a variable-size payload
+    mkdir -p /tmp/nginx-ext2/data/www/
+    tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /tmp/nginx-ext2/data/www/index.html
+
+    # TODO: Modify values inside the configuration (for Linux, dynamic runtime
+    # variables).  We need to clarify how to do that... probably we can modify
+    # the `guest_start.sh` script to have a number of variables.
+
+    # Unmounting seals the filesystem archive
+    umount /tmp/nginx-ext2
+
+    echo "Build Done!"
+
+test:
+  kernel:
+    memory: 100M
+    args: "root=/dev/vda rw console=ttyS0 init=/guest_start.sh -- $WAYFINDER_DOMAIN_IP_ADDR $WAYFINDER_DOMAIN_IP_GW_ADDR"
+    cores: 1
+  benchtool:
+    image: ghcr.io/unikraft/wayfinder/wrk:latest
+    devices:
+      - /dev/urandom
+      - /dev/kvm
+      - /dev/net/tun
+    capabilities:
+      - CAP_NET_ADMIN
+    commands: /test.sh index.html
+    cores: 1
+    start_delay: 5
+    duration: 30
+  results:
+    - name: throughput
+      path: /results/throughput.txt
+      type: float
