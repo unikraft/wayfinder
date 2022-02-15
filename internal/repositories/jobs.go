@@ -81,7 +81,12 @@ func (repo *JobsRepository) CreateJob(job *models.Job) (*models.Job, error) {
 
 // FindJob finds a job and decodes its config
 func (repo *JobsRepository) FindJob(id int64, job *models.Job) error {
-  if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
+  if err := repo.db.Where("id = ?", id).
+    Preload("Permutations.Params").
+    Preload("Permutations.Builds").
+    Preload("Permutations.Tests").
+    Preload("Permutations.Results").
+    First(&job).Error; err != nil {
     return err
   }
 
@@ -99,7 +104,12 @@ func (repo *JobsRepository) FindJob(id int64, job *models.Job) error {
 // List all jobs
 func (repo *JobsRepository) ListJobs(offset, limit int) ([]*models.Job, error) {
   var jobs []*models.Job
-  repo.db.Offset(offset).Limit(limit).Preload("jobs").Find(&jobs)
+  repo.db.Offset(offset).Limit(limit).
+    Preload("Permutations.Params").
+    Preload("Permutations.Builds").
+    Preload("Permutations.Tests").
+    Preload("Permutations.Results").
+    Find(&jobs)
 
   for i := range jobs {
     if base64.IsBase64(jobs[i].Config) {
