@@ -155,11 +155,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
   domain, err := s.p.Libvirt.NewDomain(
     pid,
     uuid,
-    req.Kernel.Image,
-    req.Kernel.InitRd,
-    req.Kernel.Args,
-    req.Kernel.Disks,
-    req.Kernel.Cores,
+    req.Kernel,
   )
   if err != nil {
     s.p.DB.Repos().Tests().SetStatusKernelFailedByTestUuid(uuid)

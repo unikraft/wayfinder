@@ -37,6 +37,8 @@ import (
   "time"
   "path"
   "strings"
+  "unsafe"
+  "strconv"
 
   libvirt "github.com/libvirt/libvirt-go"
   libvirtxml "github.com/libvirt/libvirt-go-xml"
@@ -84,7 +86,7 @@ type Domain struct {
   measure  bool
 }
 
-func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage, cores []uint64) (*Domain, error) {
+func (s *Service) NewDomain(fakePid int, uuid string, kernel *proto.TestKernel) (*Domain, error) {
   // This maintains an open door for debug purpose
   console := libvirtxml.DomainConsole{
     TTY: "/dev/pts/4",
@@ -107,7 +109,7 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 
   disks := []libvirtxml.DomainDisk{}
 
-  for _, inputDisk := range inputDisks {
+  for _, inputDisk := range kernel.Disks {
     libvirtDisk := libvirtxml.DomainDisk{
       Source: &libvirtxml.DomainDiskSource{
         File: &libvirtxml.DomainDiskSourceFile{
@@ -132,6 +134,85 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
     disks = append(disks, libvirtDisk)
   }
 
+  // TODO Add drives similar to disks (might actually be the same thing)
+  for _, inputDisk := range kernel.Drives {
+    libvirtDisk := libvirtxml.DomainDisk{
+      Source: &libvirtxml.DomainDiskSource{
+        File: &libvirtxml.DomainDiskSourceFile{
+          File: inputDisk.File,
+        },
+      },
+      Target: &libvirtxml.DomainDiskTarget{
+        Dev: inputDisk.File,
+        Bus: "virtio",
+      },
+    }
+
+    libvirtDisk.Device = "disk"
+    libvirtDisk.Driver = &libvirtxml.DomainDiskDriver{
+      Name: "qemu",
+      Type: "raw",
+    }
+
+    disks = append(disks, libvirtDisk)
+  }
+
+  // TODO add Id
+  controllers := []libvirtxml.DomainController{}
+  for _, controller := range kernel.Devices {
+    if strings.Contains(controller.Name, "pci") {
+      portInt, _ := strconv.ParseInt(controller.Port, 16, 64)
+      port := uint(portInt)
+
+      controllers = append(controllers, libvirtxml.DomainController{
+        Type: "pci",
+        Model: controller.Name,
+        PCI: &libvirtxml.DomainControllerPCI{
+          Model: &libvirtxml.DomainControllerPCIModel{
+            Name: controller.Name,
+          },
+          Target: &libvirtxml.DomainControllerPCITarget{
+            Chassis: ((*uint)(unsafe.Pointer(&controller.Chassis))),
+            Port: &port,
+          },
+        },
+        Address: &libvirtxml.DomainAddress{
+          PCI: &libvirtxml.DomainAddressPCI{
+            Bus: ((*uint)(unsafe.Pointer(&controller.Bus))),
+            MultiFunction: controller.Multifunction,
+          },
+        },
+        
+      })
+    }
+    // TODO
+    if (strings.Contains(controller.Name, "hd")) {
+      controllers = append(controllers, libvirtxml.DomainController{
+        Type: "scsi",
+        Model: controller.Name,
+        Address: &libvirtxml.DomainAddress{
+          Drive: &libvirtxml.DomainAddressDrive{
+            Bus: ((*uint)(unsafe.Pointer(&controller.Bus))),
+            Target: ((*uint)(unsafe.Pointer(&controller.Drive))),
+          },
+        },
+      })
+    }
+    // TODO
+    // if (strings.Contains(controller.Name, "net")) {
+    //   controllers = append(controllers, libvirtxml.DomainController{
+    //     Type: "virtio-net",
+    //     Model: controller.Name,
+    //     Address: &libvirtxml.DomainAddress{
+
+    //     },
+    //   })
+    // }
+  }
+
+
+
+
   logDir := path.Join(s.p.Cfg.LogDir, uuid)
   logFile := path.Join(logDir, "domain.log") // TODO: configuration opt?
   if _, err := os.Stat(logDir); os.IsNotExist(err) {
@@ -145,6 +226,13 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
     },
   }
 
+  machine := kernel.Machine
+  if kernel.Machine == "" {
+    machine = archToMachine[x86_64]
+  }
+
+  
+  // TODO Add new params
   config := &libvirtxml.Domain{
     Type:        "kvm",
     Name:         uuid,
@@ -157,20 +245,21 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
       Serials:  []libvirtxml.DomainSerial{serial},
       Interfaces: []libvirtxml.DomainInterface{iface},
       Disks:      disks,
+      Controllers: controllers,
     },
     OS:          &libvirtxml.DomainOS{
-      Kernel:     kernel,
-      Initrd:     initrd,
+      Kernel:     kernel.Image,
+      Initrd:     kernel.InitRd,
       Type:      &libvirtxml.DomainOSType{
         Type:     "hvm",
         Arch:     x86_64,
-        Machine:  archToMachine[x86_64],
+        Machine:  machine,
       },
     },
     VCPU:         &libvirtxml.DomainVCPU{
       Placement: "static",
-      CPUSet:    strings.Trim(strings.Join(strings.Fields(fmt.Sprint(cores)), ","), "[]"),
-      Value:     uint(len(cores)),
+      CPUSet:    strings.Trim(strings.Join(strings.Fields(fmt.Sprint(kernel.Cores)), ","), "[]"),
+      Value:     uint(len(kernel.Cores)),
     },
     Memory:      &libvirtxml.DomainMemory{
       Value:      defaultMemoryValue,
@@ -185,7 +274,7 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
     Measurable: metrics.NewMeasurable(),
     p:       s.p,
     fakePid: fakePid,
-    args:    args,
+    args:    kernel.Args,
     config:  config,
   }
 
