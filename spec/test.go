@@ -31,9 +31,44 @@ package spec
 // POSSIBILITY OF SUCH DAMAGE.
 
 type TestKernelSpec struct {
-  Memory string `yaml:"memory"`
-  Args   string `yaml:"args"`
-  Cores  uint64 `yaml:"cores"`
+  Memory     string               `yaml:"memory"`
+  Args       string               `yaml:"args"`
+  Cores      uint64               `yaml:"cores"`
+  Machine    string               `yaml:"machine"`
+  Smp        uint64               `yaml:"smp"`
+  Cpu        string               `yaml:"cpu"`
+  Vga        string               `yaml:"vga"`
+  Display    string               `yaml:"display"`
+  Serial     string               `yaml:"serial"`
+  Drives  []*TestKernelDriveSpec  `yaml:"drives"`
+  Devices []*TestKernelDeviceSpec `yaml:"devices"`
+  Netdevs []*TestKernelNetdevSpec `yaml:"netdevs"`
+}
+
+type TestKernelDriveSpec struct {
+  File   string `yaml:"file"`
+  Format string `yaml:"format"`
+  If     string `yaml:"if"`
+  Id     string `yaml:"id"`
+}
+
+type TestKernelDeviceSpec struct {
+  Name          string `yaml:"name"`
+  Port          string `yaml:"port"`
+  Chassis       string `yaml:"chassis"`
+  Id            string `yaml:"id"`
+  Bus           string `yaml:"bus"`
+  Multifunction string `yaml:"multifunction"`
+  Addr          string `yaml:"addr"`
+  Drive         string `yaml:"drive"`
+  Netdev        string `yaml:"netdev"`
+  Mac           string `yaml:"mac"`
+}
+
+type TestKernelNetdevSpec struct {
+  Type    string `yaml:"type"`
+  Id      string `yaml:"id"`
+  Hostfwd string `yaml:"hostfwd"`
 }
 
 type TestBenchToolSpec struct {
