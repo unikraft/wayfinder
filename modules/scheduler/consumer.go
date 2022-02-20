@@ -401,18 +401,64 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
   testCoreIds = append(testCoreIds, kernelCoreIds...)
 
+  var drives  []*proto.KernelDrive
+  var devices []*proto.KernelDevice
+  var netdevs []*proto.KernelNetdev
+
+  for _, drive := range task.Test.Kernel.Drives {
+    drives = append(drives, &proto.KernelDrive{
+      File:   drive.File,
+      Format: drive.Format,
+      If:     drive.If,
+      Id:     drive.Id,
+    })
+  }
+
+  for _, device := range task.Test.Kernel.Devices {
+    devices = append(devices, &proto.KernelDevice{
+      Name:          device.Name,
+      Id:            device.Id,
+      Port:          device.Port,
+      Chassis:       device.Chassis,
+      Bus:           device.Bus,
+      Addr:          device.Addr,
+      Multifunction: device.Multifunction,
+      Drive:         device.Drive,
+      Netdev:        device.Netdev,
+      Mac:           device.Mac,
+    })
+  }
+
+  for _, netdev := range task.Test.Kernel.Netdevs {
+    netdevs = append(netdevs, &proto.KernelNetdev{
+      Type:    netdev.Type,
+      Id:      netdev.Id,
+      Hostfwd: netdev.Hostfwd,
+    })
+  }
+
   // Create the test
   c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
   createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
-    PermutationId:  int64(permutation.Id),
-    VmmCores:       vmmCoreIds,
-    Kernel:        &proto.TestKernel{
-      Image:        saveBuildOutputsResp.Outputs.Kernel,
-      InitRd:       saveBuildOutputsResp.Outputs.InitRd,
-      Disks:        saveBuildOutputsResp.Outputs.Disks,
-      Cores:        kernelCoreIds,
-      Args:         task.Test.Kernel.Args,
-      Memory:       task.Test.Kernel.Memory,
+    PermutationId: int64(permutation.Id),
+    VmmCores:      vmmCoreIds,
+    Kernel:       &proto.TestKernel{
+      Image:   saveBuildOutputsResp.Outputs.Kernel,
+      InitRd:  saveBuildOutputsResp.Outputs.InitRd,
+      Disks:   saveBuildOutputsResp.Outputs.Disks,
+      Cores:   kernelCoreIds,
+      Args:    task.Test.Kernel.Args,
+      Memory:  task.Test.Kernel.Memory,
+      Machine: task.Test.Kernel.Machine,
+      Smp:     task.Test.Kernel.Smp,
+      Cpu:     task.Test.Kernel.Cpu,
+      Vga:     task.Test.Kernel.Vga,
+      Display: task.Test.Kernel.Display,
+      Serial:  task.Test.Kernel.Serial,
+      Drives:  drives,
+      Devices: devices,
+      Netdevs: netdevs,
+      
     },
     BenchTool:     &proto.TestBenchTool{
       Image:        task.Test.BenchTool.Image,
