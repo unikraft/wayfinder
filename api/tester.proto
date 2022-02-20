@@ -92,15 +92,50 @@ enum TestResultType {
   TEST_RESULT_BOOL  = 3;
 }
 
+message KernelDrive {
+  string file   = 1 [json_name = "file"];
+  string format = 2 [json_name = "format"];
+  string if     = 3 [json_name = "if"];
+  string id     = 4 [json_name = "id"];
+}
+
+message KernelDevice {
+  string name          = 1  [json_name = "name"];
+  string id            = 2  [json_name = "id"];
+  string port          = 3  [json_name = "port"];
+  string chassis       = 4  [json_name = "chassis"];
+  string bus           = 5  [json_name = "bus"];
+  string addr          = 6  [json_name = "addr"];
+  string multifunction = 7  [json_name = "multifunction"];
+  string drive         = 8  [json_name = "drive"];
+  string netdev        = 9  [json_name = "netdev"];
+  string mac           = 10 [json_name = "mac"];
+}
+
+message KernelNetdev {
+  string type    = 1 [json_name = "type"];
+  string id      = 2 [json_name = "id"];
+  string hostfwd = 3 [json_name = "hostfwd"];
+}
+
 message TestKernel {
-  string          memory    = 1 [json_name = "memory"];
-  string          args      = 2 [json_name = "args"];
-  repeated uint64 cores     = 3 [json_name = "cores"];
-  string          image     = 4 [json_name = "image"];
-  string          initRd    = 5 [json_name = "initrd"];
-  string          arch      = 6 [json_name = "arch"];
-  string          plat      = 7 [json_name = "plat"];
-  repeated BuildOutputDiskImage  disks   = 8 [json_name = "disks"];
+  string                         memory  = 1  [json_name = "memory"];
+  string                         args    = 2  [json_name = "args"];
+  repeated uint64                cores   = 3  [json_name = "cores"];
+  string                         image   = 4  [json_name = "image"];
+  string                         initRd  = 5  [json_name = "initrd"];
+  string                         arch    = 6  [json_name = "arch"];
+  string                         plat    = 7  [json_name = "plat"];
+  repeated BuildOutputDiskImage  disks   = 8  [json_name = "disks"];
+  string                         machine = 9  [json_name = "machine"];
+  uint64                         smp     = 10 [json_name = "smp"];
+  string                         cpu     = 11 [json_name = "cpu"];
+  string                         vga     = 12 [json_name = "vga"];
+  string                         display = 13 [json_name = "display"];
+  string                         serial  = 14 [json_name = "serial"];
+  repeated KernelDrive           drives  = 15 [json_name = "drives"];
+  repeated KernelDevice          devices = 16 [json_name = "devices"];
+  repeated KernelNetdev          netdevs = 17 [json_name = "netdevs"];
 }
 
 message TestBenchTool {
