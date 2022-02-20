@@ -1,0 +1,122 @@
+params:
+  # Nginx-specific
+  - name: ACCESS_LOG
+    type: string
+    only: ["y", "n"]
+    when: both
+
+  - name: KEEPALIVE_TIMEOUT
+    type: int
+    only: [0, 30, 60, 300]
+    when: test
+
+  - name: OPEN_FILE_CACHE
+    type: string
+    only: ["caching", "nocaching"]
+    when: test
+
+  # Client-specific
+  - name: WORKER_CONNECTIONS
+    type: int
+    only: [63]
+    when: test
+
+  - name: PAYLOAD_SIZE
+    type: int
+    only: [612] # bytes
+    when: test
+  
+  - name: NUM_PARALLEL_CONNS
+    type: int
+    only: [5, 10, 30, 64]
+    when: test
+
+build:
+  image: ghcr.io/unikraft/wayfinder/nanos-nginx:latest
+  outputs:
+    kernel: /root/.ops/images/nginx
+    arch: x86_64
+    plat: kvm
+  devices:
+    - /dev/urandom
+  capabilities:
+    - CAP_NET_ADMIN
+  cores: 2
+  commands:
+    |
+    # Modify values inside the configuration
+    cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > /root/.ops/packages/nginx_1.18.0/sysroot/etc/nginx/nginx.conf
+    if [[ $ACCESS_LOG == "y" ]]; then \
+     export ACCESS_LOG="\/dev\/stdout"; \
+    else \
+     export ACCESS_LOG="off"; \
+    fi
+    sed -i "s/\$ACCESS_LOG/${ACCESS_LOG}/g" /root/.ops/packages/nginx_1.18.0/sysroot/etc/nginx/nginx.conf
+    sed -i "s/\$KEEPALIVE_TIMEOUT/${KEEPALIVE_TIMEOUT}/g" /root/.ops/packages/nginx_1.18.0/sysroot/etc/nginx/nginx.conf
+
+    cat /root/.ops/packages/nginx_1.18.0/sysroot/etc/nginx/nginx.conf
+
+    cd /root/.ops/packages
+
+    /root/.ops/bin/ops image create --package nginx_1.18.0 --target-cloud onprem
+
+    echo "Build Done!"
+
+test:
+  kernel:
+    memory: 256M
+    cores: 1
+    machine: q35
+    smp: 1
+    cpu: max
+    vga: none
+    display: none
+    serial: stdio
+    drives:
+      - file: $UNIKERNEL_IMAGE
+        format: raw
+        if: none
+        id: hd0
+    devices:
+      - name: pcie-root-port
+        port: 0x10
+        chassis: 1
+        id: pci.1
+        bus: pcie.0
+        multifunction: on
+      - name: pcie-root-port
+        port: 0x11
+        chassis: 2
+        id: pci.2
+        bus: pcie.0
+      - name: pcie-root-port
+        port: 0x12
+        chassis: 3
+        id: pci.3
+        bus: pcie.0
+      - name: virtio-scsi-pci
+        bus: pci.2
+        drive: hd0
+      - name: virtio-net
+        bus: pci.3
+        netdev: n0
+    netdevs:
+      - type: user
+        id: n0
+        hostfwd: "tcp::80-:80"
+  benchtool:
+    image: ghcr.io/unikraft/wayfinder/wrk:latest
+    devices:
+      - /dev/urandom
+      - /dev/kvm
+      - /dev/net/tun
+    capabilities:
+      - CAP_NET_ADMIN
+    commands: /test.sh
+    cores: 1
+    start_delay: 5
+    duration: 30
+  results:
+    - name: throughput
+      path: /results/throughput.txt
+      type: float
