@@ -27,15 +27,13 @@ ifconfig $BRIDGE up
 
 echo "Starting unikernel..."
 qemu-system-x86_64 \
-  -machine q35 -display none -serial stdio -m 256M -machine accel=kvm:tcg  \
-   -vga none -cpu host \
-  -drive file=/root/.ops/images/nginx,format=raw,if=none,id=hd0 \
-  -device pcie-root-port,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on \
-  -device pcie-root-port,port=0x11,chassis=2,id=pci.2,bus=pcie.0 \
-  -device pcie-root-port,port=0x12,chassis=3,id=pci.3,bus=pcie.0 \
-  -device virtio-scsi-pci,bus=pci.2,id=scsi0 \
+  -machine q35 -display none -serial stdio -m 64M -cpu host -enable-kvm \
+  -drive file=/home/cez/.ops/images/nginx,format=raw,if=none,id=hd0 \
+  -device pcie-root-port,chassis=1,slot=1,id=myid.1,bus=pcie.0 \
+  -device pcie-root-port,chassis=2,slot=2,id=myid.2,bus=pcie.0 \
+  -device virtio-scsi-pci,bus=myid.1,id=scsi0 \
   -device scsi-hd,bus=scsi0.0,drive=hd0 \
-  -device virtio-net,bus=pci.3,netdev=n0 \
+  -device virtio-net,bus=myid.2,netdev=n0 \
   -netdev user,id=n0,hostfwd=tcp::8084-:8084
 
 # make sure that the server has properly started
