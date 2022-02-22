@@ -37,8 +37,6 @@ import (
   "time"
   "path"
   "strings"
-  "unsafe"
-  "strconv"
 
   libvirt "github.com/libvirt/libvirt-go"
   libvirtxml "github.com/libvirt/libvirt-go-xml"
@@ -135,83 +133,176 @@ func (s *Service) NewDomain(fakePid int, uuid string, kernel *proto.TestKernel) 
   }
 
   // TODO Add drives similar to disks (might actually be the same thing)
-  for _, inputDisk := range kernel.Drives {
-    libvirtDisk := libvirtxml.DomainDisk{
-      Source: &libvirtxml.DomainDiskSource{
-        File: &libvirtxml.DomainDiskSourceFile{
-          File: inputDisk.File,
-        },
-      },
-      Target: &libvirtxml.DomainDiskTarget{
-        Dev: inputDisk.File,
-        Bus: "virtio",
-      },
-    }
+  // for _, inputDisk := range kernel.Drives {
+  //   libvirtDisk := libvirtxml.DomainDisk{
+  //     Source: &libvirtxml.DomainDiskSource{
+  //       File: &libvirtxml.DomainDiskSourceFile{
+  //         File: inputDisk.File,
+  //       },
+  //     },
+  //     Target: &libvirtxml.DomainDiskTarget{
+  //       Dev: "vda",
+  //       Bus: "virtio",
+  //     },
+  //   }
 
-    libvirtDisk.Device = "disk"
-    libvirtDisk.Driver = &libvirtxml.DomainDiskDriver{
-      Name: "qemu",
-      Type: "raw",
-    }
+  //   libvirtDisk.Device = "disk"
+  //   libvirtDisk.Driver = &libvirtxml.DomainDiskDriver{
+  //     Name: "qemu",
+  //     Type: "raw",
+  //   }
 
-    disks = append(disks, libvirtDisk)
-  }
+  //   disks = append(disks, libvirtDisk)
+  // }
 
   // TODO add Id
-  controllers := []libvirtxml.DomainController{}
-  for _, controller := range kernel.Devices {
-    if strings.Contains(controller.Name, "pci") {
-      portInt, _ := strconv.ParseInt(controller.Port, 16, 64)
-      port := uint(portInt)
+  // controllers := []libvirtxml.DomainController{}
+  // hostdevs    := []libvirtxml.DomainHostdev{}
+  // for _, controller := range kernel.Devices {
+  //   if strings.Contains(controller.Name, "pci") {
+  //     portInt, _ := strconv.ParseInt(controller.Port, 16, 64)
+  //     port := uint(portInt)
+  //     chassisInt, _ := strconv.ParseInt(controller.Chassis, 10, 64)
+  //     chassis := uint(chassisInt)
+  //     busInt, _ := strconv.ParseInt(controller.Bus, 10, 64)
+  //     bus := uint(busInt)
+  //     idInt, _ := strconv.ParseInt(controller.Id, 10, 64)
+  //     id := uint(idInt)
 
-      controllers = append(controllers, libvirtxml.DomainController{
-        Type: "pci",
-        Model: controller.Name,
-        PCI: &libvirtxml.DomainControllerPCI{
-          Model: &libvirtxml.DomainControllerPCIModel{
-            Name: controller.Name,
-          },
-          Target: &libvirtxml.DomainControllerPCITarget{
-            Chassis: ((*uint)(unsafe.Pointer(&controller.Chassis))),
-            Port: &port,
-          },
-        },
-        Address: &libvirtxml.DomainAddress{
-          PCI: &libvirtxml.DomainAddressPCI{
-            Bus: ((*uint)(unsafe.Pointer(&controller.Bus))),
-            MultiFunction: controller.Multifunction,
-          },
-        },
+  //     controllers = append(controllers, libvirtxml.DomainController{
+  //       Type: "pci",
+  //       Index: &id,
+  //       Model: controller.Name,
+  //       PCI: &libvirtxml.DomainControllerPCI{
+  //         Model: &libvirtxml.DomainControllerPCIModel{
+  //           Name: controller.Name,
+  //         },
+  //         Target: &libvirtxml.DomainControllerPCITarget{
+  //           Chassis: &chassis,
+  //           Port: &port,
+  //         },
+  //       },
+  //       Address: &libvirtxml.DomainAddress{
+  //         PCI: &libvirtxml.DomainAddressPCI{
+  //           Bus: &bus,
+  //           MultiFunction: controller.Multifunction,
+  //         },
+  //       },
         
-      })
-    }
-    // TODO
-    if (strings.Contains(controller.Name, "hd")) {
-      controllers = append(controllers, libvirtxml.DomainController{
-        Type: "scsi",
-        Model: controller.Name,
-        Address: &libvirtxml.DomainAddress{
-          Drive: &libvirtxml.DomainAddressDrive{
-            Bus: ((*uint)(unsafe.Pointer(&controller.Bus))),
-            Target: ((*uint)(unsafe.Pointer(&controller.Drive))),
-          },
-        },
-      })
-    }
-    // TODO
-    // if (strings.Contains(controller.Name, "net")) {
-    //   controllers = append(controllers, libvirtxml.DomainController{
-    //     Type: "virtio-net",
-    //     Model: controller.Name,
-    //     Address: &libvirtxml.DomainAddress{
+  //     })
+  //   }
 
-    //     },
-    //   })
-    // }
+  //   // TODO does it work?
+  //   if (strings.Contains(controller.Name, "scsi")) {
+  //     busInt, _ := strconv.ParseInt(controller.Bus, 10, 64)
+  //     bus := uint(busInt)
+  //     driveInt, _ := strconv.ParseInt(controller.Drive, 10, 64)
+  //     drive := uint(driveInt)
+  //     hostdevs = append(hostdevs, libvirtxml.DomainHostdev{
+  //       SubsysSCSI: &libvirtxml.DomainHostdevSubsysSCSI{
+  //         RawIO: "yes",
+  //         Source: &libvirtxml.DomainHostdevSubsysSCSISource{
+  //           Host: &libvirtxml.DomainHostdevSubsysSCSISourceHost{
+  //             Adapter: &libvirtxml.DomainHostdevSubsysSCSIAdapter{
+  //               Name: "scsi_host0",
+  //             },
+  //           }, 
+  //         },
+  //       },
+  //       Address: &libvirtxml.DomainAddress{
+  //         Drive: &libvirtxml.DomainAddressDrive{
+  //           Bus: &bus,
+  //           Target: &drive,
+  //         },
+  //       },
+  //     })
+  //   }
+
+  //   // TODO
+  //   if (strings.Contains(controller.Name, "net")) {
+  //     controllers = append(controllers, libvirtxml.DomainController{
+  //       Type: "virtio-net",
+  //       Model: controller.Name,
+  //       Address: &libvirtxml.DomainAddress{
+
+  //       },
+  //     })
+  //   }
+  // }
+
+  var cmd libvirtxml.DomainQEMUCommandline
+  for _, args := range kernel.Devices {
+    cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+      Value: "-device",
+    })
+    command := args.Name
+    if args.Port != "" {
+      command += ",port=" + args.Port
+    }
+    if args.Chassis != "" {
+      command += ",chassis=" + args.Chassis + ",slot=" + args.Chassis
+    }
+    if args.Id != "" {
+      command += ",id=" + args.Id
+    }
+    if args.Bus != "" {
+      command += ",bus=" + args.Bus
+    }
+    if args.Multifunction != "" {
+      command += ",multifunction=" + args.Multifunction
+    }
+    if args.Drive != "" {
+      command += ",drive=" + args.Drive
+    }
+    if args.Netdev != "" {
+      command += ",netdev=" + args.Netdev
+    }
+    cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+      Value: command,
+    })
   }
-
-
-
+  for _, args := range kernel.Drives {
+    if args.File == kernel.Image {
+      kernel.Image = ""
+    }
+    cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+      Value: "-drive",
+    })
+    command := "file=" + args.File
+    if args.Format != "" {
+      command += ",format=" + args.Format
+    }
+    if args.Id != "" {
+      command += ",id=" + args.Id
+    }
+    if args.If != "" {
+      command += ",if=" + args.If
+    }
+    cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+      Value: command,
+    })
+  }
+  for _, args := range kernel.Netdevs {
+    cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+      Value: "-netdev",
+    })
+    command := args.Type
+    if args.Id != "" {
+      command += ",id=" + args.Id
+    }
+    if args.Hostfwd != "" {
+      command += ",hostfwd=" + args.Hostfwd
+    }
+    cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+      Value: command,
+    })
+  }
+  cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+    Value: "-cpu",
+  })
+  cmd.Args = append(cmd.Args, libvirtxml.DomainQEMUCommandlineArg{
+    Value: "host",
+  })
 
   logDir := path.Join(s.p.Cfg.LogDir, uuid)
   logFile := path.Join(logDir, "domain.log") // TODO: configuration opt?
@@ -245,8 +336,8 @@ func (s *Service) NewDomain(fakePid int, uuid string, kernel *proto.TestKernel) 
       Serials:  []libvirtxml.DomainSerial{serial},
       Interfaces: []libvirtxml.DomainInterface{iface},
       Disks:      disks,
-      Controllers: controllers,
     },
+    QEMUCommandline: &cmd,
     OS:          &libvirtxml.DomainOS{
       Kernel:     kernel.Image,
       Initrd:     kernel.InitRd,
@@ -458,7 +549,7 @@ func (d *Domain) Init() error {
   }
 
   // This prints out the XML:
-  // fmt.Printf("%s\n", doc)
+   fmt.Printf("%s\n", doc)
 
   d.domain, err = d.p.Client().DomainDefineXML(doc)
   if err != nil {

@@ -406,8 +406,14 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   var netdevs []*proto.KernelNetdev
 
   for _, drive := range task.Test.Kernel.Drives {
+    var file string
+    if (drive.File == "$KERNEL_IMAGE") {
+      file = saveBuildOutputsResp.Outputs.Kernel
+    } else {
+      file = drive.File
+    }
     drives = append(drives, &proto.KernelDrive{
-      File:   drive.File,
+      File:   file,
       Format: drive.Format,
       If:     drive.If,
       Id:     drive.Id,
