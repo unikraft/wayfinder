@@ -44,6 +44,26 @@ params:
     only: ["caching", "nocaching"]
     when: test
 
+  - name: WORKER_RLIMIT_NOFILE
+    type: string
+    only: [63, 126] # Should be double than WORKER_CONNECTIONS
+    when: test
+
+  - name: SERVER_TOKENS
+    type: string
+    only: ["on", "off"]
+    when: test
+
+  - name: SENDFILE
+    type: string
+    only: ["on", "off"]
+    when: test
+
+  - name: TCP_NOPUSH
+    type: string
+    only: ["on", "off"]
+    when: test
+
   # Client-specific
   - name: WORKER_CONNECTIONS
     type: int
@@ -115,6 +135,10 @@ build:
     fi
     sed -i "s/\$ACCESS_LOG/${ACCESS_LOG}/g" ./fs0/nginx/conf/nginx.conf
     sed -i "s/\$KEEPALIVE_TIMEOUT/${KEEPALIVE_TIMEOUT}/g" ./fs0/nginx/conf/nginx.conf
+    sed -i "s/\$WORKER_RLIMIT_NOFILE/${WORKER_RLIMIT_NOFILE}/g" ./fs0/nginx/conf/nginx.conf
+    sed -i "s/\$SERVER_TOKENS/${SERVER_TOKENS}/g" ./fs0/nginx/conf/nginx.conf
+    sed -i "s/\$SENDFILE/${SENDFILE}/g" ./fs0/nginx/conf/nginx.conf
+    sed -i "s/\$TCP_NOPUSH/${TCP_NOPUSH}/g" ./fs0/nginx/conf/nginx.conf
 
     cat ./fs0/nginx/conf/nginx.conf
 
