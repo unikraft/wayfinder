@@ -80,12 +80,18 @@ func (repo *JobsRepository) CreateJob(job *models.Job) (*models.Job, error) {
 }
 
 // FindJob finds a job and decodes its config
-func (repo *JobsRepository) FindJob(id int64, job *models.Job) error {
-  if err := repo.db.Where("id = ?", id).
-    Preload("Permutations.Params").
-    Preload("Permutations.Builds").
-    Preload("Permutations.Tests").
-    Preload("Permutations.Results").
+func (repo *JobsRepository) FindJob(id int64, offset, limit int, job *models.Job) error {
+  if err := repo.db.
+    Where("id = ?", id).
+    Preload("Permutations", func(db *gorm.DB) *gorm.DB {
+      return repo.db.
+      Offset(offset).
+      Limit(limit).
+      Preload("Params").
+      Preload("Builds").
+      Preload("Tests").
+      Preload("Results")
+    }).
     First(&job).Error; err != nil {
     return err
   }
