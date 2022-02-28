@@ -47,8 +47,8 @@ RUN set -xe; \
       protobuf-compiler \
       libprotobuf-dev \
       git; \
-    go get -u github.com/erda-project/erda-infra/tools/gohub; \
-    go get -u github.com/cosmtrek/air
+    go install github.com/erda-project/erda-infra/tools/gohub@32e7888; \
+    go install github.com/cosmtrek/air@1e895ef
 
 
 COPY . /go/src/github.com/${ORG}/${REPO}
