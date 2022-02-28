@@ -31,7 +31,6 @@ package postgres
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
   "fmt"
   "time"
   "reflect"
@@ -95,7 +94,7 @@ func (p *provider) Repos() *repositories.Repositories {
 
 func (c *config) baseDSN() (string, error) {
   if c.BaseDSN != "" {
-    return c.BaseDSN
+    return c.BaseDSN, nil
   }
 
   // connect to default postgres instance first
@@ -107,13 +106,9 @@ func (c *config) baseDSN() (string, error) {
     c.Host,
   )
 
-  if c.ForceSSL {
-    baseDSN = baseDSN + " sslmode=require"
-  } else {
-    baseDSN = baseDSN + " sslmode=disable"
-  }
+  baseDSN = baseDSN + " sslmode=disable"
 
-  return baseDSN
+  return baseDSN, nil
 }
 
 func (p *provider) Init(ctx servicehub.Context) error {
