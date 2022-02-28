@@ -107,6 +107,11 @@ func (repo *JobsRepository) FindJob(id int64, offset, limit int, job *models.Job
   return nil
 }
 
+// Deletes a specific job - TODO not implemented
+func (repo *JobsRepository) DeleteJob(id int64, purge bool)  error {
+  return fmt.Errorf("not implemented")
+}
+
 // List all jobs
 func (repo *JobsRepository) ListJobs(offset, limit int) ([]*models.Job, error) {
   var jobs []*models.Job
