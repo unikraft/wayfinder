@@ -216,7 +216,7 @@ message ListJobsResponse {
 }
 
 message GetJobRequest {
-  int64 id = 1;
+  int64 id     = 1;
   int32 offset = 2;
   int32 limit  = 3;
 }
@@ -227,7 +227,7 @@ message GetJobResponse {
 }
 
 message GetJobResultsRequest {
-  int64 id = 1;
+  int64 id     = 1;
   int64 offset = 2;
   int64 limit  = 3;
 }
@@ -236,4 +236,13 @@ message GetJobResultsResponse {
   bool            success = 1 [json_name = "success"];
   int64           total   = 2 [json_name = "total"];
   repeated Result results = 3 [json_name = "results"];
+}
+
+message DeleteJobRequest {
+  int64 id    = 1;
+  bool  purge = 2;
+}
+
+message DeleteJobResponse {
+  bool success = 1 [json_name = "success"];
 }
