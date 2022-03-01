@@ -62,6 +62,7 @@ type JobSpec struct {
   PermutationLimit uint64             `json:"permutation_limit"`
   Repeats          uint64             `json:"repeats"`
   CurrentPerm      JobPermutation     `json:"current"`
+  DryRun           bool               `json:"dry_run"`
 }
 
 type JobPermutation struct {

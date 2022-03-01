@@ -198,6 +198,7 @@ message StartJobRequest {
   JobIsolSplit isolSplit        = 4;
   int64        permutationLimit = 5;
   uint64       repeats          = 6;
+  bool         dryRun           = 7;
 }
 
 message StartJobResponse {
