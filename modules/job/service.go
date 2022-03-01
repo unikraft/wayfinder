@@ -115,6 +115,7 @@ func (s *service) StartJob(ctx context.Context, req *proto.StartJobRequest) (*pr
   parsed.IsolLevel = req.IsolLevel
   parsed.IsolSplit = req.IsolSplit
   parsed.Repeats   = req.Repeats
+  parsed.DryRun    = req.DryRun
 
   // Set the permutation limit to the maximum if set to 0
   if req.PermutationLimit == 0 {
