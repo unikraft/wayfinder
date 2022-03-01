@@ -62,6 +62,29 @@ func (repo *BuildsRepository) CreateBuildForPermutation(build *models.Build) (*m
   return build, nil
 }
 
+func (repo *BuildsRepository) DeleteBuild(build *models.Build) error {  
+  if err := repo.db.Delete(build).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
+
+func (repo *BuildsRepository) DeleteBuildByBuildUuid(uuid string) error {
+  build := models.Build{}
+
+  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
+    return err
+  }
+  
+  if err := repo.db.Delete(build).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
 // SetStatusByBuildUuid sets the status of the build to the desired status by
 // the Build's UUID.
 func (repo *BuildsRepository) SetStatusByBuildUuid(uuid string, status proto.BuildStatus) error {

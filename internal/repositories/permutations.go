@@ -108,6 +108,21 @@ func (r *PermutationsRepository) FindOrCreateFromJobSpec(job *spec.JobSpec) (*mo
   return permutation, nil
 }
 
+func (r *PermutationsRepository) DeleteFromJobSpec(job *spec.JobSpec) error {
+  permutation := &models.Permutation{}
+  
+  // Have we seen this permutation before?
+  result := r.db.Where("job_id = ? and checksum = ?", &job.Id, &job.CurrentPerm.Checksum).First(&permutation);
+  if result.RowsAffected == 0 {
+    return fmt.Errorf("No entry to delete")
+  }
+
+  if err := r.db.Delete(permutation).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
 
 // UpdatePermutation updates only the Data field using Key as selector.
 func (s *PermutationsRepository) UpdatePermutation(permutation *models.Permutation) (*models.Permutation, error) {

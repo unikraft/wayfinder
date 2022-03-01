@@ -62,6 +62,39 @@ func (repo *TestsRepository) CreateTestForPermutation(test *models.Test) (*model
   return test, nil
 }
 
+// Delete a given test
+func (repo *TestsRepository) DeleteTest(test *models.Test) error {
+  if err := repo.db.Delete(test).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
+func (repo *TestsRepository) DeleteTestByTestUuid(uuid string) error {
+  
+  test, err := repo.FindTestByTestUuid(uuid)  
+  if err != nil {
+    return err
+  }
+
+  if err = repo.db.Delete(test).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
+func (repo *TestsRepository) FindTestByTestUuid(uuid string) (*models.Test, error) {
+  test := models.Test{}
+  
+  if err := repo.db.Where("uuid = ?", uuid).First(&test).Error; err != nil {
+    return nil, err
+  }
+
+  return &test, nil
+}
+
 // SetStatusByTestUuid sets the status of the test to the desired status by
 // the Test's UUID.
 func (repo *TestsRepository) SetStatusByTestUuid(uuid string, status proto.TestStatus) error {
@@ -131,18 +164,3 @@ func (repo *TestsRepository) SetRuntimeByTestUuid(uuid string, runtime time.Dura
 
   return nil;
 }
-
-
-
-// CreateHost adds a new Host row to the Hosts table in the database
-// func (repo *TestsRepository) AddTestToPermutation(permutation *models.Permutation, test time.Duration) (*models.Tests, error) {
-//   testTime := &models.Tests{
-//     PermutationId: permutation.Id,
-//     Tests:      tt,
-//   }
-
-//   if err := repo.db.Create(testTime).Error; err != nil {
-//     return nil, err
-//   }
-//   return testTime, nil
-// }
