@@ -535,5 +535,12 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   if err != nil {
     return fmt.Errorf("could not release cores: %s", err)
   }
+
+  // Delete all created entries related to the task
+  if task.DryRun {
+    c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid)
+    c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid)
+  }
+
   return nil
 }
