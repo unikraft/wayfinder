@@ -84,6 +84,7 @@ type StartJobConfig struct {
   IsolSplit        proto.JobIsolSplit
   PermutationLimit int
   Repeats          int
+  DryRun           bool
 }
 
 var (
@@ -147,6 +148,14 @@ func init() {
     "Number of times to repeat a permutation. Useful for random search. (default 0)",
   )
 
+  startCmd.PersistentFlags().BoolVarP(
+    &jobCfg.DryRun,
+    "dry-run",
+    "D",
+    false,
+    "Specify whether to save output to the database or not.",
+  )
+
   startCmd.PersistentFlags().VarP(
     enumflag.New(
       &jobCfg.IsolLevel,
@@ -208,6 +217,7 @@ func doStartCmd(cmd *cobra.Command, args []string) {
     IsolSplit:        jobCfg.IsolSplit,
     PermutationLimit: int64(jobCfg.PermutationLimit),
     Repeats:          uint64(jobCfg.Repeats),
+    DryRun:           jobCfg.DryRun,
   })
   if err != nil {
     fmt.Printf("could not start job: %s\n", err)
