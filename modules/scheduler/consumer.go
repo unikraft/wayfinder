@@ -538,8 +538,18 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
   // Delete all created entries related to the task
   if task.DryRun {
-    c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid)
-    c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid)
+    err = c.p.DB.Repos().Results().DeleteResultByTestUuid(test.uuid, true)
+    if err != nil {
+      return fmt.Errorf("could not delete test: %s", err)
+    }
+    err = c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid, true)
+    if err != nil {
+      return fmt.Errorf("could not delete test: %s", err)
+    }
+    err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
+    if err != nil {
+      return fmt.Errorf("could not delete build: %s", err)
+    }
   }
 
   return nil
