@@ -62,23 +62,35 @@ func (repo *BuildsRepository) CreateBuildForPermutation(build *models.Build) (*m
   return build, nil
 }
 
-func (repo *BuildsRepository) DeleteBuild(build *models.Build) error {  
-  if err := repo.db.Delete(build).Error; err != nil {
+// Deletes build. If purge is used, the entry is deleted permanently
+func (repo *BuildsRepository) DeleteBuild(build *models.Build, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = repo.db.Unscoped()
+  } else {
+    deleteType = repo.db
+  }
+
+  if err := deleteType.Delete(&models.Build{}, "uuid = ?", build.UUID).Error; err != nil {
     return err
   }
 
   return nil
 }
 
+// Deletes build from the builds table. If purge is used,
+// the entry is deleted permanently
+func (repo *BuildsRepository) DeleteBuildByBuildUuid(uuid string, purge bool) error {
+  var deleteType *gorm.DB
 
-func (repo *BuildsRepository) DeleteBuildByBuildUuid(uuid string) error {
-  build := models.Build{}
-
-  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
-    return err
+  if purge {
+    deleteType = repo.db.Unscoped()
+  } else {
+    deleteType = repo.db
   }
-  
-  if err := repo.db.Delete(build).Error; err != nil {
+
+  if err := deleteType.Delete(&models.Build{}, "uuid = ?", uuid).Error; err != nil {
     return err
   }
 

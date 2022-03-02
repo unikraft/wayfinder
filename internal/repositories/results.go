@@ -49,6 +49,30 @@ func NewResultsRepository(db *gorm.DB) *ResultsRepository {
   return &ResultsRepository{db}
 }
 
+// Deletes a result from the results table. If purge is used,
+// the entry is deleted permanently
+func (r *ResultsRepository) DeleteResultByTestUuid(uuid string, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = r.db.Unscoped()
+  } else {
+    deleteType = r.db
+  }
+
+  
+  test := &models.Test{}
+  if r.db.Where("uuid = ?", &uuid).First(&test).RowsAffected != 1 {
+    return fmt.Errorf("could not find test with uuid: %s", uuid)
+  }
+
+  if err := deleteType.Delete(&models.Result{}, "test_id = ?", test.Id).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
 // SaveResultIntByTestUuid adds a new integer-based test result
 func (r *ResultsRepository) SaveResultIntByTestUuid(testUuid, name string, value int64) (*models.Result, error) {
   // Look up the test

@@ -62,23 +62,35 @@ func (repo *TestsRepository) CreateTestForPermutation(test *models.Test) (*model
   return test, nil
 }
 
-// Delete a given test
-func (repo *TestsRepository) DeleteTest(test *models.Test) error {
-  if err := repo.db.Delete(test).Error; err != nil {
+// Delete a given test. If purge is used, the entry is deleted permanently
+func (repo *TestsRepository) DeleteTest(test *models.Test, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = repo.db.Unscoped()
+  } else {
+    deleteType = repo.db
+  }
+
+  if err := deleteType.Delete(&models.Test{}, "uuid = ?", test.UUID).Error; err != nil {
     return err
   }
 
   return nil
 }
 
-func (repo *TestsRepository) DeleteTestByTestUuid(uuid string) error {
-  
-  test, err := repo.FindTestByTestUuid(uuid)  
-  if err != nil {
-    return err
+// Deletes a test from the tests table. If purge is used,
+// the entry is deleted permanently
+func (repo *TestsRepository) DeleteTestByTestUuid(uuid string, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = repo.db.Unscoped()
+  } else {
+    deleteType = repo.db
   }
 
-  if err = repo.db.Delete(test).Error; err != nil {
+  if err := deleteType.Delete(&models.Test{}, "uuid = ?", uuid).Error; err != nil {
     return err
   }
 
