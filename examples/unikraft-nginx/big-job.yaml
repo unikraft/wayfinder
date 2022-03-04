@@ -1,3 +1,4 @@
+name: unikraft-nginx-big
 params:
   # Unikraft-specific:
   - name: LWIP_NUM_TCPCON
