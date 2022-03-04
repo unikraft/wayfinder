@@ -40,6 +40,7 @@ import (
 type Job struct {
   Base
 
+  Name              string          `gorm:"column:name"               json:"name"`
   HostId            uint            `gorm:"column:host_id"            json:"host_id"`
   Config            string          `gorm:"column:config"             json:"config"`
   CompletedAt       time.Time       `gorm:"column:updated_at"         json:"updated_at"`
