@@ -182,8 +182,9 @@ message Result {
 }
 
 message CreateJobRequest {
-  bytes data       = 1;
-  bool  compressed = 2;
+  bytes  data       = 1;
+  bool   compressed = 2;
+  string name       = 3;
 }
 
 message CreateJobResponse {
