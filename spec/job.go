@@ -194,13 +194,23 @@ func evalExpression(cond string) (bool, error) {
 }
 
 // next recursively iterates across paramters to generate a set of tasks
-func (j *JobSpec) next(i int, permutations chan *JobPermutation,
-                       errors chan error, done chan *tree.Tree, allNr, limit uint64,
-                       curr []ParamPermutation, parentNode *tree.Node) (uint64, error) {
+func (j *JobSpec) next(
+  i int,
+  permutationsChan chan *JobPermutation,
+  errChan chan error,
+  treeChan chan *tree.Tree,
+  allNr uint64,
+  limit uint64,
+  curr []ParamPermutation,
+  parentNode *tree.Node,
+) (
+  nextPNr uint64,
+  err error,
+) {
   // List all permutations for this parameter
   params, err := paramPermutations(&j.Params[i - 1])
   if err != nil {
-    errors <- err
+    errChan <- err
     return 0, err
   }
 
@@ -258,17 +268,17 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
       perm.Checksum = perm.checksum()
 
       // Save permutation
-      permutations <- perm
+      permutationsChan <- perm
       allNr++
 
       if allNr >= limit {
-        done <- j.tree
+        treeChan <- j.tree
         return 0, nil
       }
 
     // Otherwise, recursively parse parameters in-order    
     } else {
-      nextPNr, err := j.next(i + 1, permutations, errors, done, 0, limit, curr, node)
+      nextPNr, err := j.next(i + 1, permutationsChan, errChan, treeChan, 0, limit, curr, node)
       if err != nil {
         // If this has occured, we've already sent the error to the channel
         return 0, err
@@ -279,15 +289,23 @@ func (j *JobSpec) next(i int, permutations chan *JobPermutation,
   }
 
   if allNr >= limit {
-    done <- j.tree
+    treeChan <- j.tree
   }
   return allNr, nil
 }
 
 // Generate random permutations of the parameters until limit is reached,
 // then wait to see if more are needed (in the case when there are colisions)
-func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
-                          done chan *tree.Tree, remaining chan uint64, limit uint64) (uint64, error) {
+func (j * JobSpec) random(
+  permutationsChan chan *JobPermutation,
+  errChan chan error,
+  treeChan chan *tree.Tree,
+  remainingChan chan uint64,
+  limit uint64,
+) (
+  uint64,
+  error,
+) {
   var params [][]ParamPermutation = make([][]ParamPermutation, len(j.Params))
   var err error
 
@@ -295,7 +313,7 @@ func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
   for i, param := range j.Params {
     params[i], err = paramPermutations(&param)
     if err != nil {
-      errors <- err
+      errChan <- err
       return 0, err
     }
   }
@@ -329,7 +347,7 @@ func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
           shouldEval, err := evalExpression(replaceSymbols(permFinal.Params[j].Cond, paramMap))
           if err != nil {
             err = fmt.Errorf("could not evaluate expression for param %v: %s", param, err)
-            errors <- err
+            errChan <- err
             return 0, err
           }
           if !shouldEval {
@@ -342,14 +360,14 @@ func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
       permFinal.Checksum = permFinal.checksum()
 
       // Send the permutation
-      permutations <- permFinal
+      permutationsChan <- permFinal
     }
 
     // Inform the receiver that the generation is done
-    done <- j.tree
+    treeChan <- j.tree
 
     // Wait for the receiver to confirm that the generation is done
-    var remainingToGenerate uint64 = <- remaining
+    var remainingToGenerate uint64 = <- remainingChan
     if remainingToGenerate == 0 {
       break
     } else {
@@ -361,8 +379,16 @@ func (j * JobSpec) random(permutations chan *JobPermutation, errors chan error,
 }
 
 // Permutations returns a list of all possible tasks based on parameterisation
-func (j *JobSpec) Permutations(schedulerType uint,
-    limit, maxPerm uint64) (chan *JobPermutation, chan error, chan *tree.Tree, chan uint64, error) {
+func (j *JobSpec) Permutations(
+  schedulerType uint,
+  limit, maxPerm uint64,
+) (
+  permutationsChan chan *JobPermutation,
+  errChan chan error,
+  treeChan chan *tree.Tree,
+  remainingChan chan uint64,
+  err error,
+) {
   done := make(chan *tree.Tree)
   errors := make(chan error)
   permutations := make(chan *JobPermutation)
