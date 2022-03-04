@@ -71,6 +71,11 @@ func (s *service) CreateJob(ctx context.Context, req *proto.CreateJobRequest) (*
     return nil, status.Errorf(codes.InvalidArgument, "job specification invalid: %s", err)
   }
 
+  name := parsed.Name
+  if req.Name != "" {
+    name = req.Name
+  }
+
   totalPermutations, err := parsed.TotalPermutations()
   if err != nil {
     return nil, status.Errorf(codes.InvalidArgument, "job specification invalid: %s", err)
@@ -78,6 +83,7 @@ func (s *service) CreateJob(ctx context.Context, req *proto.CreateJobRequest) (*
 
   // Save job to database
   job, err := s.p.DB.Repos().Jobs().CreateJob(&models.Job{
+    Name:              name,
     Config:            data,
     TotalPermutations: totalPermutations,
   })
