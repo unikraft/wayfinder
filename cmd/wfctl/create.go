@@ -43,6 +43,10 @@ import (
   "github.com/unikraft/wayfinder/internal/gzip"
 )
 
+type CreateJobConfig struct {
+  Name *string
+}
+
 var (
   createCmd = &cobra.Command{
     Use:                   "create [OPTIONS...] FILE",
@@ -52,7 +56,18 @@ var (
     Args:                  cobra.ExactArgs(1),
     DisableFlagsInUseLine: true,
   }
+
+  jobCreateCfg = &CreateJobConfig{}
 )
+
+func init() {
+  jobCreateCfg.Name = createCmd.PersistentFlags().StringP(
+    "name",
+    "n",
+    "",
+    "The name of the job to be created.",
+  )
+}
 
 // doCreateCmd 
 func doCreateCmd(cmd *cobra.Command, args []string) {
@@ -86,6 +101,7 @@ func doCreateCmd(cmd *cobra.Command, args []string) {
   }
 
   resp, err := Wayfinder.JobService.CreateJob(context.TODO(), &proto.CreateJobRequest{
+    Name:       *jobCreateCfg.Name,
     Data:       buf.Bytes(),
     Compressed: true,
   })
