@@ -34,9 +34,14 @@ import (
   "bytes"
   "context"
   "encoding/json"
+  "crypto/md5"
+  "io"
+  "fmt"
+  "compress/zlib"
 
   "google.golang.org/grpc/codes"
   "google.golang.org/grpc/status"
+	"gopkg.in/yaml.v2"
 
   "github.com/unikraft/wayfinder/spec"
   "github.com/unikraft/wayfinder/api/proto"
@@ -92,6 +97,79 @@ func (s *service) CreateJob(ctx context.Context, req *proto.CreateJobRequest) (*
   }
 
   return &proto.CreateJobResponse{
+    Success: true,
+    Id:      int64(job.Id),
+  }, nil
+}
+
+// Searches for a job with the given id and creates a permutation within it and runs it
+func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePermutationJobRequest) (*proto.CreatePermutationJobResponse, error) {
+  s.p.Log.Infof("received new permutation job create request...")
+
+  job := models.Job{}
+
+  // Check if job exists
+  if err := s.p.DB.Repos().Jobs().FindJob(req.Id, 0, 1, &job); err != nil {
+    return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
+  }
+
+  newPermutationInJob := spec.JobSpec{}
+  yaml.Unmarshal([]byte(job.Config), &newPermutationInJob)
+  
+
+  // Format permutation
+  newPermutationInJob.Id = uint(req.Id)
+  newPermutationInJob.PermutationLimit = 1
+
+
+  // Calculate checksum for given permutation
+  if len(newPermutationInJob.CurrentPerm.Checksum) == 0 {
+    newPermutationInJob.CurrentPerm.Params = make([]spec.ParamPermutation, 0)
+
+    // Save name and type to currentperm
+    for _, p := range req.Params {
+      newPermutationInJob.CurrentPerm.Params = append(
+        newPermutationInJob.CurrentPerm.Params, spec.ParamPermutation{
+        Name:     p.Name,
+        Type:     p.Type,
+      })
+    }
+
+    md5val := md5.New()
+    for i, param := range newPermutationInJob.CurrentPerm.Params {
+      var value string
+      switch param.Type {
+      case "int", "integer":
+        value = fmt.Sprintf("%d", req.Params[i].ValueInt)
+      case "str", "string":
+        value = req.Params[i].ValueStr
+      }
+      newPermutationInJob.CurrentPerm.Params[i].Value = value
+      io.WriteString(md5val, fmt.Sprintf("%s=%s\n", param.Name, value))
+    }
+
+    newPermutationInJob.CurrentPerm.Checksum = fmt.Sprintf("%x", md5val.Sum(nil))
+    newPermutationInJob.CurrentPerm.JobId = uint(req.Id)
+    newPermutationInJob.CurrentPerm.Id = 0
+  }
+
+  // Publish permutation to queue
+  taskBytes, err := json.Marshal(newPermutationInJob)
+  if err != nil {
+    return nil, status.Errorf(codes.Internal, "could not marshal job: %s", err)
+  }
+
+  var compressedBytes bytes.Buffer
+  w := zlib.NewWriter(&compressedBytes)
+  w.Write(taskBytes)
+  w.Close()
+
+  s.p.TaskQueue.PublishBytes(compressedBytes.Bytes())
+  if err != nil {
+    return nil, status.Errorf(codes.Internal, "could not publish job to queue: %s", err)
+  }
+
+  return &proto.CreatePermutationJobResponse{
     Success: true,
     Id:      int64(job.Id),
   }, nil
