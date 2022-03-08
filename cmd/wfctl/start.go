@@ -85,6 +85,7 @@ type StartJobConfig struct {
   PermutationLimit int
   Repeats          int
   DryRun           bool
+  SeqScheduler     bool
 }
 
 var (
@@ -138,6 +139,14 @@ func init() {
     "scheduler",
     "s",
     "Specify the scheduler for job permutations.",
+  )
+
+  startCmd.PersistentFlags().BoolVarP(
+    &jobCfg.SeqScheduler,
+    "sequential",
+    "S",
+    false,
+    "Use sequential generation for permutations.",
   )
 
   startCmd.PersistentFlags().IntVarP(
@@ -213,6 +222,7 @@ func doStartCmd(cmd *cobra.Command, args []string) {
   _, err = Wayfinder.JobService.StartJob(context.TODO(), &proto.StartJobRequest{
     Id:               int64(jobId),
     Scheduler:        jobCfg.Scheduler,
+    SeqScheduler:     jobCfg.SeqScheduler,
     IsolLevel:        jobCfg.IsolLevel,
     IsolSplit:        jobCfg.IsolSplit,
     PermutationLimit: int64(jobCfg.PermutationLimit),
