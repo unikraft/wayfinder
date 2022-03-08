@@ -128,9 +128,10 @@ message Job {
   JobStatus             status            = 5  [json_name = "status"];
   uint64                hostId            = 6  [json_name = "host_id"];
   string                config            = 7  [json_name = "config"];
-  string                 completedAt      = 8  [json_name = "completed_at"];
+  string                completedAt       = 8  [json_name = "completed_at"];
   uint64                totalPermutations = 9  [json_name = "total_permutations"];
   repeated Permutation  permutations      = 10 [json_name = "permutations"];
+  bool                  seqScheduler      = 11 [json_name = "seq_scheduler"];
 }
 
 message Permutation {
@@ -200,6 +201,7 @@ message StartJobRequest {
   int64        permutationLimit = 5;
   uint64       repeats          = 6;
   bool         dryRun           = 7;
+  bool         seqScheduler     = 8;
 }
 
 message StartJobResponse {
