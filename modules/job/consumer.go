@@ -35,6 +35,7 @@ import (
   "encoding/json"
   "compress/zlib"
   "bytes"
+  "time"
 
   "github.com/adjust/rmq/v4"
   "github.com/erda-project/erda-infra/base/logs"
@@ -103,11 +104,18 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 
   c.Log.Info("calculating all permutation values...")
 
-  permutations, errors, done, remaining, err := jobSpec.Permutations(
+  permutations, errors, done, remaining, canPublish, err := jobSpec.Permutations(
     uint(jobSpec.Scheduler), jobSpec.PermutationLimit, maxPerm)
   if err != nil {
     return fmt.Errorf("could not calculate permutations: %s", err)
   }
+
+  // Send first signal to the generator
+  canPublish <- true
+
+  // See if the generator is sequential or not
+  isSequential := <- canPublish
+
   var totalPermutations uint64 = 0
   uniquePermutations := make(map[string]bool)
   for {
@@ -151,6 +159,18 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
         w := zlib.NewWriter(&compressedBytes)
         w.Write(taskBytes)
         w.Close()
+
+        if isSequential {
+          // Busy wait to free up space for the task executor
+          for {
+            if c.p.Redis.LLen(c.p.Redis.Context(), "rmq::queue::[task-queue]::ready").Val() == 0 {
+              break
+            }
+            time.Sleep(time.Second)
+          }
+
+          canPublish <- true
+        }
 
         // Publish permutation to the task queue.  This will be picked up by the
         // scheduler.
