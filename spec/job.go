@@ -57,6 +57,7 @@ type JobSpec struct {
   // Desired additional information by the scheduler
   Id               uint               `json:"id"`
   Scheduler        proto.JobScheduler `json:"scheduler"`
+  SeqScheduler     bool               `json:"seq_scheduler"`
   IsolLevel        proto.JobIsolLevel `json:"isol_level"`
   IsolSplit        proto.JobIsolSplit `json:"isol_split"`
   PermutationLimit uint64             `json:"permutation_limit"`
@@ -201,6 +202,7 @@ func (j *JobSpec) next(
   permutationsChan chan *JobPermutation,
   errChan chan error,
   treeChan chan *tree.Tree,
+  canPublish chan bool,
   allNr uint64,
   limit uint64,
   curr []ParamPermutation,
@@ -270,6 +272,11 @@ func (j *JobSpec) next(
       perm.Checksum = perm.checksum()
       perm.BuildChecksum = perm.buildChecksum()
 
+      // Block save until task is processed
+      if j.SeqScheduler {
+        _ = <-canPublish
+      }
+
       // Save permutation
       permutationsChan <- perm
       allNr++
@@ -281,7 +288,7 @@ func (j *JobSpec) next(
 
     // Otherwise, recursively parse parameters in-order    
     } else {
-      nextPNr, err := j.next(i + 1, permutationsChan, errChan, treeChan, 0, limit, curr, node)
+      nextPNr, err := j.next(i + 1, permutationsChan, errChan, treeChan, canPublish, 0, limit, curr, node)
       if err != nil {
         // If this has occured, we've already sent the error to the channel
         return 0, err
@@ -303,6 +310,7 @@ func (j * JobSpec) random(
   permutationsChan chan *JobPermutation,
   errChan chan error,
   treeChan chan *tree.Tree,
+  canPublish chan bool,
   remainingChan chan uint64,
   limit uint64,
 ) (
@@ -363,6 +371,11 @@ func (j * JobSpec) random(
       permFinal.Checksum = permFinal.checksum()
       permFinal.BuildChecksum = permFinal.buildChecksum()
 
+      // Block save until task is processed
+      if j.SeqScheduler {
+        _ = <-canPublish
+      }
+
       // Send the permutation
       permutationsChan <- permFinal
     }
@@ -391,21 +404,30 @@ func (j *JobSpec) Permutations(
   errChan chan error,
   treeChan chan *tree.Tree,
   remainingChan chan uint64,
+  canPublishChan chan bool,
   err error,
 ) {
   done := make(chan *tree.Tree)
   errors := make(chan error)
   permutations := make(chan *JobPermutation)
   remaining := make(chan uint64)
+  canPublish := make(chan bool, 2)
 
   var allNr uint64
 
   // Reject generation if random and the job wants more than 0.75 of permutations generated
   if schedulerType == Random && limit > 0 && maxPerm > 0 && (float64(limit) / float64(maxPerm) > 0.75) {
-    return nil, nil, nil, nil, fmt.Errorf("too many permutations requested")
+    return nil, nil, nil, nil, nil, fmt.Errorf("too many permutations requested")
   }
 
   go func() {
+    // If not sequential, ignore first block and notfy the consumer
+    if !j.SeqScheduler {
+      _ = <- canPublish
+      canPublish <- false
+    } else {
+      canPublish <- true
+    }
     switch schedulerType {
       case Grid:
         j.tree = tree.NewTree()
@@ -415,9 +437,9 @@ func (j *JobSpec) Permutations(
         node.SetId(0)
         j.tree.SetRoot(node)
 
-        j.next(1, permutations, errors, done, allNr, limit, nil, node)
+        j.next(1, permutations, errors, done, canPublish, allNr, limit, nil, node)
       case Random:
-        j.random(permutations, errors, done, remaining, limit)
+        j.random(permutations, errors, done, canPublish, remaining, limit)
       case Guided:
         // TODO implement Bayesian guided scheduling
       default:
@@ -425,7 +447,7 @@ func (j *JobSpec) Permutations(
     }
   }()
 
-  return permutations, errors, done, remaining, nil
+  return permutations, errors, done, remaining, canPublish, nil
 }
 
 // TotalPermutations calculates the total number of permutations for the job
