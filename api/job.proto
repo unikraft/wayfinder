@@ -47,6 +47,13 @@ service JobService {
     };
   }
 
+  // create permutation inside job
+  rpc CreatePermutationJob (CreatePermutationJobRequest) returns (CreatePermutationJobResponse)  {
+    option (google.api.http) = {
+      put: "/api/job/{id}/permutation",
+    };
+  }
+
   // start job
   rpc StartJob (StartJobRequest) returns (StartJobResponse)  {
     option (google.api.http) = {
@@ -189,6 +196,16 @@ message CreateJobRequest {
 }
 
 message CreateJobResponse {
+  bool  success = 1;
+  int64 id      = 2;
+}
+
+message CreatePermutationJobRequest {
+  int64           id     = 1;
+  repeated Param  params = 2;
+}
+
+message CreatePermutationJobResponse {
   bool  success = 1;
   int64 id      = 2;
 }
