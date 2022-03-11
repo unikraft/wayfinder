@@ -318,8 +318,6 @@ func (j * JobSpec) random(
     }
   }
 
-  var paramMap map[string]string
-  shouldBuildMap := true
   var i uint64 = 0
   for {
     // Generate the given number of random permutations
@@ -338,6 +336,8 @@ func (j * JobSpec) random(
       }
 
       // Evaluate all conditions
+      var paramMap map[string]string
+      shouldBuildMap := true
       for j, param := range permFinal.Params {
         if param.Cond != "" {
           if shouldBuildMap {
