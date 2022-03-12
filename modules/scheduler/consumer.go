@@ -49,8 +49,10 @@ import (
 )
 
 type TaskConsumer struct {
-  p       *provider
-  Log      logs.Logger
+  p                *provider
+  prevBuildChecksum string
+  prevBuildOutput  *proto.SaveBuildOutputsToDiskResponse
+  Log               logs.Logger
 }
 
 const (
@@ -263,132 +265,143 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   //   return fmt.Errorf("permutation with id=%d not found", perm.Id)
   // }
 
-  build := build{}
+  var buildOutput *proto.SaveBuildOutputsToDiskResponse
+  if (c.prevBuildChecksum != task.CurrentPerm.BuildChecksum) {
+    c.prevBuildChecksum = task.CurrentPerm.BuildChecksum
+    build := build{}
 
-  buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit)
+    buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit)
 
-  var buildEnvVars []*proto.BuildEnvVar
-  for _, param := range task.CurrentPerm.Params {
-    buildEnvVars = append(buildEnvVars, &proto.BuildEnvVar{
-      Name: param.Name,
-      Value: param.Value,
+    var buildEnvVars []*proto.BuildEnvVar
+    for _, param := range task.CurrentPerm.Params {
+      buildEnvVars = append(buildEnvVars, &proto.BuildEnvVar{
+        Name: param.Name,
+        Value: param.Value,
+      })
+    }
+
+    // Create the build
+    c.Log.Infof("creating build container for permutation_id=%d", permutation.Id)
+    createBuildResp, err := c.p.Builder.CreateBuild(context.TODO(), &proto.CreateBuildRequest{
+      PermutationId: int64(permutation.Id),
+      Image:         task.Build.Image,
+      Devices:       task.Build.Devices,
+      Capabilities:  task.Build.Capabilities,
+      Cores:         buildCoreIds,
+      Workdir:       task.Build.Workdir,
+      Commands:      task.Build.Commands,
+      EnvVars:       buildEnvVars,
     })
-  }
+    if err != nil {
+      c.releaseCoresById(buildCoreIds)
+      return fmt.Errorf("could not create build: %s", err)
+    }
 
-  // Create the build
-  c.Log.Infof("creating build container for permutation_id=%d", permutation.Id)
-  createBuildResp, err := c.p.Builder.CreateBuild(context.TODO(), &proto.CreateBuildRequest{
-    PermutationId: int64(permutation.Id),
-    Image:         task.Build.Image,
-    Devices:       task.Build.Devices,
-    Capabilities:  task.Build.Capabilities,
-    Cores:         buildCoreIds,
-    Workdir:       task.Build.Workdir,
-    Commands:      task.Build.Commands,
-    EnvVars:       buildEnvVars,
-  })
-  if err != nil {
-    c.releaseCoresById(buildCoreIds)
-    return fmt.Errorf("could not create build: %s", err)
-  }
+    build.uuid = createBuildResp.Uuid
 
-  build.uuid = createBuildResp.Uuid
-
-  // Start the build
-  c.Log.Infof("starting build container for permutation_id=%d", permutation.Id)
-  _, err = c.p.Builder.StartBuild(context.TODO(), &proto.StartBuildRequest{
-    Uuid: build.uuid,
-  })
-  if err != nil {
-    c.releaseCoresById(buildCoreIds)
-    return fmt.Errorf("could not start build: %s", err)
-  }
-
-  // Wait for the build to complete
-  c.Log.Infof("waiting for build container for permutation_id=%d to complete...", permutation.Id)
-  var numRetries uint64 = 0;
-  buildstatus:for {
-    statusBuildResp, err := c.p.Builder.GetBuildStatus(context.TODO(), &proto.GetBuildStatusRequest{
+    // Start the build
+    c.Log.Infof("starting build container for permutation_id=%d", permutation.Id)
+    _, err = c.p.Builder.StartBuild(context.TODO(), &proto.StartBuildRequest{
       Uuid: build.uuid,
     })
-
-    // Retry 5 times waiting a second each, fail if no response
     if err != nil {
-      numRetries++
-      if numRetries >= 5 {
-        c.releaseCoresById(buildCoreIds)
-        return fmt.Errorf("could not get build status: %s", err)
-      }
-      time.Sleep(time.Second)
-      continue
+      c.releaseCoresById(buildCoreIds)
+      return fmt.Errorf("could not start build: %s", err)
     }
 
-    switch statusBuildResp.Status {
-      case proto.BuildStatus_BUILD_SUCCESS,
-           proto.BuildStatus_BUILD_KILLED,
-           proto.BuildStatus_BUILD_FAILED:
-        
-        _, err = time.ParseDuration(statusBuildResp.Runtime)
-        if err != nil {
+    // Wait for the build to complete
+    c.Log.Infof("waiting for build container for permutation_id=%d to complete...", permutation.Id)
+    var numRetries uint64 = 0;
+    buildstatus:for {
+      statusBuildResp, err := c.p.Builder.GetBuildStatus(context.TODO(), &proto.GetBuildStatusRequest{
+        Uuid: build.uuid,
+      })
+
+      // Retry 5 times waiting a second each, fail if no response
+      if err != nil {
+        numRetries++
+        if numRetries >= 5 {
           c.releaseCoresById(buildCoreIds)
-          return fmt.Errorf("could not convert test runtime into duration: %s", err)
+          return fmt.Errorf("could not get build status: %s", err)
         }
+        time.Sleep(time.Second)
+        continue
+      }
 
-        break buildstatus;
+      switch statusBuildResp.Status {
+        case proto.BuildStatus_BUILD_SUCCESS,
+            proto.BuildStatus_BUILD_KILLED,
+            proto.BuildStatus_BUILD_FAILED:
+          
+          _, err = time.ParseDuration(statusBuildResp.Runtime)
+          if err != nil {
+            c.releaseCoresById(buildCoreIds)
+            return fmt.Errorf("could not convert test runtime into duration: %s", err)
+          }
+
+          break buildstatus;
+      }
+
+      time.Sleep(c.p.Cfg.GraceTime)
     }
 
-    time.Sleep(c.p.Cfg.GraceTime)
-  }
+    c.Log.Infof("build container for permutation_id=%d exited!", permutation.Id)
 
-  c.Log.Infof("build container for permutation_id=%d exited!", permutation.Id)
+    disks := []*proto.BuildOutputDiskImage{}
 
-  disks := []*proto.BuildOutputDiskImage{}
+    // TODO: This is where spec/proto map, this should be done in proto or in spec
+    // and not here.  This, or spec should be derived from proto.  The problem is
+    // named enums.
+    for _, disk := range task.Build.Outputs.Disks {
+      outputDisk := &proto.BuildOutputDiskImage{
+        Path: disk.Path,
+        Name: disk.Name,
+      }
+      switch disk.Type {
+      case spec.OutputDiskImageTypeRaw:
+        outputDisk.Type = proto.BuildOutputDiskImageType_BUILD_OUTPUT_DISK_RAW
+      }
 
-  // TODO: This is where spec/proto map, this should be done in proto or in spec
-  // and not here.  This, or spec should be derived from proto.  The problem is
-  // named enums.
-  for _, disk := range task.Build.Outputs.Disks {
-    outputDisk := &proto.BuildOutputDiskImage{
-      Path: disk.Path,
-      Name: disk.Name,
+      disks = append(disks, outputDisk)
     }
-    switch disk.Type {
-    case spec.OutputDiskImageTypeRaw:
-      outputDisk.Type = proto.BuildOutputDiskImageType_BUILD_OUTPUT_DISK_RAW
+
+    // Save the outputs from the build
+    c.Log.Infof("saving outputs from permutation_id=%d", permutation.Id)
+    saveBuildOutputsResp, err := c.p.Builder.SaveBuildOutputsToDisk(context.TODO(), &proto.SaveBuildOutputsToDiskRequest{
+      Uuid:       build.uuid,
+      Outputs:   &proto.BuildOutputs{
+        Kernel:   task.Build.Outputs.Kernel,
+        InitRd:   task.Build.Outputs.InitRd,
+        Disks:    disks,
+      },
+    })
+    if err != nil {
+      c.releaseCoresById(buildCoreIds)
+      return fmt.Errorf("could not save build outputs: %s", err)
     }
 
-    disks = append(disks, outputDisk)
-  }
+    // Previous output needs to be replaced
+    buildOutput = saveBuildOutputsResp
+    c.prevBuildOutput = buildOutput
 
-  // Save the outputs from the build
-  c.Log.Infof("saving outputs from permutation_id=%d", permutation.Id)
-  saveBuildOutputsResp, err := c.p.Builder.SaveBuildOutputsToDisk(context.TODO(), &proto.SaveBuildOutputsToDiskRequest{
-    Uuid:       build.uuid,
-    Outputs:   &proto.BuildOutputs{
-      Kernel:   task.Build.Outputs.Kernel,
-      InitRd:   task.Build.Outputs.InitRd,
-      Disks:    disks,
-    },
-  })
-  if err != nil {
-    c.releaseCoresById(buildCoreIds)
-    return fmt.Errorf("could not save build outputs: %s", err)
-  }
+    // Destroy the build
+    c.Log.Infof("destroying the build environment for permutation_id=%d", permutation.Id)
+    _, err = c.p.Builder.DestroyBuild(context.TODO(), &proto.DestroyBuildRequest{
+      Uuid: build.uuid,
+    })
+    if err != nil {
+      c.releaseCoresById(buildCoreIds)
+      return fmt.Errorf("could not destroy build environment%s", err)
+    }
 
-  // Destroy the build
-  c.Log.Infof("destroying the build environment for permutation_id=%d", permutation.Id)
-  _, err = c.p.Builder.DestroyBuild(context.TODO(), &proto.DestroyBuildRequest{
-    Uuid: build.uuid,
-  })
-  if err != nil {
-    c.releaseCoresById(buildCoreIds)
-    return fmt.Errorf("could not destroy build environment%s", err)
-  }
-
-  // Free up cores
-  err = c.releaseCoresById(buildCoreIds)
-  if (err != nil) {
-    return fmt.Errorf("could not release cores: %s", err)
+    // Free up cores
+    err = c.releaseCoresById(buildCoreIds)
+    if (err != nil) {
+      return fmt.Errorf("could not release cores: %s", err)
+    }
+  } else {
+    c.Log.Infof("skipping build for permutation_id=%d", permutation.Id)
+    buildOutput = c.prevBuildOutput
   }
 
   //
@@ -408,9 +421,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     PermutationId:  int64(permutation.Id),
     VmmCores:       vmmCoreIds,
     Kernel:        &proto.TestKernel{
-      Image:        saveBuildOutputsResp.Outputs.Kernel,
-      InitRd:       saveBuildOutputsResp.Outputs.InitRd,
-      Disks:        saveBuildOutputsResp.Outputs.Disks,
+      Image:        buildOutput.Outputs.Kernel,
+      InitRd:       buildOutput.Outputs.InitRd,
+      Disks:        buildOutput.Outputs.Disks,
       Cores:        kernelCoreIds,
       Args:         task.Test.Kernel.Args,
       Memory:       task.Test.Kernel.Memory,
@@ -471,7 +484,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   }
 
   // Wait for the test to complete
-  numRetries = 0
+  numRetries := 0
   c.Log.Infof("waiting for test for permutation_id=%d to complete...", permutation.Id)
   teststatus:for {
     statusTestResp, err := c.p.Tester.GetTestStatus(context.TODO(), &proto.GetTestStatusRequest{
