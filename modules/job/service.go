@@ -136,6 +136,7 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
     }
 
     md5val := md5.New()
+    md5valBuild := md5.New()
     for i, param := range newPermutationInJob.CurrentPerm.Params {
       var value string
       switch param.Type {
@@ -146,9 +147,13 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
       }
       newPermutationInJob.CurrentPerm.Params[i].Value = value
       io.WriteString(md5val, fmt.Sprintf("%s=%s\n", param.Name, value))
+
+      // Build no matter what
+      io.WriteString(md5valBuild, fmt.Sprintf("%s=%s\n", param.Name, param.Value))
     }
 
     newPermutationInJob.CurrentPerm.Checksum = fmt.Sprintf("%x", md5val.Sum(nil))
+    newPermutationInJob.CurrentPerm.BuildChecksum = fmt.Sprintf("%x", md5valBuild.Sum(nil))
     newPermutationInJob.CurrentPerm.JobId = uint(req.Id)
     newPermutationInJob.CurrentPerm.Id = 0
   }
