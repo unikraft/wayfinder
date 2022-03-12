@@ -266,9 +266,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   // }
 
   var buildOutput *proto.SaveBuildOutputsToDiskResponse
+  build := build{}
   if (c.prevBuildChecksum != task.CurrentPerm.BuildChecksum) {
     c.prevBuildChecksum = task.CurrentPerm.BuildChecksum
-    build := build{}
 
     buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit)
 
@@ -546,9 +546,11 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
     if err != nil {
       return fmt.Errorf("could not delete test: %s", err)
     }
-    err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
-    if err != nil {
-      return fmt.Errorf("could not delete build: %s", err)
+    if build.uuid != "" {
+      err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
+      if err != nil {
+        return fmt.Errorf("could not delete build: %s", err)
+      }
     }
   }
 

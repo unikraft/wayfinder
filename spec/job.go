@@ -64,6 +64,7 @@ type JobSpec struct {
   Repeats          uint64             `json:"repeats"`
   CurrentPerm      JobPermutation     `json:"current"`
   DryRun           bool               `json:"dry_run"`
+  Name             string             `json:"name"`
 }
 
 type JobPermutation struct {
