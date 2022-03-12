@@ -110,11 +110,11 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
     return fmt.Errorf("could not calculate permutations: %s", err)
   }
 
-  // Send first signal to the generator
-  canPublish <- true
-
   // See if the generator is sequential or not
   isSequential := <- canPublish
+
+  // Send first signal to the generator
+  canPublish <- true
 
   var totalPermutations uint64 = 0
   uniquePermutations := make(map[string]bool)

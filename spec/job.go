@@ -421,13 +421,11 @@ func (j *JobSpec) Permutations(
     return nil, nil, nil, nil, nil, fmt.Errorf("too many permutations requested")
   }
 
+  canPublish <- j.SeqScheduler
   go func() {
     // If not sequential, ignore first block and notfy the consumer
     if !j.SeqScheduler {
       _ = <- canPublish
-      canPublish <- false
-    } else {
-      canPublish <- true
     }
     switch schedulerType {
       case Grid:
