@@ -58,7 +58,7 @@ params:
 
   - name:    SENDFILE
     type:    string
-    only:    ["on", "off"]
+    only:    ["off"]
     default: "off"
     when:    test
 
