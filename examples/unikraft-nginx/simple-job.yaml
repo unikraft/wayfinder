@@ -1,77 +1,91 @@
 name: unikraft-nginx-simple
 params:
   # Unikraft-specific
-  - name: LWIP_NUM_TCPCON
-    type: int
-    only: [8, 16, 32, 64]
-    when: build
+  - name:    LWIP_NUM_TCPCON
+    type:    int
+    default: 64
+    only:    [8, 16, 32, 64]
+    when:    build
 
-  - name: LWIP_NUM_TCPLISTENERS
-    type: int
-    only: [8, 16, 32, 64]
-    when: build
+  - name:    LWIP_NUM_TCPLISTENERS
+    type:    int
+    default: 64
+    only:    [8, 16, 32, 64]
+    when:    build
   
-  - name: LWIP_UKNETDEV_POLLONLY
-    type: string
-    only: ["y"]
-    when: build
+  - name:    LWIP_UKNETDEV_POLLONLY
+    type:    string
+    default: "y"
+    only:    ["y"]
+    when:    build
   
-  - name: LWIP_POOLS
-    type: string
-    only: ["y", "n"]
-    when: build
+  - name:    LWIP_POOLS
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
 
   # Nginx-specific
-  - name: ACCESS_LOG
-    type: string
-    only: ["n"]
-    when: test
+  - name:    ACCESS_LOG
+    type:    string
+    default: "n"
+    only:    ["n"]
+    when:    test
 
-  - name: KEEPALIVE_TIMEOUT
-    type: int
-    only: [0, 60]
-    when: test
+  - name:    KEEPALIVE_TIMEOUT
+    type:    int
+    default: 60
+    only:    [0, 60]
+    when:    test
 
-  - name: OPEN_FILE_CACHE
-    type: string
-    only: ["nocaching"]
-    when: test
+  - name:    OPEN_FILE_CACHE
+    type:    string
+    default: "nocaching"
+    only:    ["nocaching"]
+    when:    test
 
-  - name: WORKER_RLIMIT_NOFILE
-    type: string
-    only: [63, 126] # Should be double than WORKER_CONNECTIONS
-    when: test
+  - name:    WORKER_RLIMIT_NOFILE
+    type:    string
+    only:    [63, 126] # Should be double than WORKER_CONNECTIONS
+    default: 63
+    when:    test
 
-  - name: SERVER_TOKENS
-    type: string
-    only: ["on", "off"]
-    when: test
+  - name:    SERVER_TOKENS
+    type:    string
+    only:    ["on", "off"]
+    default: "off"
+    when:    test
 
-  - name: SENDFILE
-    type: string
-    only: ["on", "off"]
-    when: test
+  - name:    SENDFILE
+    type:    string
+    only:    ["on", "off"]
+    default: "off"
+    when:    test
 
-  - name: TCP_NOPUSH
-    type: string
-    only: ["on", "off"]
-    when: test
+  - name:    TCP_NOPUSH
+    type:    string
+    default: "off"
+    only:    ["on", "off"]
+    when:    test
 
   # Client-specific
-  - name: WORKER_CONNECTIONS
-    type: int
-    only: [63]
-    when: test
+  - name:    WORKER_CONNECTIONS
+    type:    int
+    default: 63
+    only:    [63]
+    when:    test
 
-  - name: PAYLOAD_SIZE
-    type: int
-    only: [612] # bytes
-    when: test
+  - name:    PAYLOAD_SIZE
+    type:    int
+    default: 612
+    only:    [612] # bytes
+    when:    test
   
-  - name: NUM_PARALLEL_CONNS
-    type: int
-    only: [30]
-    when: test
+  - name:    NUM_PARALLEL_CONNS
+    type:    int
+    default: 30
+    only:    [30]
+    when:    test
 
 build:
   image: ghcr.io/unikraft/wayfinder/unikraft-nginx:latest
