@@ -88,6 +88,12 @@ service JobService {
       get: "/api/flush",
     };
   }
+
+  rpc PauseRedisQueues (PauseRedisQueuesRequest) returns (PauseRedisQueuesResponse)  {
+    option (google.api.http) = {
+      get: "/api/pause",
+    };
+  }
 }
 
 enum JobScheduler {
@@ -276,6 +282,14 @@ message FlushRedisQueueRequest {
 }
 
 message FlushRedisQueueResponse {
+  bool success = 1 [json_name = "success"];
+}
+
+message PauseRedisQueuesRequest {
+  int64 time = 1;
+}
+
+message PauseRedisQueuesResponse {
   bool success = 1 [json_name = "success"];
 }
 
