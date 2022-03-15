@@ -337,6 +337,64 @@ func (s *service) DeleteJob(ctx context.Context, req *proto.DeleteJobRequest) (*
   }, nil
 }
 
+func (s *service) FlushRedisQueue(ctx context.Context, req *proto.FlushRedisQueueRequest) (*proto.FlushRedisQueueResponse, error) {
+  s.p.Log.Infof("flushing redis queue...")
+
+  switch req.QueueType {
+  case proto.RedisQueueType_REDIS_QUEUE_TYPE_JOB:
+    s.p.Log.Infof("flushing job queue...")
+    
+    nrPurged, err := s.p.JobQueue.PurgeReady()
+    if err != nil {
+      s.p.Log.Errorf("could not purge job queue: %s", err)
+    }
+
+    s.p.Log.Infof("Flushed job queue, %d jobs purged", nrPurged)
+
+    return &proto.FlushRedisQueueResponse{
+      Success: true,
+    }, nil
+  case proto.RedisQueueType_REDIS_QUEUE_TYPE_PERMUTATION:
+    s.p.Log.Infof("flushing permutation queue...")
+    
+    nrPurged, err := s.p.TaskQueue.PurgeReady()
+    if err != nil {
+      s.p.Log.Errorf("could not purge task queue: %s", err)
+    }
+
+    s.p.Log.Infof("Flushed task queue, %d permutations purged", nrPurged)
+
+    return &proto.FlushRedisQueueResponse{
+      Success: true,
+    }, nil
+  case proto.RedisQueueType_REDIS_QUEUE_TYPE_ALL:
+    var totalPurged int64
+    s.p.Log.Infof("flushing all queues...")
+
+    nrPurged, err := s.p.JobQueue.PurgeReady()
+    if err != nil {
+      s.p.Log.Errorf("could not purge job queue: %s", err)
+    }
+    totalPurged = nrPurged
+
+    nrPurged, err = s.p.TaskQueue.PurgeReady()
+    if err != nil {
+      s.p.Log.Errorf("could not purge task queue: %s", err)
+    }
+    totalPurged += nrPurged
+
+    s.p.Log.Infof("Flushed all queues, %d elements purged", totalPurged)
+
+    return &proto.FlushRedisQueueResponse{
+      Success: true,
+    }, nil
+  default:
+    return &proto.FlushRedisQueueResponse{
+      Success: false,
+    }, status.Errorf(codes.InvalidArgument, "invalid queue type: %s", req.QueueType)
+  }
+}
+
 func (s *service) GetJobResults(ctx context.Context, req *proto.GetJobResultsRequest) (*proto.GetJobResultsResponse, error) {
   s.p.Log.Infof("requested to get job %d results...", req.Id)
 
