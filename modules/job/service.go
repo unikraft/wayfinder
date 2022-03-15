@@ -38,6 +38,7 @@ import (
   "io"
   "fmt"
   "compress/zlib"
+	"time"
 
   "google.golang.org/grpc/codes"
   "google.golang.org/grpc/status"
@@ -333,6 +334,22 @@ func (s *service) DeleteJob(ctx context.Context, req *proto.DeleteJobRequest) (*
   }
 
   return &proto.DeleteJobResponse{
+    Success: true,
+  }, nil
+}
+
+func (s *service) PauseRedisQueues(ctx context.Context, req *proto.PauseRedisQueuesRequest) (*proto.PauseRedisQueuesResponse, error) {
+  s.p.Log.Infof("pausing redis queues...")
+
+  if s.p.Redis.ClientPause(s.p.Redis.Context(), time.Millisecond * time.Duration(req.Time)).Err() != nil {
+    return &proto.PauseRedisQueuesResponse{
+      Success: false,
+    }, status.Errorf(codes.Internal, "could not pause redis queues")
+  }
+
+  fmt.Printf("Paused redis queues for %dms\n", req.Time)
+
+  return &proto.PauseRedisQueuesResponse{
     Success: true,
   }, nil
 }
