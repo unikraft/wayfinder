@@ -82,6 +82,12 @@ service JobService {
       get: "/api/job/{id}/results",
     };
   }
+
+  rpc FlushRedisQueue (FlushRedisQueueRequest) returns (FlushRedisQueueResponse)  {
+    option (google.api.http) = {
+      get: "/api/flush",
+    };
+  }
 }
 
 enum JobScheduler {
@@ -125,6 +131,12 @@ enum JobPermutationStatus {
   JOB_PERM_STATUS_TEST_FAILED   = 9;
   JOB_PERM_STATUS_TEST_KILLED   = 10;
   JOB_PERM_STATUS_SUCCESS       = 11;
+}
+
+enum RedisQueueType {
+  REDIS_QUEUE_TYPE_JOB = 0;
+  REDIS_QUEUE_TYPE_PERMUTATION = 1;
+  REDIS_QUEUE_TYPE_ALL = 2;
 }
 
 message Job {
@@ -257,6 +269,14 @@ message GetJobResultsResponse {
   bool            success = 1 [json_name = "success"];
   int64           total   = 2 [json_name = "total"];
   repeated Result results = 3 [json_name = "results"];
+}
+
+message FlushRedisQueueRequest {
+  RedisQueueType queueType = 1;
+}
+
+message FlushRedisQueueResponse {
+  bool success = 1 [json_name = "success"];
 }
 
 message DeleteJobRequest {
