@@ -61,6 +61,13 @@ service JobService {
     };
   }
 
+  // delete job
+  rpc DeleteJob (DeleteJobRequest) returns (DeleteJobResponse)  {
+    option (google.api.http) = {
+      delete: "/api/job/{id}/delete",
+    };
+  }
+
 
   // list jobs
   rpc ListJobs (ListJobsRequest) returns (ListJobsResponse)  {
@@ -294,8 +301,9 @@ message PauseRedisQueuesResponse {
 }
 
 message DeleteJobRequest {
-  int64 id    = 1;
-  bool  purge = 2;
+  int64 id      = 1;
+  bool  purge   = 2;
+  bool  cascade = 3;
 }
 
 message DeleteJobResponse {
