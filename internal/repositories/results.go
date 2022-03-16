@@ -73,6 +73,22 @@ func (r *ResultsRepository) DeleteResultByTestUuid(uuid string, purge bool) erro
   return nil
 }
 
+func (r *ResultsRepository) DeleteResultsByPermutationId(permutationId int64, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = r.db.Unscoped()
+  } else {
+    deleteType = r.db
+  }
+
+  if err := deleteType.Delete(&models.Result{}, "permutation_id = ?", permutationId).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
 // SaveResultIntByTestUuid adds a new integer-based test result
 func (r *ResultsRepository) SaveResultIntByTestUuid(testUuid, name string, value int64) (*models.Result, error) {
   // Look up the test

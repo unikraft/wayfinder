@@ -97,6 +97,22 @@ func (repo *BuildsRepository) DeleteBuildByBuildUuid(uuid string, purge bool) er
   return nil
 }
 
+func (repo *BuildsRepository) DeleteBuildsByPermutationId(permutationId int64, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = repo.db.Unscoped()
+  } else {
+    deleteType = repo.db
+  }
+
+  if err := deleteType.Delete(&models.Build{}, "permutation_id = ?", permutationId).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
 // SetStatusByBuildUuid sets the status of the build to the desired status by
 // the Build's UUID.
 func (repo *BuildsRepository) SetStatusByBuildUuid(uuid string, status proto.BuildStatus) error {

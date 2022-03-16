@@ -109,13 +109,20 @@ func (repo *JobsRepository) FindJob(id int64, offset, limit int, job *models.Job
 
 // Deletes a specific job
 func (repo *JobsRepository) DeleteJob(id int64, purge bool)  error {
+  var deleteType *gorm.DB
   job := &models.Job{}
+
+  if purge {
+    deleteType = repo.db.Unscoped()
+  } else {
+    deleteType = repo.db
+  }
 
   if err := repo.FindJob(id, 0, 1, job); err != nil {
     return err
   }
 
-  if err := repo.db.Delete(job).Error; err != nil {
+  if err := deleteType.Delete(job).Error; err != nil {
     return err
   }
   

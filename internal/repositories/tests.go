@@ -97,6 +97,22 @@ func (repo *TestsRepository) DeleteTestByTestUuid(uuid string, purge bool) error
   return nil
 }
 
+func (repo *TestsRepository) DeleteTestsByPermutationId(permutationId int64, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = repo.db.Unscoped()
+  } else {
+    deleteType = repo.db
+  }
+
+  if err := deleteType.Delete(&models.Test{}, "permutation_id = ?", permutationId).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
 func (repo *TestsRepository) FindTestByTestUuid(uuid string) (*models.Test, error) {
   test := models.Test{}
   

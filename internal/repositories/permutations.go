@@ -124,6 +124,59 @@ func (r *PermutationsRepository) DeleteFromJobSpec(job *spec.JobSpec) error {
   return nil
 }
 
+func (r *PermutationsRepository) DeleteById(permutationId int64, purge bool) error {
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = r.db.Unscoped()
+  } else {
+    deleteType = r.db
+  }
+
+  if err := deleteType.Delete(&models.Permutation{}, "id = ?", permutationId).Error; err != nil {
+    return err
+  }
+
+  return nil
+}
+
+func (r *PermutationsRepository) DeleteParamsById(permutationId int64, purge bool) error {
+  var paramsFound []models.Param
+  var paramIds []models.PermutationParam
+  ids := make([]int64, 0)
+  var deleteType *gorm.DB
+
+  if purge {
+    deleteType = r.db.Unscoped()
+  } else {
+    deleteType = r.db
+  }
+
+  if err := deleteType.Where("permutation_id = ?", permutationId).Select("param_id").Find(paramIds).Error; err != nil {
+    return err
+  }
+
+  for _, paramId := range paramIds {
+    ids = append(ids, paramId.ParamId)
+  }
+
+  if (len(ids) == 0) {
+    return fmt.Errorf("No params found for permutation id %d", permutationId)
+  }
+
+  if err := r.db.Where("id in ?", ids).Preload("permutation_params").Find(paramsFound).Error; err != nil {
+    return err
+  }
+
+  for _, param := range paramsFound {
+    if err := deleteType.Delete(&param).Error; err != nil {
+      return err
+    }
+  }
+
+  return nil
+}
+
 // UpdatePermutation updates only the Data field using Key as selector.
 func (s *PermutationsRepository) UpdatePermutation(permutation *models.Permutation) (*models.Permutation, error) {
   if err := s.db.Model(permutation).Where("id = ?", permutation.Id).Updates(permutation).Error; err != nil {
