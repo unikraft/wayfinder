@@ -327,6 +327,47 @@ func (s *service) DeleteJob(ctx context.Context, req *proto.DeleteJobRequest) (*
     }, status.Errorf(codes.NotFound, "job with id=%d not found", req.Id)
   }
 
+  if req.Cascade {
+    for _, permutation := range job.Permutations {
+      // Delete Params
+      if err := s.p.DB.Repos().Permutations().DeleteParamsById(int64(permutation.Id), req.Purge); err != nil {
+        return &proto.DeleteJobResponse{
+          Success: false,
+        }, status.Errorf(codes.Internal, "could not delete params for permutation with id=%d: %s", err)
+      }
+
+      // TODO Delete Permutation_params?
+
+      // Delete results
+      if err := s.p.DB.Repos().Results().DeleteResultsByPermutationId(int64(permutation.Id), req.Purge); err != nil {
+        return &proto.DeleteJobResponse{
+          Success: false,
+        }, status.Errorf(codes.Internal, "could not delete results for permutation with id=%d: %s", err)
+      }
+      
+      // Delete Builds
+      if err := s.p.DB.Repos().Builds().DeleteBuildsByPermutationId(int64(permutation.Id), req.Purge); err != nil {
+        return &proto.DeleteJobResponse{
+          Success: false,
+        }, status.Errorf(codes.Internal, "could not delete builds for permutation with id=%d: %s", err)
+      }
+
+      // Delete Tests
+      if err := s.p.DB.Repos().Tests().DeleteTestsByPermutationId(int64(permutation.Id), req.Purge); err != nil {
+        return &proto.DeleteJobResponse{
+          Success: false,
+        }, status.Errorf(codes.Internal, "could not delete tests for permutation with id=%d: %s", err)
+      }
+
+      // Delete Permutations
+      if err := s.p.DB.Repos().Permutations().DeleteParamsById(int64(permutation.Id), req.Purge); err != nil {
+        return &proto.DeleteJobResponse{
+          Success: false,
+        }, status.Errorf(codes.Internal, "could not delete permutation with id=%d: %s", err)
+      }
+    }
+  }
+
   if err := s.p.DB.Repos().Jobs().DeleteJob(req.Id, req.Purge); err != nil {
     return &proto.DeleteJobResponse{
       Success: false,
