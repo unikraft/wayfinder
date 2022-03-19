@@ -35,16 +35,31 @@ RUN set -xe; \
 # Grab and prepare Lupine/Linux sources
 #
 ENV LUPINE_HASH=3729c7570e5f1b25e786171d0a19cef858b4923f
+ENV LINUX_HASH=39a8804455fb23f09157341d3ba7db6d7ae6ee76
+ENV OSV_HASH=3e658b8ab32a424ae58a24d01d5b2e22da61932e
 ENV WORKDIR="/root/workspace"
 ENV MICROVM_CFG="${WORKDIR}/configs/microvm.config"
 ENV NGINX_CFG="${WORKDIR}/configs/apps/nginx.config"
 ENV NGINX_CONF="/root/resources/nginx.conf"
 
 RUN set -xe; \
-    git clone https://github.com/hlef/Lupine-Linux.git ${WORKDIR}; \
+    mkdir ${WORKDIR}; \
     cd ${WORKDIR}; \
+    git init; \
+    git remote add origin https://github.com/hlef/Lupine-Linux.git; \
+    git fetch --depth 1 origin ${LUPINE_HASH}; \
+    git checkout FETCH_HEAD; \
     git checkout ${LUPINE_HASH}; \
-    git submodule update --init; \
+    cd ${WORKDIR}/linux; \
+    git init; \
+    git remote add origin https://github.com/torvalds/linux.git; \
+    git fetch --depth 1 origin ${LINUX_HASH}; \
+    git checkout FETCH_HEAD; \
+    cd ${WORKDIR}/osv; \
+    git init; \
+    git remote add origin https://github.com/cloudius-systems/osv.git; \
+    git fetch --depth 1 origin ${OSV_HASH}; \
+    git checkout FETCH_HEAD; \
     cd ${WORKDIR}/load_entropy; \
     make;
 
