@@ -38,6 +38,7 @@ import (
   "compress/zlib"
   "bytes"
   "io"
+  "os"
 
   "github.com/adjust/rmq/v4"
   
@@ -226,6 +227,35 @@ func (c *TaskConsumer) packEnvVars(task *spec.JobSpec) []*proto.TestEnvVar {
   return envVars
 }
 
+func cleanPreviousBuild(output *proto.BuildOutputs) error {
+  initRd := output.InitRd
+  kernel := output.Kernel
+  disks  := output.Disks
+
+  // Run on a different thread to avoid IO blocking
+  go func ()  {
+    if initRd != "" {
+      if err := os.Remove(initRd); err != nil {
+        fmt.Printf("Could not remove initrd: %s err: %s\n", initRd, err)
+      }
+    }
+    if kernel != "" {
+      if err := os.Remove(kernel); err != nil {
+        fmt.Printf("Could not remove kernel: %s err: %s\n", kernel, err)
+      }
+    }
+    for _, disk := range disks {
+      if disk.Path != "" {
+        if err := os.Remove(disk.Path); err != nil {
+          fmt.Printf("Could not remove disk: %s err: %s\n", disk, err)
+        }
+      }
+    }
+  }()
+  
+  return nil
+}
+
 func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
   // TODO: Implement a *real* scheduler.  For now this consumer accepts any task
   // it receives and attempts to complete it.  This method should essentially
@@ -380,7 +410,14 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
       return fmt.Errorf("could not save build outputs: %s", err)
     }
 
-    // Previous output needs to be replaced
+    // Previous output needs to be replaced and deleted
+    if (c.prevBuildOutput != nil) {
+      err = cleanPreviousBuild(c.prevBuildOutput.Outputs)
+      if err != nil {
+        c.releaseCoresById(buildCoreIds)
+        return fmt.Errorf("could not clean previous build: %s", err)
+      }
+    }
     buildOutput = saveBuildOutputsResp
     c.prevBuildOutput = buildOutput
 
