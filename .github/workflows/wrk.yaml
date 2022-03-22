@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'support/wrk/Dockerfile'
 
 jobs:
   build-and-push-image:

@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'examples/linux-nginx/Dockerfile'
 
 jobs:
   build-and-push-image:
