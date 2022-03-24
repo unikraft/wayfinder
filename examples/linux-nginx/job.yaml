@@ -16,6 +16,271 @@ params:
     type: string
     only: ["y", "n"]
 
+  # Linux compile-time options
+  - name:    COMPRESSION_MODE
+    type:    string
+    default: "CONFIG_KERNEL_GZIP"
+    only:    ["CONFIG_KERNEL_GZIP", "CONFIG_KERNEL_BZIP2", "CONFIG_KERNEL_LZMA", "CONFIG_KERNEL_XZ", "CONFIG_KERNEL_LZO", "CONFIG_KERNEL_LZ4"]
+    when:    build
+
+  - name:    CONFIG_CROSS_MEMORY_ATTACH
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    TIMER_TICK_HANDLING
+    type:    string
+    default: "CONFIG_NO_HZ_FULL"
+    only:    ["CONFIG_HZ_PERIODIC", "CONFIG_NO_HZ_IDLE", "CONFIG_NO_HZ_FULL"]
+    when:    build
+
+  - name:    CONFIG_HIGH_RES_TIMERS
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_TASKS_RCU
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_RCU_USER_QS
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name: CONFIG_RCU_FANOUT
+    type: int
+    #default:
+    only: [2, 64]
+    when: build
+
+  - name: CONFIG_RCU_FANOUT_LEAF
+    type: int
+    #default:
+    only: [2, 4, 8, 16, 32, 64]
+    when: build
+
+  - name:    CONFIG_RCU_FANOUT_EXACT
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_RCU_FAST_NO_HZ
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_RCU_KTHREAD_PRIO
+    type:    int
+    default: 0
+    only:    [0, 1, 2, 4, 8, 16, 32, 64, 99]
+    when:    build
+
+  - name:    CONFIG_RCU_NOCB_CPU
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_NUMA_BALANCING
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_NUMA_BALANCING_DEFAULT_ENABLED
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_SCHED_AUTOGROUP
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_CC_OPTIMIZE_FOR_SIZE
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    build
+
+  - name:    CONFIG_PRINTK
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_BASE_FULL
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_FUTEX
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_EPOLL
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_AIO
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_ADVISE_SYSCALLS
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    SLAB
+    type:    string
+    default: "CONFIG_SLUB"
+    only:    ["CONFIG_SLAB", "CONFIG_SLUB", "CONFIG_SLOB"]
+    when:    build
+
+  - name:    CONFIG_SLUB_CPU_PARTIAL
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_JUMP_LABEL
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    STACK_PROTECTOR
+    type:    string
+    default: "CONFIG_CC_STACKPROTECTOR_NONE"
+    only:    ["CONFIG_CC_STACKPROTECTOR_NONE", "CONFIG_CC_STACKPROTECTOR_REGULAR", "CONFIG_CC_STACKPROTECTOR_STRONG"]
+    when:    build
+#wip
+  - name:    CONFIG_DEFAULT_IOSCHED
+    type:    string
+    default: "cfq"
+    only:    ["cfq", "deadline", "noop"]
+    when:    build
+
+  - name:    CONFIG_SCHED_OMIT_FRAME_POINTER
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_SMP
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+#?
+  - name:    PROCESSOR_FAMILY
+    type:    string
+    default: "CONFIG_GENERIC_CPU"
+    values:  ["CONFIG_MK8", "CONFIG_MPSC", "CONFIG_MCORE2", "CONFIG_MATOM", "CONFIG_GENERIC_CPU"]
+    when:    build
+
+  - name:    CONFIG_SCHED_SMT
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    PREEMPTION_MODEL
+    type:    string
+    default: "CONFIG_PREEMPT_VOLUNTARY"
+    values:  ["CONFIG_PREEMPT_NONE", "CONFIG_PREEMPT_VOLUNTARY", "CONFIG_PREEMPT"]
+    when:    build
+
+  - name:    CONFIG_DIRECT_GBPAGES
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_NUMA
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_SPARSEMEM_VMEMMAP
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_TRANSPARENT_HUGEPAGE
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_X86_SMAP
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    TIMER_FREQUENCY
+    type:    string
+    default: "CONFIG_HZ_250"
+    only:    ["CONFIG_HZ_100", "CONFIG_HZ_250", "CONFIG_HZ_300", "CONFIG_HZ_1000"]
+    when:    build
+
+  - name:    CONFIG_WQ_POWER_EFFICIENT_DEFAULT
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CPU_FREQ_GOVERNOR
+    type:    string
+    default: "CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE"
+    only:    ["CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE", "CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE", "CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE", "CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND", "CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE"]
+    when:    build
+
+  - name:    CONFIG_SUSPEND
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_HIBERNATION
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    CONFIG_PM_AUTOSLEEP
+    type:    string
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DEBUG_TLBFLUSH
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    build
+
   # NGINX-specific
   - name: PAYLOAD_SIZE
     type: int
