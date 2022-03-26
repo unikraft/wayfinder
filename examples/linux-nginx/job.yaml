@@ -281,6 +281,2333 @@ params:
     only:    ["n", "y"]
     when:    build
 
+  # Runtime Parameters
+  # /proc/sys/fs
+  - name:    AIO_MAX_NR
+    path:    /proc/sys/fs/aio-max-nr
+    type:    int
+    default: 65536
+    only:    [65536]
+    when:    test
+
+  - name:    DIR_NOTIFY_ENABLE
+    path:    /proc/sys/fs/dir-notify-enable
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    FILE_MAX
+    path:    /proc/sys/fs/file-max
+    type:    int
+    default: 816968
+    only:    [816968]
+    when:    test
+
+  - name:    LEASE_BREAK_TIME
+    path:    /proc/sys/fs/lease-break-time
+    type:    int
+    default: 45
+    only:    [45]
+    when:    test
+
+  - name:    LEASES_ENABLE
+    path:    /proc/sys/fs/leases-enable
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    NR_OPEN
+    path:    /proc/sys/fs/nr_open
+    type:    int
+    default: 1048576
+    only:    [1048576]
+    when:    test
+
+  - name:    OVERFLOWGID
+    path:    /proc/sys/fs/overflowgid
+    type:    int
+    default: 65534
+    only:    [65534]
+    when:    test
+
+  - name:    OVERFLOWUID
+    path:    /proc/sys/fs/overflowuid
+    type:    int
+    default: 65534
+    only:    [65534]
+    when:    test
+
+  - name:    PIPE_MAX_SIZE
+    path:    /proc/sys/fs/pipe-max-size
+    type:    int
+    default: 1048576
+    only:    [1048576]
+    when:    test
+
+  - name:    PROTECTED_HARDLINKS
+    path:    /proc/sys/fs/protected_hardlinks
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    PROTECTED_SYMLINKS
+    path:    /proc/sys/fs/protected_symlinks
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SUID_DUMPABLE
+    path:    /proc/sys/fs/suid_dumpable
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  # /proc/sys/kernel
+  - name:    ACPI_VIDEO_FLAGS
+    path:    /proc/sys/kernel/acpi_video_flags
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    AUTO_MSGMNI
+    path:    /proc/sys/kernel/auto_msgmni
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    CAD_PID
+    path:    /proc/sys/kernel/cad_pid
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    COMPAT_LOG
+    path:    /proc/sys/kernel/compat-log
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    CORE_PIPE_LIMIT
+    path:    /proc/sys/kernel/core_pipe_limit
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    CORE_USES_PID
+    path:    /proc/sys/kernel/core_uses_pid
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    CTRL_ALT_DEL
+    path:    /proc/sys/kernel/ctrl-alt-del
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DMESG_RESTRICT
+    path:    /proc/sys/kernel/dmesg_restrict
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FTRACE_DUMP_ON_OOPS
+    path:    /proc/sys/kernel/ftrace_dump_on_oops
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FTRACE_ENABLED
+    path:    /proc/sys/kernel/ftrace_enabled
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    HUNG_TASK_CHECK_COUNT
+    path:    /proc/sys/kernel/hung_task_check_count
+    type:    int
+    default: 4194304
+    only:    [4194304]
+    when:    test
+
+  - name:    HUNG_TASK_PANIC
+    path:    /proc/sys/kernel/hung_task_panic
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HUNG_TASK_TIMEOUT_SECS
+    path:    /proc/sys/kernel/hung_task_timeout_secs
+    type:    int
+    default: 120
+    only:    [120]
+    when:    test
+
+  - name:    HUNG_TASK_WARNINGS
+    path:    /proc/sys/kernel/hung_task_warnings
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    IO_DELAY_TYPE
+    path:    /proc/sys/kernel/io_delay_type
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    KEXEC_LOAD_DISABLED
+    path:    /proc/sys/kernel/kexec_load_disabled
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    KPTR_RESTRICT
+    path:    /proc/sys/kernel/kptr_restrict
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    KSTACK_DEPTH_TO_PRINT
+    path:    /proc/sys/kernel/kstack_depth_to_print
+    type:    int
+    default: 12
+    only:    [12]
+    when:    test
+
+  - name:    LATENCYTOP
+    path:    /proc/sys/kernel/latencytop
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    MAX_LOCK_DEPTH
+    path:    /proc/sys/kernel/max_lock_depth
+    type:    int
+    default: 1024
+    only:    [1024]
+    when:    test
+
+  - name:    MODULES_DISABLED
+    path:    /proc/sys/kernel/modules_disabled
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    MSGMAX
+    path:    /proc/sys/kernel/msgmax
+    type:    int
+    default: 8192
+    only:    [8192]
+    when:    test
+
+  - name:    MSGMNB
+    path:    /proc/sys/kernel/msgmnb
+    type:    int
+    default: 16384
+    only:    [16384]
+    when:    test
+
+  - name:    MSGMNI
+    path:    /proc/sys/kernel/msgmni
+    type:    int
+    default: 32000
+    only:    [32000]
+    when:    test
+
+  - name:    NMI_WATCHDOG
+    path:    /proc/sys/kernel/nmi_watchdog
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    NS_LAST_PID
+    path:    /proc/sys/kernel/ns_last_pid
+    type:    int
+    default: 2793
+    only:    [2793]
+    when:    test
+
+  - name:    NUMA_BALANCING
+    path:    /proc/sys/kernel/numa_balancing
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NUMA_BALANCING_SCAN_DELAY_MS
+    path:    /proc/sys/kernel/numa_balancing_scan_delay_ms
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  - name:    NUMA_BALANCING_SCAN_PERIOD_MAX_MS
+    path:    /proc/sys/kernel/numa_balancing_scan_period_max_ms
+    type:    int
+    default: 60000
+    only:    [60000]
+    when:    test
+
+  - name:    NUMA_BALANCING_SCAN_PERIOD_MIN_MS
+    path:    /proc/sys/kernel/numa_balancing_scan_period_min_ms
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  - name:    NUMA_BALANCING_SCAN_SIZE_MB
+    path:    /proc/sys/kernel/numa_balancing_scan_size_mb
+    type:    int
+    default: 256
+    only:    [256]
+    when:    test
+
+  - name:    OVERFLOWGID
+    path:    /proc/sys/kernel/overflowgid
+    type:    int
+    default: 65534
+    only:    [65534]
+    when:    test
+
+  - name:    OVERFLOWUID
+    path:    /proc/sys/kernel/overflowuid
+    type:    int
+    default: 65534
+    only:    [65534]
+    when:    test
+
+  - name:    PANIC
+    path:    /proc/sys/kernel/panic
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PANIC_ON_IO_NMI
+    path:    /proc/sys/kernel/panic_on_io_nmi
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PANIC_ON_OOPS
+    path:    /proc/sys/kernel/panic_on_oops
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PANIC_ON_UNRECOVERED_NMI
+    path:    /proc/sys/kernel/panic_on_unrecovered_nmi
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PANIC_ON_WARN
+    path:    /proc/sys/kernel/panic_on_warn
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PERF_CPU_TIME_MAX_PERCENT
+    path:    /proc/sys/kernel/perf_cpu_time_max_percent
+    type:    int
+    default: 25
+    only:    [25]
+    when:    test
+
+  - name:    PERF_EVENT_MAX_SAMPLE_RATE
+    path:    /proc/sys/kernel/perf_event_max_sample_rate
+    type:    int
+    default: 100000
+    only:    [100000]
+    when:    test
+
+  - name:    PERF_EVENT_MLOCK_KB
+    path:    /proc/sys/kernel/perf_event_mlock_kb
+    type:    int
+    default: 516
+    only:    [516]
+    when:    test
+
+  - name:    PERF_EVENT_PARANOID
+    path:    /proc/sys/kernel/perf_event_paranoid
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    PID_MAX
+    path:    /proc/sys/kernel/pid_max
+    type:    int
+    default: 32768
+    only:    [32768]
+    when:    test
+
+  - name:    PRINT_FATAL_SIGNALS
+    path:    /proc/sys/kernel/print-fatal-signals
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINTK
+    path:    /proc/sys/kernel/printk
+    type:    int
+    default: 4
+    only:    [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    when:    test
+
+  - name:    PRINTK_DELAY
+    path:    /proc/sys/kernel/printk_delay
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINTK_RATELIMIT
+    path:    /proc/sys/kernel/printk_ratelimit
+    type:    int
+    default: 5
+    only:    [5]
+    when:    test
+
+  - name:    PRINTK_RATELIMIT_BURST
+    path:    /proc/sys/kernel/printk_ratelimit_burst
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    RANDOMIZE_VA_SPACE
+    path:    /proc/sys/kernel/randomize_va_space
+    type:    int
+    default: 2
+    only:    [2]
+    when:    test
+
+  - name:    REAL_ROOT_DEV
+    path:    /proc/sys/kernel/real-root-dev
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SCHED_AUTOGROUP_ENABLED
+    path:    /proc/sys/kernel/sched_autogroup_enabled
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SCHED_CFS_BANDWIDTH_SLICE_US
+    path:    /proc/sys/kernel/sched_cfs_bandwidth_slice_us
+    type:    int
+    default: 5000
+    only:    [5000]
+    when:    test
+
+  - name:    SCHED_CHILD_RUNS_FIRST
+    path:    /proc/sys/kernel/sched_child_runs_first
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SCHED_LATENCY_NS
+    path:    /proc/sys/kernel/sched_latency_ns
+    type:    int
+    default: 18000000
+    only:    [18000000]
+    when:    test
+
+  - name:    SCHED_MIGRATION_COST_NS
+    path:    /proc/sys/kernel/sched_migration_cost_ns
+    type:    int
+    default: 500000
+    only:    [500000]
+    when:    test
+
+  - name:    SCHED_MIN_GRANULARITY_NS
+    path:    /proc/sys/kernel/sched_min_granularity_ns
+    type:    int
+    default: 2250000
+    only:    [2250000]
+    when:    test
+
+  - name:    SCHED_NR_MIGRATE
+    path:    /proc/sys/kernel/sched_nr_migrate
+    type:    int
+    default: 32
+    only:    [32]
+    when:    test
+
+  - name:    SCHED_RR_TIMESLICE_MS
+    path:    /proc/sys/kernel/sched_rr_timeslice_ms
+    type:    int
+    default: 25
+    only:    [25]
+    when:    test
+
+  - name:    SCHED_RT_PERIOD_US
+    path:    /proc/sys/kernel/sched_rt_period_us
+    type:    int
+    default: 1000000
+    only:    [1000000]
+    when:    test
+
+  - name:    SCHED_RT_RUNTIME_US
+    path:    /proc/sys/kernel/sched_rt_runtime_us
+    type:    int
+    default: 950000
+    only:    [950000]
+    when:    test
+
+  - name:    SCHED_SHARES_WINDOW_NS
+    path:    /proc/sys/kernel/sched_shares_window_ns
+    type:    int
+    default: 10000000
+    only:    [10000000]
+    when:    test
+
+  - name:    SCHED_TIME_AVG_MS
+    path:    /proc/sys/kernel/sched_time_avg_ms
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  - name:    SCHED_TUNABLE_SCALING
+    path:    /proc/sys/kernel/sched_tunable_scaling
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SCHED_WAKEUP_GRANULARITY_NS
+    path:    /proc/sys/kernel/sched_wakeup_granularity_ns
+    type:    int
+    default: 3000000
+    only:    [3000000]
+    when:    test
+
+  - name:    SEM
+    path:    /proc/sys/kernel/sem
+    type:    string
+    default: "32000 1024000000 500 32000"
+    only:    ["32000 1024000000 500 32000", "3200 102400000 50 3200", "320000 10240000000 5000 320000"]
+    when:    test
+
+  - name:    SHM_RMID_FORCED
+    path:    /proc/sys/kernel/shm_rmid_forced
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SHMALL
+    path:    /proc/sys/kernel/shmall
+    type:    int
+    default: 18446744073692774399
+    only:    [18446744073692774399]
+    when:    test
+
+  - name:    SHMMAX
+    path:    /proc/sys/kernel/shmmax
+    type:    int
+    default: 18446744073692774399
+    only:    [18446744073692774399]
+    when:    test
+
+  - name:    SHMMNI
+    path:    /proc/sys/kernel/shmmni
+    type:    int
+    default: 4096
+    only:    [4096]
+    when:    test
+
+  - name:    SOFTLOCKUP_ALL_CPU_BACKTRACE
+    path:    /proc/sys/kernel/softlockup_all_cpu_backtrace
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SOFTLOCKUP_PANIC
+    path:    /proc/sys/kernel/softlockup_panic
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    STACK_TRACER_ENABLED
+    path:    /proc/sys/kernel/stack_tracer_enabled
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SYSCTL_WRITES_STRICT
+    path:    /proc/sys/kernel/sysctl_writes_strict
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SYSRQ
+    path:    /proc/sys/kernel/sysrq
+    type:    int
+    default: 176
+    only:    [176]
+    when:    test
+
+  - name:    TAINTED
+    path:    /proc/sys/kernel/tainted
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    THREADS_MAX
+    path:    /proc/sys/kernel/threads-max
+    type:    int
+    default: 63834
+    only:    [63834]
+    when:    test
+
+  - name:    TIMER_MIGRATION
+    path:    /proc/sys/kernel/timer_migration
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACEOFF_ON_WARNING
+    path:    /proc/sys/kernel/traceoff_on_warning
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACEPOINT_PRINTK
+    path:    /proc/sys/kernel/tracepoint_printk
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    UNKNOWN_NMI_PANIC
+    path:    /proc/sys/kernel/unknown_nmi_panic
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WATCHDOG
+    path:    /proc/sys/kernel/watchdog
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    WATCHDOG_THRESH
+    path:    /proc/sys/kernel/watchdog_thresh
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  # /proc/sys/net/core
+  - name:    BPF_JIT_ENABLE
+    path:    /proc/sys/net/core/bpf_jit_enable
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  # these are high importance probably.
+  - name:    BUSY_POLL
+    path:    /proc/sys/net/core/busy_poll
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    BUSY_READ
+    path:    /proc/sys/net/core/busy_read
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  # This is only relevant if you perform some form of priority queueing.
+  - name:    DEFAULT_QDISC
+    path:    /proc/sys/net/core/default_qdisc
+    type:    string
+    default: "pfifo_fast"
+    only:    ["pfifo", "bfifo", "pfifo_fast", "red", "sfq", "tbf"]
+    when:    test
+
+  #  maximum number of packets that kernel can handle on a NAPI interrupt
+  - name:    DEV_WEIGHT
+    path:    /proc/sys/net/core/dev_weight
+    type:    int
+    default: 64
+    only:    [64]
+    when:    test
+
+  # These option requires rps to be enabled on option
+  # /sys/class/net/<dev>/queues/rx-<n>/rps_cpus also it doesn't make much sense
+  # if single core (spreads interrupt management to multiple CPUs])
+  # if testing multicre worth checking: XPS (Transmit packet steering),
+  # RFS (Receive Flow Steering)
+  - name:    FLOW_LIMIT_CPU_BITMAP
+    path:    /proc/sys/net/core/flow_limit_cpu_bitmap
+    type:    string
+    default: "00"
+    only:    ["00"]
+    when:    test
+
+  - name:    FLOW_LIMIT_TABLE_LEN
+    path:    /proc/sys/net/core/flow_limit_table_len
+    type:    int
+    default: 4096
+    only:    [4096]
+    when:    test
+
+  # Logging infromation limits from the network. Probably should be turned off.
+  - name:    MESSAGE_BURST
+    path:    /proc/sys/net/core/message_burst
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    MESSAGE_COST
+    path:    /proc/sys/net/core/message_cost
+    type:    int
+    default: 5
+    only:    [5]
+    when:    test
+
+  # threshold of packet processed on every NAPI poll cycle (Probably interesting,
+  # although since backpressure will occur naturally, not that important)
+  - name:    NETDEV_BUDGET
+    path:    /proc/sys/net/core/netdev_budget
+    type:    int
+    default: 300
+    only:    [300]
+    when:    test
+
+  # size of receive queue between netdev and ip kernel layers
+  - name:    NETDEV_MAX_BACKLOG
+    path:    /proc/sys/net/core/netdev_max_backlog
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  # control when timestamps are added, better set to 0 and not relevant for
+  # single CPU config.
+  - name:    NETDEV_TSTAMP_PREQUEUE
+    path:    /proc/sys/net/core/netdev_tstamp_prequeue
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  # Memory limit for per packet metadata. probably exponentially increasing.
+  - name:    OPTMEM_MAX
+    path:    /proc/sys/net/core/optmem_max
+    type:    int
+    default: 20480
+    only:    [20480]
+    when:    test
+
+  # read mem limits
+  - name:    RMEM_DEFAULT
+    path:    /proc/sys/net/core/rmem_default
+    type:    int
+    default: 212992
+    only:    [212992]
+    when:    test
+
+  - name:    RMEM_MAX
+    path:    /proc/sys/net/core/rmem_max
+    type:    int
+    default: 212992
+    only:    [212992]
+    when:    test
+
+  # mumber of maximum concurent flows for rps. power of 2
+  - name:    RPS_SOCK_FLOW_ENTRIES
+    path:    /proc/sys/net/core/rps_sock_flow_entries
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  # listen socket backlog limit - also related: tcp_max_syn_backlog
+  - name:    SOMAXCONN
+    path:    /proc/sys/net/core/somaxconn
+    type:    int
+    default: 128
+    only:    [128]
+    when:    test
+
+  - name:    TSTAMP_ALLOW_DATA
+    path:    /proc/sys/net/core/tstamp_allow_data
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  # write mem limits
+  - name:    WMEM_DEFAULT
+    path:    /proc/sys/net/core/wmem_default
+    type:    int
+    default: 212992
+    only:    [212992]
+    when:    test
+
+  - name:    WMEM_MAX
+    path:    /proc/sys/net/core/wmem_max
+    type:    int
+    default: 212992
+    only:    [212992]
+    when:    test
+
+  # /sys/class/net/<dev>/queues/rx-<n>/rps_cpus
+  - name:    RPS_FLOW_CNT
+    path:    /sys/class/net/__NETWORK_INTERFACE_NAME__/queues/rx-0/rps_flow_cnt
+    type:    int
+    default: 0
+    only:    [0]
+    when:    test
+
+  - name:    RPS_CPUS
+    path:    /sys/class/net/__NETWORK_INTERFACE_NAME__/queues/rx-0/rps_cpus
+    type:    string
+    default: "00"
+    only:    ["00"]
+    when:    test
+
+  - name:    FWMARK_REFLECT
+    path:    /proc/sys/net/ipv4/fwmark_reflect
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  # Control how the host reacts to icmp messages. These probabvly are irrelevant
+  # for our workload.
+  - name:    ICMP_ECHO_IGNORE_ALL
+    path:    /proc/sys/net/ipv4/icmp_echo_ignore_all
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ICMP_ECHO_IGNORE_BROADCASTS
+    path:    /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ICMP_ERRORS_USE_INBOUND_IFADDR
+    path:    /proc/sys/net/ipv4/icmp_errors_use_inbound_ifaddr
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ICMP_IGNORE_BOGUS_ERROR_RESPONSES
+    path:    /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ICMP_MSGS_BURST
+    path:    /proc/sys/net/ipv4/icmp_msgs_burst
+    type:    int
+    default: 50
+    only:    [50]
+    when:    test
+
+  - name:    ICMP_MSGS_PER_SEC
+    path:    /proc/sys/net/ipv4/icmp_msgs_per_sec
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  - name:    ICMP_RATELIMIT
+    path:    /proc/sys/net/ipv4/icmp_ratelimit
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  - name:    ICMP_RATEMASK
+    path:    /proc/sys/net/ipv4/icmp_ratemask
+    type:    int
+    default: 6168
+    only:    [6168]
+    when:    test
+
+  - name:    IGMP_MAX_MEMBERSHIPS
+    path:    /proc/sys/net/ipv4/igmp_max_memberships
+    type:    int
+    default: 20
+    only:    [20]
+    when:    test
+
+  # Multicast param. control max addresses in a multicast group and max groups
+  # that the host can subscribe to - probably useless
+  - name:    IGMP_MAX_MSF
+    path:    /proc/sys/net/ipv4/igmp_max_msf
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    IGMP_QRV
+    path:    /proc/sys/net/ipv4/igmp_qrv
+    type:    int
+    default: 2
+    only:    [2]
+    when:    test
+
+  # temp storage per-ip information - probable useless.
+  - name:    INET_PEER_MAXTTL
+    path:    /proc/sys/net/ipv4/inet_peer_maxttl
+    type:    int
+    default: 600
+    only:    [600]
+    when:    test
+
+  - name:    INET_PEER_MINTTL
+    path:    /proc/sys/net/ipv4/inet_peer_minttl
+    type:    int
+    default: 120
+    only:    [120]
+    when:    test
+
+  - name:    INET_PEER_THRESHOLD
+    path:    /proc/sys/net/ipv4/inet_peer_threshold
+    type:    int
+    default: 65664
+    only:    [65664]
+    when:    test
+
+  - name:    IP_DEFAULT_TTL
+    path:    /proc/sys/net/ipv4/ip_default_ttl
+    type:    int
+    default: 64
+    only:    [64]
+    when:    test
+
+  - name:    IP_DYNADDR
+    path:    /proc/sys/net/ipv4/ip_dynaddr
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    IP_EARLY_DEMUX
+    path:    /proc/sys/net/ipv4/ip_early_demux
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    IP_FORWARD
+    path:    /proc/sys/net/ipv4/ip_forward
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    IP_FORWARD_USE_PMTU
+    path:    /proc/sys/net/ipv4/ip_forward_use_pmtu
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    IP_NO_PMTU_DISC
+    path:    /proc/sys/net/ipv4/ip_no_pmtu_disc
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    IP_NONLOCAL_BIND
+    path:    /proc/sys/net/ipv4/ip_nonlocal_bind
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    IPFRAG_HIGH_THRESH
+    path:    /proc/sys/net/ipv4/ipfrag_high_thresh
+    type:    int
+    default: 4194304
+    only:    [4194304]
+    when:    test
+
+  - name:    IPFRAG_LOW_THRESH
+    path:    /proc/sys/net/ipv4/ipfrag_low_thresh
+    type:    int
+    default: 3145728
+    only:    [3145728]
+    when:    test
+
+  - name:    IPFRAG_MAX_DIST
+    path:    /proc/sys/net/ipv4/ipfrag_max_dist
+    type:    int
+    default: 64
+    only:    [64]
+    when:    test
+
+  - name:    IPFRAG_SECRET_INTERVAL
+    path:    /proc/sys/net/ipv4/ipfrag_secret_interval
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    IPFRAG_TIME
+    path:    /proc/sys/net/ipv4/ipfrag_time
+    type:    int
+    default: 30
+    only:    [30]
+    when:    test
+
+  # reset when too many requests on listen queue, probably irrelevant if number
+  # of concurrent flows is small.
+  - name:    TCP_ABORT_ON_OVERFLOW
+    path:    /proc/sys/net/ipv4/tcp_abort_on_overflow
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_ADV_WIN_SCALE
+    path:    /proc/sys/net/ipv4/tcp_adv_win_scale
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_APP_WIN
+    path:    /proc/sys/net/ipv4/tcp_app_win
+    type:    int
+    default: 31
+    only:    [31]
+    when:    test
+
+  - name:    TCP_AUTOCORKING
+    path:    /proc/sys/net/ipv4/tcp_autocorking
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  # This can be up to 9000 (jumbo frame size).
+  # Jumbo frames are not realistic in the Internet.
+  - name:    TCP_BASE_MSS
+    path:    /proc/sys/net/ipv4/tcp_base_mss
+    type:    int
+    default: 512
+    only:    [512]
+    when:    test
+
+  # Side-channel atack to infer seq number. Probably irrelevant.
+  - name:    TCP_CHALLENGE_ACK_LIMIT
+    path:    /proc/sys/net/ipv4/tcp_challenge_ack_limit
+    type:    int
+    default: 100
+    only:    [100]
+    when:    test
+
+  #   VERY IMPORTANT: TCP congestion algorithm default choice.
+  #   DCTCP is an interesting option, but need ECN support.
+  #   TODO: need to enable compile option to allow it to work.
+  - name:    TCP_CONGESTION_CONTROL
+    path:    /proc/sys/net/ipv4/tcp_congestion_control
+    type:    string
+    default: "cubic"
+    only: ["cubic", "reno", "htcp", "vegas", "bbr", "cdg"]
+    when:    test
+
+  # TCP selective ACK, duplicate SACK, Forward SACK, can affect processing
+  # performance, probably no impact if no packet loss.
+  - name:    TCP_DSACK
+    path:    /proc/sys/net/ipv4/tcp_dsack
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  # recovery mechanism for short connections. Probably useful and boolean. off is 0, on is 3.
+  - name:    TCP_EARLY_RETRANS
+    path:    /proc/sys/net/ipv4/tcp_early_retrans
+    type:    int
+    default: 3
+    only:    [3]
+    when:    test
+
+  # This requires support from the network. Disable is no support - probably
+  # irrelevant.
+  - name:    TCP_ECN
+    path:    /proc/sys/net/ipv4/tcp_ecn
+    type:    int
+    default: 2
+    only:    [2]
+    when:    test
+
+  - name:    TCP_FACK
+    path:    /proc/sys/net/ipv4/tcp_fack
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  # needs application support
+  - name:    TCP_FASTOPEN
+    path:    /proc/sys/net/ipv4/tcp_fastopen
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  # random seed to generate random tcp cookies for fastopen. Probably irrelevant.
+  - name:    TCP_FIN_TIMEOUT
+    path:    /proc/sys/net/ipv4/tcp_fin_timeout
+    type:    int
+    default: 60
+    only:    [60]
+    when:    test
+
+  - name:    TCP_FRTO
+    path:    /proc/sys/net/ipv4/tcp_frto
+    type:    int
+    default: 2
+    only:    [2]
+    when:    test
+
+  - name:    TCP_FWMARK_ACCEPT
+    path:    /proc/sys/net/ipv4/tcp_fwmark_accept
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_INVALID_RATELIMIT
+    path:    /proc/sys/net/ipv4/tcp_invalid_ratelimit
+    type:    int
+    default: 500
+    only:    [500]
+    when:    test
+
+  - name:    TCP_KEEPALIVE_INTVL
+    path:    /proc/sys/net/ipv4/tcp_keepalive_intvl
+    type:    int
+    default: 75
+    only:    [75]
+    when:    test
+
+  - name:    TCP_KEEPALIVE_PROBES
+    path:    /proc/sys/net/ipv4/tcp_keepalive_probes
+    type:    int
+    default: 9
+    only:    [9]
+    when:    test
+
+  - name:    TCP_KEEPALIVE_TIME
+    path:    /proc/sys/net/ipv4/tcp_keepalive_time
+    type:    int
+    default: 7200
+    only:    [7200]
+    when:    test
+
+  - name:    TCP_LIMIT_OUTPUT_BYTES
+    path:    /proc/sys/net/ipv4/tcp_limit_output_bytes
+    type:    int
+    default: 131072
+    only:    [131072]
+    when:    test
+
+  - name:    TCP_LOW_LATENCY
+    path:    /proc/sys/net/ipv4/tcp_low_latency
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_MAX_ORPHANS
+    path:    /proc/sys/net/ipv4/tcp_max_orphans
+    type:    int
+    default: 32768
+    only:    [32768]
+    when:    test
+
+  - name:    TCP_MAX_REORDERING
+    path:    /proc/sys/net/ipv4/tcp_max_reordering
+    type:    int
+    default: 300
+    only:    [300]
+    when:    test
+
+  - name:    TCP_MAX_SYN_BACKLOG
+    path:    /proc/sys/net/ipv4/tcp_max_syn_backlog
+    type:    int
+    default: 256
+    only:    [256]
+    when:    test
+
+  - name:    TCP_MAX_TW_BUCKETS
+    path:    /proc/sys/net/ipv4/tcp_max_tw_buckets
+    type:    int
+    default: 32768
+    only:    [32768]
+    when:    test
+
+  - name:    TCP_MEM
+    path:    /proc/sys/net/ipv4/tcp_mem
+    type:    string
+    default: "189126 252170 378252"
+    only:    ["189126 252170 378252", "18912 25217 37825", "1891260 2521700 3782520"]
+    when:    test
+
+  - name:    TCP_MIN_TSO_SEGS
+    path:    /proc/sys/net/ipv4/tcp_min_tso_segs
+    type:    int
+    default: 2
+    only:    [2]
+    when:    test
+
+  - name:    TCP_MODERATE_RCVBUF
+    path:    /proc/sys/net/ipv4/tcp_moderate_rcvbuf
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_MTU_PROBING
+    path:    /proc/sys/net/ipv4/tcp_mtu_probing
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_NO_METRICS_SAVE
+    path:    /proc/sys/net/ipv4/tcp_no_metrics_save
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_NOTSENT_LOWAT
+    path:    /proc/sys/net/ipv4/tcp_notsent_lowat
+    type:    int
+    default: -1
+    only:    [-1, 16384, 4096, 65536]
+    when:    test
+
+  - name:    TCP_ORPHAN_RETRIES
+    path:    /proc/sys/net/ipv4/tcp_orphan_retries
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_REORDERING
+    path:    /proc/sys/net/ipv4/tcp_reordering
+    type:    int
+    default: 3
+    only:    [3]
+    when:    test
+
+  - name:    TCP_RETRANS_COLLAPSE
+    path:    /proc/sys/net/ipv4/tcp_retrans_collapse
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_RETRIES1
+    path:    /proc/sys/net/ipv4/tcp_retries1
+    type:    int
+    default: 3
+    only:    [3]
+    when:    test
+
+  - name:    TCP_RETRIES2
+    path:    /proc/sys/net/ipv4/tcp_retries2
+    type:    int
+    default: 15
+    only:    [15]
+    when:    test
+
+  - name:    TCP_RFC1337
+    path:    /proc/sys/net/ipv4/tcp_rfc1337
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  # socket read mem limits
+  - name:    TCP_RMEM
+    path:    /proc/sys/net/ipv4/tcp_rmem
+    type:    string
+    default: "4096 87380 6291456"
+    only:    ["4096 87380 6291456", "512 8738 629145", "40960 873800 62914560"]
+    when:    test
+
+  - name:    TCP_SACK
+    path:    /proc/sys/net/ipv4/tcp_sack
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_SLOW_START_AFTER_IDLE
+    path:    /proc/sys/net/ipv4/tcp_slow_start_after_idle
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_STDURG
+    path:    /proc/sys/net/ipv4/tcp_stdurg
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_SYN_RETRIES
+    path:    /proc/sys/net/ipv4/tcp_syn_retries
+    type:    int
+    default: 6
+    only:    [6]
+    when:    test
+
+  - name:    TCP_SYNACK_RETRIES
+    path:    /proc/sys/net/ipv4/tcp_synack_retries
+    type:    int
+    default: 5
+    only:    [5]
+    when:    test
+
+  - name:    TCP_SYNCOOKIES
+    path:    /proc/sys/net/ipv4/tcp_syncookies
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_THIN_DUPACK
+    path:    /proc/sys/net/ipv4/tcp_thin_dupack
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_THIN_LINEAR_TIMEOUTS
+    path:    /proc/sys/net/ipv4/tcp_thin_linear_timeouts
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_TIMESTAMPS
+    path:    /proc/sys/net/ipv4/tcp_timestamps
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_TSO_WIN_DIVISOR
+    path:    /proc/sys/net/ipv4/tcp_tso_win_divisor
+    type:    int
+    default: 3
+    only:    [3]
+    when:    test
+
+  - name:    TCP_TW_RECYCLE
+    path:    /proc/sys/net/ipv4/tcp_tw_recycle
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_TW_REUSE
+    path:    /proc/sys/net/ipv4/tcp_tw_reuse
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TCP_WINDOW_SCALING
+    path:    /proc/sys/net/ipv4/tcp_window_scaling
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TCP_WMEM
+    path:    /proc/sys/net/ipv4/tcp_wmem
+    type:    string
+    default: "4096 16384 4194304"
+    only:    ["4096 16384 4194304", "512 1638 419430", "40960 163840 41943040"]
+    when:    test
+
+  - name:    TCP_WORKAROUND_SIGNED_WINDOWS
+    path:    /proc/sys/net/ipv4/tcp_workaround_signed_windows
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    UDP_MEM
+    path:    /proc/sys/net/ipv4/udp_mem
+    type:    string
+    default: "189126 252170 378252"
+    only:    ["189126 252170 378252", "18912 25217 37825", "1891260 2521700 3782520"]
+    when:    test
+
+  - name:    UDP_RMEM_MIN
+    path:    /proc/sys/net/ipv4/udp_rmem_min
+    type:    int
+    default: 4096
+    only:    [4096]
+    when:    test
+
+  - name:    UDP_WMEM_MIN
+    path:    /proc/sys/net/ipv4/udp_wmem_min
+    type:    int
+    default: 4096
+    only:    [4096]
+    when:    test
+
+  - name:    XFRM4_GC_THRESH
+    path:    /proc/sys/net/ipv4/xfrm4_gc_thresh
+    type:    int
+    default: 32768
+    only:    [32768]
+    when:    test
+
+  # /proc/sys/net/ipv4/route
+  - name:    ERROR_BURST
+    path:    /proc/sys/net/ipv4/route/error_burst
+    type:    int
+    default: 1250
+    only:    [1250]
+    when:    test
+
+  - name:    ERROR_COST
+    path:    /proc/sys/net/ipv4/route/error_cost
+    type:    int
+    default: 250
+    only:    [250]
+    when:    test
+
+  - name:    GC_ELASTICITY
+    path:    /proc/sys/net/ipv4/route/gc_elasticity
+    type:    int
+    default: 8
+    only:    [8]
+    when:    test
+
+  - name:    GC_INTERVAL
+    path:    /proc/sys/net/ipv4/route/gc_interval
+    type:    int
+    default: 60
+    only:    [60]
+    when:    test
+
+  - name:    GC_MIN_INTERVAL
+    path:    /proc/sys/net/ipv4/route/gc_min_interval
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    GC_MIN_INTERVAL_MS
+    path:    /proc/sys/net/ipv4/route/gc_min_interval_ms
+    type:    int
+    default: 500
+    only:    [500]
+    when:    test
+
+  - name:    GC_THRESH
+    path:    /proc/sys/net/ipv4/route/gc_thresh
+    type:    int
+    default: -1
+    only:    [-1, 200000, 2000000, 20000000]
+    when:    test
+
+  - name:    GC_TIMEOUT
+    path:    /proc/sys/net/ipv4/route/gc_timeout
+    type:    int
+    default: 300
+    only:    [300]
+    when:    test
+
+  - name:    MAX_SIZE
+    path:    /proc/sys/net/ipv4/route/max_size
+    type:    int
+    default: 2147483647
+    only:    [2147483647]
+    when:    test
+
+  - name:    MIN_ADV_MSS
+    path:    /proc/sys/net/ipv4/route/min_adv_mss
+    type:    int
+    default: 256
+    only:    [256]
+    when:    test
+
+  - name:    MIN_PMTU
+    path:    /proc/sys/net/ipv4/route/min_pmtu
+    type:    int
+    default: 552
+    only:    [552]
+    when:    test
+
+  # Probably irrelevant
+  - name:    MTU_EXPIRES
+    path:    /proc/sys/net/ipv4/route/mtu_expires
+    type:    int
+    default: 600
+    only:    [600]
+    when:    test
+
+  - name:    REDIRECT_LOAD
+    path:    /proc/sys/net/ipv4/route/redirect_load
+    type:    int
+    default: 5
+    only:    [5]
+    when:    test
+
+  - name:    REDIRECT_NUMBER
+    path:    /proc/sys/net/ipv4/route/redirect_number
+    type:    int
+    default: 9
+    only:    [9]
+    when:    test
+
+  - name:    REDIRECT_SILENCE
+    path:    /proc/sys/net/ipv4/route/redirect_silence
+    type:    int
+    default: 5120
+    only:    [5120]
+    when:    test
+
+  # /proc/sys/net/ipv4/conf/all
+  - name:    ACCEPT_LOCAL
+    path:    /proc/sys/net/ipv4/conf/all/accept_local
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ACCEPT_REDIRECTS
+    path:    /proc/sys/net/ipv4/conf/all/accept_redirects
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ACCEPT_SOURCE_ROUTE
+    path:    /proc/sys/net/ipv4/conf/all/accept_source_route
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ARP_ACCEPT
+    path:    /proc/sys/net/ipv4/conf/all/arp_accept
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ARP_ANNOUNCE
+    path:    /proc/sys/net/ipv4/conf/all/arp_announce
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ARP_FILTER
+    path:    /proc/sys/net/ipv4/conf/all/arp_filter
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ARP_IGNORE
+    path:    /proc/sys/net/ipv4/conf/all/arp_ignore
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ARP_NOTIFY
+    path:    /proc/sys/net/ipv4/conf/all/arp_notify
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    BOOTP_RELAY
+    path:    /proc/sys/net/ipv4/conf/all/bootp_relay
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DISABLE_POLICY
+    path:    /proc/sys/net/ipv4/conf/all/disable_policy
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DISABLE_XFRM
+    path:    /proc/sys/net/ipv4/conf/all/disable_xfrm
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FORCE_IGMP_VERSION
+    path:    /proc/sys/net/ipv4/conf/all/force_igmp_version
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FORWARDING
+    path:    /proc/sys/net/ipv4/conf/all/forwarding
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    IGMPV2_UNSOLICITED_REPORT_INTERVAL
+    path:    /proc/sys/net/ipv4/conf/all/igmpv2_unsolicited_report_interval
+    type:    int
+    default: 10000
+    only:    [10000]
+    when:    test
+
+  - name:    IGMPV3_UNSOLICITED_REPORT_INTERVAL
+    path:    /proc/sys/net/ipv4/conf/all/igmpv3_unsolicited_report_interval
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  - name:    LOG_MARTIANS
+    path:    /proc/sys/net/ipv4/conf/all/log_martians
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    MEDIUM_ID
+    path:    /proc/sys/net/ipv4/conf/all/medium_id
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PROMOTE_SECONDARIES
+    path:    /proc/sys/net/ipv4/conf/all/promote_secondaries
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PROXY_ARP
+    path:    /proc/sys/net/ipv4/conf/all/proxy_arp
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PROXY_ARP_PVLAN
+    path:    /proc/sys/net/ipv4/conf/all/proxy_arp_pvlan
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ROUTE_LOCALNET
+    path:    /proc/sys/net/ipv4/conf/all/route_localnet
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    RP_FILTER
+    path:    /proc/sys/net/ipv4/conf/all/rp_filter
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SECURE_REDIRECTS
+    path:    /proc/sys/net/ipv4/conf/all/secure_redirects
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SEND_REDIRECTS
+    path:    /proc/sys/net/ipv4/conf/all/send_redirects
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SHARED_MEDIA
+    path:    /proc/sys/net/ipv4/conf/all/shared_media
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SRC_VALID_MARK
+    path:    /proc/sys/net/ipv4/conf/all/src_valid_mark
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TAG
+    path:    /proc/sys/net/ipv4/conf/all/tag
+    type:    string
+    default: "n"
+    when:    test
+
+  # /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__
+  - name:    ANYCAST_DELAY
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/anycast_delay
+    type:    int
+    default: 100
+    only:    [100]
+    when:    test
+
+  - name:    APP_SOLICIT
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/app_solicit
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    BASE_REACHABLE_TIME
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/base_reachable_time
+    type:    int
+    default: 30
+    only:    [30]
+    when:    test
+
+  - name:    BASE_REACHABLE_TIME_MS
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/base_reachable_time_ms
+    type:    int
+    default: 30000
+    only:    [30000]
+    when:    test
+
+  - name:    DELAY_FIRST_PROBE_TIME
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/delay_first_probe_time
+    type:    int
+    default: 5
+    only:    [5]
+    when:    test
+
+  - name:    GC_STALE_TIME
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/gc_stale_time
+    type:    int
+    default: 60
+    only:    [60]
+    when:    test
+
+  - name:    LOCKTIME
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/locktime
+    type:    int
+    default: 100
+    only:    [100]
+    when:    test
+
+  - name:    MCAST_SOLICIT
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/mcast_solicit
+    type:    int
+    default: 3
+    only:    [3]
+    when:    test
+
+  - name:    PROXY_DELAY
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/proxy_delay
+    type:    int
+    default: 80
+    only:    [80]
+    when:    test
+
+  - name:    PROXY_QLEN
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/proxy_qlen
+    type:    int
+    default: 64
+    only:    [64]
+    when:    test
+
+  - name:    RETRANS_TIME
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/retrans_time
+    type:    int
+    default: 100
+    only:    [100]
+    when:    test
+
+  - name:    RETRANS_TIME_MS
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/retrans_time_ms
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
+  - name:    UCAST_SOLICIT
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/ucast_solicit
+    type:    int
+    default: 3
+    only:    [3]
+    when:    test
+
+  - name:    UNRES_QLEN
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/unres_qlen
+    type:    int
+    default: 31
+    only:    [31]
+    when:    test
+
+  - name:    UNRES_QLEN_BYTES
+    path:    /proc/sys/net/ipv4/neigh/__NETWORK_INTERFACE_NAME__/unres_qlen_bytes
+    type:    int
+    default: 65536
+    only:    [65536]
+    when:    test
+
+  # /proc/sys/net/unix
+  - name:    MAX_DGRAM_QLEN
+    path:    /proc/sys/net/unix/max_dgram_qlen
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  # /proc/sys/vm
+  - name:    ADMIN_RESERVE_KBYTES
+    path:    /proc/sys/vm/admin_reserve_kbytes
+    type:    int
+    default: 8192
+    only:    [8192]
+    when:    test
+
+  - name:    BLOCK_DUMP
+    path:    /proc/sys/vm/block_dump
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DIRTY_BACKGROUND_BYTES
+    path:    /proc/sys/vm/dirty_background_bytes
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DIRTY_BACKGROUND_RATIO
+    path:    /proc/sys/vm/dirty_background_ratio
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    DIRTY_BYTES
+    path:    /proc/sys/vm/dirty_bytes
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DIRTY_EXPIRE_CENTISECS
+    path:    /proc/sys/vm/dirty_expire_centisecs
+    type:    int
+    default: 3000
+    only:    [3000]
+    when:    test
+
+  - name:    DIRTY_RATIO
+    path:    /proc/sys/vm/dirty_ratio
+    type:    int
+    default: 20
+    only:    [20]
+    when:    test
+
+  - name:    DIRTY_WRITEBACK_CENTISECS
+    path:    /proc/sys/vm/dirty_writeback_centisecs
+    type:    int
+    default: 500
+    only:    [500]
+    when:    test
+
+  - name:    DIRTYTIME_EXPIRE_SECONDS
+    path:    /proc/sys/vm/dirtytime_expire_seconds
+    type:    int
+    default: 43200
+    only:    [43200]
+    when:    test
+
+  - name:    DROP_CACHES
+    path:    /proc/sys/vm/drop_caches
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    EXTFRAG_THRESHOLD
+    path:    /proc/sys/vm/extfrag_threshold
+    type:    int
+    default: 500
+    only:    [500]
+    when:    test
+
+  - name:    HUGEPAGES_TREAT_AS_MOVABLE
+    path:    /proc/sys/vm/hugepages_treat_as_movable
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HUGETLB_SHM_GROUP
+    path:    /proc/sys/vm/hugetlb_shm_group
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LAPTOP_MODE
+    path:    /proc/sys/vm/laptop_mode
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LEGACY_VA_LAYOUT
+    path:    /proc/sys/vm/legacy_va_layout
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOWMEM_RESERVE_RATIO
+    path:    /proc/sys/vm/lowmem_reserve_ratio
+    type:    string
+    default: "256 256 32"
+    only:    ["256 256 32", "25 25 3", "2560 2560 320"]
+    when:    test
+
+  - name:    MAX_MAP_COUNT
+    path:    /proc/sys/vm/max_map_count
+    type:    int
+    default: 65530
+    only:    [65530]
+    when:    test
+
+  - name:    MEMORY_FAILURE_EARLY_KILL
+    path:    /proc/sys/vm/memory_failure_early_kill
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    MEMORY_FAILURE_RECOVERY
+    path:    /proc/sys/vm/memory_failure_recovery
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    MIN_FREE_KBYTES
+    path:    /proc/sys/vm/min_free_kbytes
+    type:    int
+    default: 67584
+    only:    [67584]
+    when:    test
+
+  - name:    MIN_SLAB_RATIO
+    path:    /proc/sys/vm/min_slab_ratio
+    type:    int
+    default: 5
+    only:    [5]
+    when:    test
+
+  - name:    MIN_UNMAPPED_RATIO
+    path:    /proc/sys/vm/min_unmapped_ratio
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    MMAP_MIN_ADDR
+    path:    /proc/sys/vm/mmap_min_addr
+    type:    int
+    default: 65536
+    only:    [65536]
+    when:    test
+
+  - name:    NR_HUGEPAGES
+    path:    /proc/sys/vm/nr_hugepages
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NR_HUGEPAGES_MEMPOLICY
+    path:    /proc/sys/vm/nr_hugepages_mempolicy
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NR_OVERCOMMIT_HUGEPAGES
+    path:    /proc/sys/vm/nr_overcommit_hugepages
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NUMA_ZONELIST_ORDER
+    path:    /proc/sys/vm/numa_zonelist_order
+    type:    string
+    default: "default"
+    only:    ["default", "node", "zone"]
+    when:    test
+
+  - name:    OOM_DUMP_TASKS
+    path:    /proc/sys/vm/oom_dump_tasks
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    OOM_KILL_ALLOCATING_TASK
+    path:    /proc/sys/vm/oom_kill_allocating_task
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    OVERCOMMIT_KBYTES
+    path:    /proc/sys/vm/overcommit_kbytes
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    OVERCOMMIT_MEMORY
+    path:    /proc/sys/vm/overcommit_memory
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    OVERCOMMIT_RATIO
+    path:    /proc/sys/vm/overcommit_ratio
+    type:    int
+    default: 50
+    only:    [50]
+    when:    test
+
+  - name:    PAGE_CLUSTER
+    path:    /proc/sys/vm/page-cluster
+    type:    int
+    default: 3
+    only:    [3]
+    when:    test
+
+  - name:    PANIC_ON_OOM
+    path:    /proc/sys/vm/panic_on_oom
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PERCPU_PAGELIST_FRACTION
+    path:    /proc/sys/vm/percpu_pagelist_fraction
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    STAT_INTERVAL
+    path:    /proc/sys/vm/stat_interval
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SWAPPINESS
+    path:    /proc/sys/vm/swappiness
+    type:    int
+    default: 60
+    only:    [60]
+    when:    test
+
+  - name:    USER_RESERVE_KBYTES
+    path:    /proc/sys/vm/user_reserve_kbytes
+    type:    int
+    default: 131072
+    only:    [131072]
+    when:    test
+
+  - name:    VFS_CACHE_PRESSURE
+    path:    /proc/sys/vm/vfs_cache_pressure
+    type:    int
+    default: 100
+    only:    [100]
+    when:    test
+
+  - name:    ZONE_RECLAIM_MODE
+    path:    /proc/sys/vm/zone_reclaim_mode
+    type:    string
+    default: "n"
+    when:    test
+
+  # /sys/fs/ext4/__PARTITION_NAME__
+  - name:    INODE_READAHEAD_BLKS
+    path:    /sys/fs/ext4/__PARTITION_NAME__/inode_readahead_blks
+    type:    int
+    default: 32
+    only:    [32]
+    when:    test
+
+  - name:    MB_MAX_TO_SCAN
+    path:    /sys/fs/ext4/__PARTITION_NAME__/mb_max_to_scan
+    type:    int
+    default: 200
+    only:    [200]
+    when:    test
+
+  - name:    MSG_RATELIMIT_BURST
+    path:    /sys/fs/ext4/__PARTITION_NAME__/msg_ratelimit_burst
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    MB_STREAM_REQ
+    path:    /sys/fs/ext4/__PARTITION_NAME__/mb_stream_req
+    type:    int
+    default: 16
+    only:    [16]
+    when:    test
+
+  - name:    MB_MIN_TO_SCAN
+    path:    /sys/fs/ext4/__PARTITION_NAME__/mb_min_to_scan
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    MB_STATS
+    path:    /sys/fs/ext4/__PARTITION_NAME__/mb_stats
+    type:    string
+    default: "n"
+    when:    test
+
+  #- trigger_fs_error:
+  - name:    ERR_RATELIMIT_BURST
+    path:    /sys/fs/ext4/__PARTITION_NAME__/err_ratelimit_burst
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    MB_GROUP_PREALLOC
+    path:    /sys/fs/ext4/__PARTITION_NAME__/mb_group_prealloc
+    type:    int
+    default: 512
+    only:    [512]
+    when:    test
+
+  - name:    INODE_GOAL
+    path:    /sys/fs/ext4/__PARTITION_NAME__/inode_goal
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    RESERVED_CLUSTERS
+    path:    /sys/fs/ext4/__PARTITION_NAME__/reserved_clusters
+    type:    int
+    default: 4096
+    only:    [4096]
+    when:    test
+
+  - name:    EXTENT_MAX_ZEROOUT_KB
+    path:    /sys/fs/ext4/__PARTITION_NAME__/extent_max_zeroout_kb
+    type:    int
+    default: 32
+    only:    [32]
+    when:    test
+
+  - name:    ERR_RATELIMIT_INTERVAL_MS
+    path:    /sys/fs/ext4/__PARTITION_NAME__/err_ratelimit_interval_ms
+    type:    int
+    default: 1250
+    only:    [1250]
+    when:    test
+
+  - name:    WARNING_RATELIMIT_BURST
+    path:    /sys/fs/ext4/__PARTITION_NAME__/warning_ratelimit_burst
+    type:    int
+    default: 10
+    only:    [10]
+    when:    test
+
+  - name:    WARNING_RATELIMIT_INTERVAL_MS
+    path:    /sys/fs/ext4/__PARTITION_NAME__/warning_ratelimit_interval_ms
+    type:    int
+    default: 1250
+    only:    [1250]
+    when:    test
+
+  - name:    MB_ORDER2_REQ
+    path:    /sys/fs/ext4/__PARTITION_NAME__/mb_order2_req
+    type:    int
+    default: 2
+    only:    [2]
+    when:    test
+
+  - name:    MSG_RATELIMIT_INTERVAL_MS
+    path:    /sys/fs/ext4/__PARTITION_NAME__/msg_ratelimit_interval_ms
+    type:    int
+    default: 1250
+    only:    [1250]
+    when:    test
+
+  # /sys/kernel/mm/hugepages/hugepages-2048kB
+  - name:    NR_OVERCOMMIT_HUGEPAGES
+    path:    /sys/kernel/mm/hugepages/hugepages-2048kB/nr_overcommit_hugepages
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NR_HUGEPAGES
+    path:    /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NR_HUGEPAGES_MEMPOLICY
+    path:    /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages_mempolicy
+    type:    string
+    default: "n"
+    when:    test
+
+  # /sys/kernel/mm/transparent_hugepage
+  - name:    ENABLED
+    path:    /sys/kernel/mm/transparent_hugepage/enabled
+    type:    string
+    default: "always"
+    only:    ["always", "madvise", "never"]
+    when:    test
+
+  - name:    USE_ZERO_PAGE
+    path:    /sys/kernel/mm/transparent_hugepage/use_zero_page
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    DEFRAG
+    path:    /sys/kernel/mm/transparent_hugepage/defrag
+    type:    string
+    default: "always"
+    only:    ["always", "madvise", "never"]
+    when:    test
+
+  # /sys/class/net
+  - name:    MTU
+    path:    /sys/class/net/__NETWORK_INTERFACE_NAME__/mtu
+    type:    int
+    default: 1500
+    only:    [1500]
+    when:    test
+
+  - name:    NETDEV_GROUP
+    path:    /sys/class/net/__NETWORK_INTERFACE_NAME__/netdev_group
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FLAGS
+    path:    /sys/class/net/__NETWORK_INTERFACE_NAME__/flags
+    type:    string
+    default: "0x1003"
+    only:    ["0x1003"]
+    when:    test
+
+  - name:    GRO_FLUSH_TIMEOUT
+    path:    /sys/class/net/__NETWORK_INTERFACE_NAME__/gro_flush_timeout
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TX_QUEUE_LEN
+    path:    /sys/class/net/__NETWORK_INTERFACE_NAME__/tx_queue_len
+    type:    int
+    default: 1000
+    only:    [1000]
+    when:    test
+
   # NGINX-specific
   - name: PAYLOAD_SIZE
     type: int
