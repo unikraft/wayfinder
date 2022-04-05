@@ -39,6 +39,7 @@ import (
   "bytes"
   "io"
   "os"
+  "strings"
 
   "github.com/adjust/rmq/v4"
   
@@ -225,6 +226,18 @@ func (c *TaskConsumer) packEnvVars(task *spec.JobSpec) []*proto.TestEnvVar {
   }
 
   return envVars
+}
+
+func (c *TaskConsumer) replaceArgs(task *spec.JobSpec) string {
+  argsString := task.Test.Kernel.Args
+
+  for _, param := range task.CurrentPerm.Params {
+    argsString = strings.Replace(argsString, "${" + param.Name + "}", param.Value, -1)
+  }
+
+  task.Test.Kernel.Args = argsString
+  
+  return argsString
 }
 
 func cleanPreviousBuild(output *proto.BuildOutputs) error {
@@ -462,7 +475,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
       InitRd:       buildOutput.Outputs.InitRd,
       Disks:        buildOutput.Outputs.Disks,
       Cores:        kernelCoreIds,
-      Args:         task.Test.Kernel.Args,
+      Args:         c.replaceArgs(task),
       Memory:       task.Test.Kernel.Memory,
     },
     BenchTool:     &proto.TestBenchTool{
