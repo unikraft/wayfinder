@@ -1,26 +1,26 @@
 params:
   # Linux-specific
-  - name: CONFIG_NETWORK_SECMARK
-    type: string
-    only: ["y", "n"]
-    when: build
+  # Compile-time options
+  - name:    CONFIG_NETWORK_SECMARK
+    type:    string
+    only:    ["y", "n"]
+    when:    build
 
-  - name: CONFIG_CC_OPTIMIZE_FOR_SIZE
-    type: string
-    only: ["y", "n"]
-    when: build
+  - name:    CONFIG_CC_OPTIMIZE_FOR_SIZE
+    type:    string
+    only:    ["y", "n"]
+    when:    build
 
-  - name: CONFIG_SECURITY_SELINUX
-    type: string
-    only: ["y", "n"]
-    when: build
+  - name:    CONFIG_SECURITY_SELINUX
+    type:    string
+    only:    ["y", "n"]
+    when:    build
 
-  - name: CONFIG_CPU_FREQ_STAT
-    type: string
-    only: ["y", "n"]
-    when: build
+  - name:    CONFIG_CPU_FREQ_STAT
+    type:    string
+    only:    ["y", "n"]
+    when:    build
 
-  # Linux compile-time options
   - name:    COMPRESSION_MODE
     type:    string
     default: "CONFIG_KERNEL_GZIP"
@@ -57,17 +57,15 @@ params:
     only:    ["y", "n"]
     when:    build
 
-  - name: CONFIG_RCU_FANOUT
-    type: int
-    #default:
-    only: [2, 64]
-    when: build
+  - name:    CONFIG_RCU_FANOUT
+    type:    int
+    only:    [2, 64]
+    when:    build
 
-  - name: CONFIG_RCU_FANOUT_LEAF
-    type: int
-    #default:
-    only: [2, 4, 8, 16, 32, 64]
-    when: build
+  - name:    CONFIG_RCU_FANOUT_LEAF
+    type:    int
+    only:    [2, 4, 8, 16, 32, 64]
+    when:    build
 
   - name:    CONFIG_RCU_FANOUT_EXACT
     type:    string
@@ -109,12 +107,6 @@ params:
     type:    string
     default: "y"
     only:    ["y", "n"]
-    when:    build
-
-  - name:    CONFIG_CC_OPTIMIZE_FOR_SIZE
-    type:    string
-    default: "n"
-    only:    ["n", "y"]
     when:    build
 
   - name:    CONFIG_PRINTK
@@ -176,7 +168,7 @@ params:
     default: "CONFIG_CC_STACKPROTECTOR_NONE"
     only:    ["CONFIG_CC_STACKPROTECTOR_NONE", "CONFIG_CC_STACKPROTECTOR_REGULAR", "CONFIG_CC_STACKPROTECTOR_STRONG"]
     when:    build
-#wip
+
   - name:    CONFIG_DEFAULT_IOSCHED
     type:    string
     default: "cfq"
@@ -195,7 +187,6 @@ params:
     only:    ["y", "n"]
     when:    build
 
-#?
   - name:    PROCESSOR_FAMILY
     type:    string
     default: "CONFIG_GENERIC_CPU"
@@ -516,12 +507,6 @@ params:
     only:    [2793]
     when:    test
 
-  - name:    NUMA_BALANCING
-    type:    string
-    default: "0"
-    only:    ["0", "1"]
-    when:    test
-
   - name:    NUMA_BALANCING_SCAN_DELAY_MS
     type:    int
     default: 1000
@@ -544,18 +529,6 @@ params:
     type:    int
     default: 256
     only:    [256]
-    when:    test
-
-  - name:    OVERFLOWGID
-    type:    int
-    default: 65534
-    only:    [65534]
-    when:    test
-
-  - name:    OVERFLOWUID
-    type:    int
-    default: 65534
-    only:    [65534]
     when:    test
 
   - name:    PANIC
@@ -2021,24 +1994,6 @@ params:
     only:    [65536]
     when:    test
 
-  - name:    NR_HUGEPAGES
-    type:    string
-    default: "0"
-    only:    ["0", "1"]
-    when:    test
-
-  - name:    NR_HUGEPAGES_MEMPOLICY
-    type:    string
-    default: "0"
-    only:    ["0", "1"]
-    when:    test
-
-  - name:    NR_OVERCOMMIT_HUGEPAGES
-    type:    string
-    default: "0"
-    only:    ["0", "1"]
-    when:    test
-
   - name:    NUMA_ZONELIST_ORDER
     type:    string
     default: "default"
@@ -2652,10 +2607,6 @@ build:
     # Generate a variable-size payload
     mkdir -p /tmp/nginx-ext2/data/www/
     tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /tmp/nginx-ext2/data/www/index.html
-
-    # TODO: Modify values inside the configuration (for Linux, dynamic runtime
-    # variables).  We need to clarify how to do that... probably we can modify
-    # the `guest_start.sh` script to have a number of variables.
 
     # Unmounting seals the filesystem archive
     umount /tmp/nginx-ext2
