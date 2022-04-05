@@ -2077,7 +2077,7 @@ params:
     default: "0"
     when:    test
 
-  # /sys/fs/ext4/__PARTITION_NAME__
+  # /sys/fs/ext2/vda
   - name:    INODE_READAHEAD_BLKS
     type:    int
     default: 32

@@ -1215,67 +1215,67 @@ if [ -n "$ZONE_RECLAIM_MODE" ]; then
 fi
 
 if [ -n "$INODE_READAHEAD_BLKS" ]; then
-        echo $INODE_READAHEAD_BLKS > /sys/fs/ext4/__PARTITION_NAME__/inode_readahead_blks;
+        echo $INODE_READAHEAD_BLKS > /sys/fs/ext2/vda/inode_readahead_blks;
 fi
 
 if [ -n "$MB_MAX_TO_SCAN" ]; then
-        echo $MB_MAX_TO_SCAN > /sys/fs/ext4/__PARTITION_NAME__/mb_max_to_scan;
+        echo $MB_MAX_TO_SCAN > /sys/fs/ext2/vda/mb_max_to_scan;
 fi
 
 if [ -n "$MSG_RATELIMIT_BURST" ]; then
-        echo $MSG_RATELIMIT_BURST > /sys/fs/ext4/__PARTITION_NAME__/msg_ratelimit_burst;
+        echo $MSG_RATELIMIT_BURST > /sys/fs/ext2/vda/msg_ratelimit_burst;
 fi
 
 if [ -n "$MB_STREAM_REQ" ]; then
-        echo $MB_STREAM_REQ > /sys/fs/ext4/__PARTITION_NAME__/mb_stream_req;
+        echo $MB_STREAM_REQ > /sys/fs/ext2/vda/mb_stream_req;
 fi
 
 if [ -n "$MB_MIN_TO_SCAN" ]; then
-        echo $MB_MIN_TO_SCAN > /sys/fs/ext4/__PARTITION_NAME__/mb_min_to_scan;
+        echo $MB_MIN_TO_SCAN > /sys/fs/ext2/vda/mb_min_to_scan;
 fi
 
 if [ -n "$MB_STATS" ]; then
-        echo $MB_STATS > /sys/fs/ext4/__PARTITION_NAME__/mb_stats;
+        echo $MB_STATS > /sys/fs/ext2/vda/mb_stats;
 fi
 
 if [ -n "$ERR_RATELIMIT_BURST" ]; then
-        echo $ERR_RATELIMIT_BURST > /sys/fs/ext4/__PARTITION_NAME__/err_ratelimit_burst;
+        echo $ERR_RATELIMIT_BURST > /sys/fs/ext2/vda/err_ratelimit_burst;
 fi
 
 if [ -n "$MB_GROUP_PREALLOC" ]; then
-        echo $MB_GROUP_PREALLOC > /sys/fs/ext4/__PARTITION_NAME__/mb_group_prealloc;
+        echo $MB_GROUP_PREALLOC > /sys/fs/ext2/vda/mb_group_prealloc;
 fi
 
 if [ -n "$INODE_GOAL" ]; then
-        echo $INODE_GOAL > /sys/fs/ext4/__PARTITION_NAME__/inode_goal;
+        echo $INODE_GOAL > /sys/fs/ext2/vda/inode_goal;
 fi
 
 if [ -n "$RESERVED_CLUSTERS" ]; then
-        echo $RESERVED_CLUSTERS > /sys/fs/ext4/__PARTITION_NAME__/reserved_clusters;
+        echo $RESERVED_CLUSTERS > /sys/fs/ext2/vda/reserved_clusters;
 fi
 
 if [ -n "$EXTENT_MAX_ZEROOUT_KB" ]; then
-        echo $EXTENT_MAX_ZEROOUT_KB > /sys/fs/ext4/__PARTITION_NAME__/extent_max_zeroout_kb;
+        echo $EXTENT_MAX_ZEROOUT_KB > /sys/fs/ext2/vda/extent_max_zeroout_kb;
 fi
 
 if [ -n "$ERR_RATELIMIT_INTERVAL_MS" ]; then
-        echo $ERR_RATELIMIT_INTERVAL_MS > /sys/fs/ext4/__PARTITION_NAME__/err_ratelimit_interval_ms;
+        echo $ERR_RATELIMIT_INTERVAL_MS > /sys/fs/ext2/vda/err_ratelimit_interval_ms;
 fi
 
 if [ -n "$WARNING_RATELIMIT_BURST" ]; then
-        echo $WARNING_RATELIMIT_BURST > /sys/fs/ext4/__PARTITION_NAME__/warning_ratelimit_burst;
+        echo $WARNING_RATELIMIT_BURST > /sys/fs/ext2/vda/warning_ratelimit_burst;
 fi
 
 if [ -n "$WARNING_RATELIMIT_INTERVAL_MS" ]; then
-        echo $WARNING_RATELIMIT_INTERVAL_MS > /sys/fs/ext4/__PARTITION_NAME__/warning_ratelimit_interval_ms;
+        echo $WARNING_RATELIMIT_INTERVAL_MS > /sys/fs/ext2/vda/warning_ratelimit_interval_ms;
 fi
 
 if [ -n "$MB_ORDER2_REQ" ]; then
-        echo $MB_ORDER2_REQ > /sys/fs/ext4/__PARTITION_NAME__/mb_order2_req;
+        echo $MB_ORDER2_REQ > /sys/fs/ext2/vda/mb_order2_req;
 fi
 
 if [ -n "$MSG_RATELIMIT_INTERVAL_MS" ]; then
-        echo $MSG_RATELIMIT_INTERVAL_MS > /sys/fs/ext4/__PARTITION_NAME__/msg_ratelimit_interval_ms;
+        echo $MSG_RATELIMIT_INTERVAL_MS > /sys/fs/ext2/vda/msg_ratelimit_interval_ms;
 fi
 
 if [ -n "$NR_OVERCOMMIT_HUGEPAGES" ]; then
