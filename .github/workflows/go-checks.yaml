@@ -35,7 +35,9 @@ jobs:
         run: go install honnef.co/go/tools/cmd/staticcheck@c8caa92bad8c27ae734c6725b8a04932d54a147b # 2021.1.2 (v0.2.2)
 
       - name: Switch to SSH
-        run: git config --global url."ssh://git@github.com".insteadOf "https://github.com"
+        run: |
+          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          git config --global url."https://$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
       - name: Check that go.mod is tidy
         uses: protocol/multiple-go-modules@v1.2
