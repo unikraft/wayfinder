@@ -3,6 +3,7 @@ module github.com/unikraft/wayfinder
 go 1.17
 
 require (
+	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
 	github.com/adjust/rmq/v4 v4.0.1
 	github.com/erda-project/erda-infra v0.0.0-20211025111229-a1e623f59b33
 	github.com/evolbioinfo/gotree v0.4.2
@@ -30,19 +31,6 @@ require (
 )
 
 require (
-	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/json-iterator/go v1.1.11 // indirect
-	github.com/klauspost/compress v1.13.5 // indirect
-	github.com/klauspost/cpuid v1.3.1 // indirect
-	github.com/minio/md5-simd v1.1.0 // indirect
-	github.com/minio/sha256-simd v0.1.1 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/rs/xid v1.2.1 // indirect
-)
-
-require (
 	github.com/Microsoft/go-winio v0.4.17 // indirect
 	github.com/Microsoft/hcsshim v0.9.0 // indirect
 	github.com/bits-and-blooms/bitset v1.2.0 // indirect
@@ -61,7 +49,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/docker/cli v0.0.0-20191017083524-a8ff7f821017 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v1.4.2-0.20190924003213-a8608b5b67c7 // indirect
+	github.com/docker/docker v1.4.2-0.20190924003213-a8608b5b67c7
 	github.com/docker/docker-credential-helpers v0.6.3 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/docker/libnetwork v0.0.0-20180914141841-20461b853933 // indirect
@@ -98,7 +86,6 @@ require (
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
-	github.com/minio/minio-go/v7 v7.0.15
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/moby/sys/mount v0.2.0 // indirect
 	github.com/moby/sys/mountinfo v0.4.1 // indirect
