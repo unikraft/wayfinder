@@ -1,6 +1,7 @@
 dist/
 client/go/
 api/proto/
+api/client/
 
 # general things to ignore
 *.egg-info
