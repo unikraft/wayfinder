@@ -22,6 +22,7 @@ jobs:
     name: All
     env:
       RUNGOGENERATE: false
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -36,7 +37,6 @@ jobs:
 
       - name: Switch to SSH
         run: |
-          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           git config --global url."https://$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
       - name: Check that go.mod is tidy
