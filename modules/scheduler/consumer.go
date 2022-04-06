@@ -468,6 +468,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 	testCoreIds = append(testCoreIds, kernelCoreIds...)
 
 	// Create the test
+	// The environment variables are currently the same as in the build environment
 	c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
 	createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
 		PermutationId: int64(permutation.Id),
