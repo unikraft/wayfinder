@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'support/logstash/Dockerfile'
+      - 'support/logstash/**'
 
 jobs:
   build-and-push-image:

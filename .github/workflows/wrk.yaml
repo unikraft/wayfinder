@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'support/wrk/Dockerfile'
+      - 'support/wrk/**'
 
 jobs:
   build-and-push-image:

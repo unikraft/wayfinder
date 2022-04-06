@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'examples/unikraft-nginx/Dockerfile'
+      - 'examples/unikraft-nginx/**'
+      - '!examples/unikraft-nginx/**.yaml'
 
 jobs:
   build-and-push-image:

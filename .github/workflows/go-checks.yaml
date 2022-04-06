@@ -1,6 +1,20 @@
-on: [push, pull_request]
-
 name: Go Checks
+
+on:
+  push:
+    paths:
+      - 'cmd/**'
+      - 'internal/**'
+      - 'modules/**'
+      - 'pkg/**'
+      - 'spec/**'
+  pull_request:
+    paths:
+      - 'cmd/**'
+      - 'internal/**'
+      - 'modules/**'
+      - 'pkg/**'
+      - 'spec/**'
 
 jobs:
   unit:
