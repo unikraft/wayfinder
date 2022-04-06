@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,45 +32,45 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "gorm.io/gorm"
+	"fmt"
+	"gorm.io/gorm"
 )
 
 func AutoMigrate(db *gorm.DB) error {
-  // This query is only in mysql, but it does not change anything (as NO_ZERO_IN_DATE is already set)
-  mysqlError    := db.Exec("SET sql_mode = 'NO_ZERO_IN_DATE'").Error
+	// This query is only in mysql, but it does not change anything (as NO_ZERO_IN_DATE is already set)
+	mysqlError := db.Exec("SET sql_mode = 'NO_ZERO_IN_DATE'").Error
 
-  // This query is only in postgres, as it can be seen from the pg_* prefix in the table name
-  postgresError := db.Exec("select * from pg_stat_activity").Error
+	// This query is only in postgres, as it can be seen from the pg_* prefix in the table name
+	postgresError := db.Exec("select * from pg_stat_activity").Error
 
-  // Crash if the database is neither mysql nor postgres
-  if mysqlError != nil && postgresError != nil {
-    return fmt.Errorf("failed to detect a mysql or postgres database; mysql: %#v postgres: %#v", mysqlError, postgresError)
-  }
+	// Crash if the database is neither mysql nor postgres
+	if mysqlError != nil && postgresError != nil {
+		return fmt.Errorf("failed to detect a mysql or postgres database; mysql: %#v postgres: %#v", mysqlError, postgresError)
+	}
 
-  // Do extra work for postgres
-  if postgresError == nil && mysqlError != nil {
-    extensions := []string{
-      "uuid-ossp",
-      "tablefunc",
-    }
-    for _, extension := range extensions {
-      if err := db.Exec(
-          fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS \"%s\"", extension),
-        ).Error; err != nil {
-        return err
-      }
-    }
-  }
+	// Do extra work for postgres
+	if postgresError == nil && mysqlError != nil {
+		extensions := []string{
+			"uuid-ossp",
+			"tablefunc",
+		}
+		for _, extension := range extensions {
+			if err := db.Exec(
+				fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS \"%s\"", extension),
+			).Error; err != nil {
+				return err
+			}
+		}
+	}
 
-  return db.AutoMigrate(
-    &Host{},
-    &Job{},
-    &Param{},
-    &Permutation{},
-    &Build{},
-    &BuildOutputDisk{},
-    &Test{},
-    &Result{},
-  )
+	return db.AutoMigrate(
+		&Host{},
+		&Job{},
+		&Param{},
+		&Permutation{},
+		&Build{},
+		&BuildOutputDisk{},
+		&Test{},
+		&Result{},
+	)
 }

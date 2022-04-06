@@ -1,4 +1,5 @@
 package base64
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,36 +32,36 @@ package base64
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "regexp"
+	"fmt"
+	"regexp"
 
-  b64 "encoding/base64"
+	b64 "encoding/base64"
 )
 
 const (
-  Base64 string = "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{4})$"
+	Base64 string = "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{4})$"
 )
 
 var (
-  rxBase64 = regexp.MustCompile(Base64)
+	rxBase64 = regexp.MustCompile(Base64)
 )
 
 // IsBase64 check if a string is base64 encoded
 func IsBase64(str string) bool {
-  return rxBase64.MatchString(str)
+	return rxBase64.MatchString(str)
 }
 
 // Encode encodes a string into base64
 func Encode(str string) string {
-  return b64.StdEncoding.EncodeToString([]byte(str))
+	return b64.StdEncoding.EncodeToString([]byte(str))
 }
 
 // Decode decodes a string from base64 or returns an error
 func Decode(encoded string) (string, error) {
-  decoded, err := b64.StdEncoding.DecodeString(encoded)
-  if err != nil {
-    return "", fmt.Errorf("could not decode base64: %s", err)
-  }
+	decoded, err := b64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		return "", fmt.Errorf("could not decode base64: %s", err)
+	}
 
-  return string(decoded), nil
+	return string(decoded), nil
 }

@@ -1,4 +1,5 @@
 package spec
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,31 +32,30 @@ package spec
 // POSSIBILITY OF SUCH DAMAGE.
 
 type TestKernelSpec struct {
-  Memory string `yaml:"memory"`
-  Args   string `yaml:"args"`
-  Cores  uint64 `yaml:"cores"`
+	Memory string `yaml:"memory"`
+	Args   string `yaml:"args"`
+	Cores  uint64 `yaml:"cores"`
 }
 
 type TestBenchToolSpec struct {
-  Image          string            `yaml:"image"`
-  Devices      []string            `yaml:"devices"`
-  Capabilities []string            `yaml:"capabilities"`
-  Commands       string            `yaml:"commands"`
-  Cores          uint64            `yaml:"cores"`
-  StartDelay     uint64            `yaml:"boot_delay"` // in seconds
-  Duration       uint64            `yaml:"duration"`   // in seconds
-  Environment    map[string]string `yaml:"environment"`
+	Image        string            `yaml:"image"`
+	Devices      []string          `yaml:"devices"`
+	Capabilities []string          `yaml:"capabilities"`
+	Commands     string            `yaml:"commands"`
+	Cores        uint64            `yaml:"cores"`
+	StartDelay   uint64            `yaml:"boot_delay"` // in seconds
+	Duration     uint64            `yaml:"duration"`   // in seconds
+	Environment  map[string]string `yaml:"environment"`
 }
 
 type TestResultSpec struct {
-  Name string `yaml:"name"`
-  Path string `yaml:"path"`
-  Type string `yaml:"type"` // only "int", "integer", "str", "string", "float" or "bool"
+	Name string `yaml:"name"`
+	Path string `yaml:"path"`
+	Type string `yaml:"type"` // only "int", "integer", "str", "string", "float" or "bool"
 }
 
 type TestSpec struct {
-  Kernel      TestKernelSpec    `yaml:"kernel"`
-  BenchTool   TestBenchToolSpec `yaml:"benchtool"`
-  Results   []TestResultSpec    `yaml:"results"`
+	Kernel    TestKernelSpec    `yaml:"kernel"`
+	BenchTool TestBenchToolSpec `yaml:"benchtool"`
+	Results   []TestResultSpec  `yaml:"results"`
 }
-

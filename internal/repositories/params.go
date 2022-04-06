@@ -1,4 +1,5 @@
 package repositories
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,63 +32,62 @@ package repositories
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "gorm.io/gorm"
+	"gorm.io/gorm"
 
-  "github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/internal/models"
 )
 
 // ParamsRepository uses gorm.DB for querying the database
 type ParamsRepository struct {
-  db *gorm.DB
+	db *gorm.DB
 }
 
 // NewParamsRepository returns a default ParamsRepository which uses
 // gorm.DB for querying the database
 func NewParamsRepository(db *gorm.DB) *ParamsRepository {
-  return &ParamsRepository{db}
+	return &ParamsRepository{db}
 }
 
 // CreateParam adds a new param-value combination row to the Params table in the
 // database
 func (repo *ParamsRepository) CreateParam(param *models.Param) (*models.Param, error) {
-  if err := repo.db.Create(param).Error; err != nil {
-    return nil, err
-  }
-  return param, nil
+	if err := repo.db.Create(param).Error; err != nil {
+		return nil, err
+	}
+	return param, nil
 }
-
 
 // CreateParamInt adds a new param-value combination row to the Params table in
 // the database
 func (repo *ParamsRepository) CreateParamIntForJobId(id uint, key string, val int) (*models.Param, error) {
-  job := &models.Job{}
-  
-  if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
-    return nil, err
-  }
-  
-  // param := &models.Param{
-  //   JobId: id,
-  // }
-  // return param, nil
+	job := &models.Job{}
 
-  return nil, nil
+	if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
+		return nil, err
+	}
+
+	// param := &models.Param{
+	//   JobId: id,
+	// }
+	// return param, nil
+
+	return nil, nil
 }
 
 // CreateParamStr adds a new param-value combination row to the Params table in
 // the database
 func (repo *ParamsRepository) CreateParamStrForJobId(id uint, key, val string) (*models.Param, error) {
-  job := &models.Job{}
-  
-  if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
-    return nil, err
-  }
-  
-  // param := &models.Param{
-  //   JobId: id,
-  //   Job: 
-  // }
-  // return param, nil
+	job := &models.Job{}
 
-  return nil, nil
+	if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
+		return nil, err
+	}
+
+	// param := &models.Param{
+	//   JobId: id,
+	//   Job:
+	// }
+	// return param, nil
+
+	return nil, nil
 }

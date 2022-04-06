@@ -1,4 +1,5 @@
 package parsecpusets
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -32,49 +33,49 @@ package parsecpusets
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "strconv"
-  "strings"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 func ParseCpuSets(cpuSets string) ([]uint64, error) {
-  var cpus []uint64
+	var cpus []uint64
 
-  if strings.Contains(cpuSets, ",") {
-    c := strings.Split(cpuSets, ",")
+	if strings.Contains(cpuSets, ",") {
+		c := strings.Split(cpuSets, ",")
 
-    for i := range c {
-      moreCpus, err := parseRange(c[i])
-      if err != nil {
-        return nil, err
-      }
+		for i := range c {
+			moreCpus, err := parseRange(c[i])
+			if err != nil {
+				return nil, err
+			}
 
-      // If we have found more cpus, the format is A-C,E-G
-      if len(moreCpus) > 0 {
-        cpus = append(cpus, moreCpus...)
-      
-      // If not, then the format is A,B,C,E,F,G
-      } else {
-        j, err := strconv.ParseUint(c[i], 10, 64)
-        if err != nil {
-          return nil, fmt.Errorf("invalid syntax for CPU set: %s", c[i])
-        }
+			// If we have found more cpus, the format is A-C,E-G
+			if len(moreCpus) > 0 {
+				cpus = append(cpus, moreCpus...)
 
-        cpus = append(cpus, j)
-      }
-    }
+				// If not, then the format is A,B,C,E,F,G
+			} else {
+				j, err := strconv.ParseUint(c[i], 10, 64)
+				if err != nil {
+					return nil, fmt.Errorf("invalid syntax for CPU set: %s", c[i])
+				}
 
-  // Maybe the range is simply A-C
-  } else {
-    moreCpus, err := parseRange(cpuSets)
-    if err != nil {
-      return nil, err
-    }
+				cpus = append(cpus, j)
+			}
+		}
 
-    cpus = append(cpus, moreCpus...)
-  }
+		// Maybe the range is simply A-C
+	} else {
+		moreCpus, err := parseRange(cpuSets)
+		if err != nil {
+			return nil, err
+		}
 
-  return cpus, nil
+		cpus = append(cpus, moreCpus...)
+	}
+
+	return cpus, nil
 }
 
 // func parseDelim(cpuSets string) ([]uint64, error) {
@@ -96,28 +97,28 @@ func ParseCpuSets(cpuSets string) ([]uint64, error) {
 // }
 
 func parseRange(cpuSets string) ([]uint64, error) {
-  var cpus []uint64
+	var cpus []uint64
 
-  if res := strings.Contains(cpuSets, "-"); res {
-    c := strings.Split(cpuSets, "-")
-    if len(c) > 2 {
-      return nil, fmt.Errorf("invalid syntax for CPU sets: %s", cpuSets)
-    }
+	if res := strings.Contains(cpuSets, "-"); res {
+		c := strings.Split(cpuSets, "-")
+		if len(c) > 2 {
+			return nil, fmt.Errorf("invalid syntax for CPU sets: %s", cpuSets)
+		}
 
-    start, err := strconv.ParseUint(c[0], 10, 64)
-    if err != nil {
-      return nil, fmt.Errorf("invalid syntax for CPU sets: %s", cpuSets)
-    }
+		start, err := strconv.ParseUint(c[0], 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid syntax for CPU sets: %s", cpuSets)
+		}
 
-    end, err := strconv.ParseUint(c[1], 10, 64)
-    if err != nil {
-      return nil, fmt.Errorf("invalid syntax for CPU sets: %s", cpuSets)
-    }
-    
-    for i := start; i <= end; i++ {
-      cpus = append(cpus, i)
-    }
-  }
+		end, err := strconv.ParseUint(c[1], 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid syntax for CPU sets: %s", cpuSets)
+		}
 
-  return cpus, nil
+		for i := start; i <= end; i++ {
+			cpus = append(cpus, i)
+		}
+	}
+
+	return cpus, nil
 }

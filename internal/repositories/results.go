@@ -1,4 +1,5 @@
 package repositories
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,154 +32,150 @@ package repositories
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "gorm.io/gorm"
+	"fmt"
+	"gorm.io/gorm"
 
-  "github.com/unikraft/wayfinder/api/proto"
-  "github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/internal/models"
 )
 
 // ResultsRepository uses gorm.DB for querying the database
 type ResultsRepository struct {
-  db *gorm.DB
+	db *gorm.DB
 }
 
 // NewResultsRepository returns a ResultsRepository which uses
 // gorm.DB for querying the database
 func NewResultsRepository(db *gorm.DB) *ResultsRepository {
-  return &ResultsRepository{db}
+	return &ResultsRepository{db}
 }
 
 // Deletes a result from the results table. If purge is used,
 // the entry is deleted permanently
 func (r *ResultsRepository) DeleteResultByTestUuid(uuid string, purge bool) error {
-  var deleteType *gorm.DB
+	var deleteType *gorm.DB
 
-  if purge {
-    deleteType = r.db.Unscoped()
-  } else {
-    deleteType = r.db
-  }
+	if purge {
+		deleteType = r.db.Unscoped()
+	} else {
+		deleteType = r.db
+	}
 
-  
-  test := &models.Test{}
-  if r.db.Where("uuid = ?", &uuid).First(&test).RowsAffected != 1 {
-    return fmt.Errorf("could not find test with uuid: %s", uuid)
-  }
+	test := &models.Test{}
+	if r.db.Where("uuid = ?", &uuid).First(&test).RowsAffected != 1 {
+		return fmt.Errorf("could not find test with uuid: %s", uuid)
+	}
 
-  if err := deleteType.Delete(&models.Result{}, "test_id = ?", test.Id).Error; err != nil {
-    return err
-  }
+	if err := deleteType.Delete(&models.Result{}, "test_id = ?", test.Id).Error; err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // SaveResultIntByTestUuid adds a new integer-based test result
 func (r *ResultsRepository) SaveResultIntByTestUuid(testUuid, name string, value int64) (*models.Result, error) {
-  // Look up the test
-  test := &models.Test{}
-  if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
-    return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
-  }
+	// Look up the test
+	test := &models.Test{}
+	if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
+		return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
+	}
 
-  result := &models.Result{
-    TestId:        test.Id,
-    PermutationId: test.PermutationId,
-    Name:          name,
-    Type:          proto.TestResultType_TEST_RESULT_INT,
-    ValueInt:      value,
-  }
+	result := &models.Result{
+		TestId:        test.Id,
+		PermutationId: test.PermutationId,
+		Name:          name,
+		Type:          proto.TestResultType_TEST_RESULT_INT,
+		ValueInt:      value,
+	}
 
-  if err := r.db.Create(result).Error; err != nil {
-    return nil, err
-  }
+	if err := r.db.Create(result).Error; err != nil {
+		return nil, err
+	}
 
-  return result, nil
+	return result, nil
 }
-
 
 // SaveResultStrByTestUuid adds a new integer-based test result
 func (r *ResultsRepository) SaveResultStrByTestUuid(testUuid, name, value string) (*models.Result, error) {
-  // Look up the test
-  test := &models.Test{}
-  if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
-    return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
-  }
+	// Look up the test
+	test := &models.Test{}
+	if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
+		return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
+	}
 
-  result := &models.Result{
-    TestId:        test.Id,
-    PermutationId: test.PermutationId,
-    Name:          name,
-    Type:          proto.TestResultType_TEST_RESULT_STR,
-    ValueStr:      value,
-  }
+	result := &models.Result{
+		TestId:        test.Id,
+		PermutationId: test.PermutationId,
+		Name:          name,
+		Type:          proto.TestResultType_TEST_RESULT_STR,
+		ValueStr:      value,
+	}
 
-  if err := r.db.Create(result).Error; err != nil {
-    return nil, err
-  }
+	if err := r.db.Create(result).Error; err != nil {
+		return nil, err
+	}
 
-  return result, nil
+	return result, nil
 }
-
 
 // SaveResultFloatByTestUuid adds a new integer-based test result
 func (r *ResultsRepository) SaveResultFloatByTestUuid(testUuid, name string, value float64) (*models.Result, error) {
-  // Look up the test
-  test := &models.Test{}
-  if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
-    return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
-  }
+	// Look up the test
+	test := &models.Test{}
+	if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
+		return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
+	}
 
-  result := &models.Result{
-    TestId:        test.Id,
-    PermutationId: test.PermutationId,
-    Name:          name,
-    Type:          proto.TestResultType_TEST_RESULT_FLOAT,
-    ValueFloat:    value,
-  }
+	result := &models.Result{
+		TestId:        test.Id,
+		PermutationId: test.PermutationId,
+		Name:          name,
+		Type:          proto.TestResultType_TEST_RESULT_FLOAT,
+		ValueFloat:    value,
+	}
 
-  if err := r.db.Create(result).Error; err != nil {
-    return nil, err
-  }
+	if err := r.db.Create(result).Error; err != nil {
+		return nil, err
+	}
 
-  return result, nil
+	return result, nil
 }
-
 
 // SaveResultBoolByTestUuid adds a new integer-based test result
 func (r *ResultsRepository) SaveResultBoolByTestUuid(testUuid, name string, value bool) (*models.Result, error) {
-  // Look up the test
-  test := &models.Test{}
-  if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
-    return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
-  }
+	// Look up the test
+	test := &models.Test{}
+	if r.db.Where("uuid = ?", &testUuid).First(&test).RowsAffected != 1 {
+		return nil, fmt.Errorf("could not find test with uuid: %s", testUuid)
+	}
 
-  result := &models.Result{
-    TestId:        test.Id,
-    PermutationId: test.PermutationId,
-    Name:          name,
-    Type:          proto.TestResultType_TEST_RESULT_BOOL,
-    ValueBool:     value,
-  }
+	result := &models.Result{
+		TestId:        test.Id,
+		PermutationId: test.PermutationId,
+		Name:          name,
+		Type:          proto.TestResultType_TEST_RESULT_BOOL,
+		ValueBool:     value,
+	}
 
-  if err := r.db.Create(result).Error; err != nil {
-    return nil, err
-  }
+	if err := r.db.Create(result).Error; err != nil {
+		return nil, err
+	}
 
-  return result, nil
+	return result, nil
 }
 
 // Extract all results for a given job
 func (r *ResultsRepository) FindResults(jobId uint, offset, limit int) ([]*models.Result, error) {
-  var results []*models.Result
-  r.db.
-    Offset(offset).
-    Limit(limit).
-    Where("job_id = ?", jobId).
-    Joins("JOIN permutations ON results.permutation_id = permutations.id").
-    Preload("Results").
-    Select("results.*").
-    Find(&results)
+	var results []*models.Result
+	r.db.
+		Offset(offset).
+		Limit(limit).
+		Where("job_id = ?", jobId).
+		Joins("JOIN permutations ON results.permutation_id = permutations.id").
+		Preload("Results").
+		Select("results.*").
+		Find(&results)
 
-  return results, nil
+	return results, nil
 }

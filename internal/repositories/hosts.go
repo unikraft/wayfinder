@@ -1,4 +1,5 @@
 package repositories
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,26 +32,26 @@ package repositories
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "gorm.io/gorm"
+	"gorm.io/gorm"
 
-  "github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/internal/models"
 )
 
 // HostsRepository uses gorm.DB for querying the database
 type HostsRepository struct {
-  db *gorm.DB
+	db *gorm.DB
 }
 
 // NewHostsRepository returns a HostsRepository which uses
 // gorm.DB for querying the database
 func NewHostsRepository(db *gorm.DB) *HostsRepository {
-  return &HostsRepository{db}
+	return &HostsRepository{db}
 }
 
 // CreateHost adds a new Host row to the Hosts table in the database
 func (repo *HostsRepository) CreateHost(host *models.Host) (*models.Host, error) {
-  if err := repo.db.Create(host).Error; err != nil {
-    return nil, err
-  }
-  return host, nil
+	if err := repo.db.Create(host).Error; err != nil {
+		return nil, err
+	}
+	return host, nil
 }

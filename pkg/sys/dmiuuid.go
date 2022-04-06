@@ -1,4 +1,5 @@
 package sys
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,24 +32,24 @@ package sys
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "bytes"
-  "io/ioutil"
+	"bytes"
+	"fmt"
+	"io/ioutil"
 )
 
 // GetSysDmiUUID reads the hosts DMI UUID from
 // /sys/devices/virtual/dmi/id/product_uuid
 // Please Note: root privileges are required to read the file
 func GetSysDmiUUID() (string, error) {
-  var sysDmiUUID string
+	var sysDmiUUID string
 
-  path := "/sys/devices/virtual/dmi/id/product_uuid"
-  contents, err := ioutil.ReadFile(path)
-  if err != nil {
-    return "", fmt.Errorf("could not read product UUID: %s", err)
-  }
+	path := "/sys/devices/virtual/dmi/id/product_uuid"
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("could not read product UUID: %s", err)
+	}
 
-  fmt.Fscan(bytes.NewBuffer(contents), &sysDmiUUID)
+	fmt.Fscan(bytes.NewBuffer(contents), &sysDmiUUID)
 
-  return sysDmiUUID, nil
+	return sysDmiUUID, nil
 }

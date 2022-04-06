@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,20 +32,20 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "time"
+	"time"
 
-  "github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/api/proto"
 )
 
 // Job type that extends gorm.Model
 type Job struct {
-  Base
+	Base
 
-  Name              string          `gorm:"column:name"               json:"name"`
-  HostId            uint            `gorm:"column:host_id"            json:"host_id"`
-  Config            string          `gorm:"column:config"             json:"config"`
-  CompletedAt       time.Time       `gorm:"column:updated_at"         json:"updated_at"`
-  TotalPermutations uint64          `gorm:"column:total_permutations" json:"total_permutations"`
-  Status            proto.JobStatus `gorm:"column:status"             json:"status"`
-  Permutations    []Permutation     `gorm:"foreignKey:job_id"         json:"permutations"`
+	Name              string          `gorm:"column:name"               json:"name"`
+	HostId            uint            `gorm:"column:host_id"            json:"host_id"`
+	Config            string          `gorm:"column:config"             json:"config"`
+	CompletedAt       time.Time       `gorm:"column:updated_at"         json:"updated_at"`
+	TotalPermutations uint64          `gorm:"column:total_permutations" json:"total_permutations"`
+	Status            proto.JobStatus `gorm:"column:status"             json:"status"`
+	Permutations      []Permutation   `gorm:"foreignKey:job_id"         json:"permutations"`
 }

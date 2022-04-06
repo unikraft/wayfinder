@@ -42,79 +42,78 @@ import (
 
 	"github.com/unikraft/wayfinder/api/proto"
 )
-  
-var (
-  cpCmd = &cobra.Command{
-    Use:                   "create-permutation [OPTIONS...] ID",
-    Aliases:               []string{"cp"},
-    Short:                 `Create a single unique permutation linked to a job.`,
-    Run:                   doCpCmd,
-    Args:                  cobra.ExactArgs(1),
-    DisableFlagsInUseLine: true,
-  }
 
-  cpCfg = &createPermutationConfig{}
+var (
+	cpCmd = &cobra.Command{
+		Use:                   "create-permutation [OPTIONS...] ID",
+		Aliases:               []string{"cp"},
+		Short:                 `Create a single unique permutation linked to a job.`,
+		Run:                   doCpCmd,
+		Args:                  cobra.ExactArgs(1),
+		DisableFlagsInUseLine: true,
+	}
+
+	cpCfg = &createPermutationConfig{}
 )
 
 type createPermutationConfig struct {
-  jobId    int
-  params []string
+	jobId  int
+	params []string
 }
 
 func init() {
-   cpCmd.PersistentFlags().StringArrayVarP(
-    &cpCfg.params,
-    "set",
-    "s",
-    []string{},
-    "Parameters set within the permutation.",
-  )
+	cpCmd.PersistentFlags().StringArrayVarP(
+		&cpCfg.params,
+		"set",
+		"s",
+		[]string{},
+		"Parameters set within the permutation.",
+	)
 }
 
 func parseSet(args []string) []*proto.Param {
-  params := make([]*proto.Param, 0)
-  
-  for _, arg := range args {
-    elems := strings.Split(arg, "=")
-    param := proto.Param{}
+	params := make([]*proto.Param, 0)
 
-    param.Name = elems[0]
-    value, err := strconv.ParseInt(elems[1], 10, 64)
-    if err == nil {
-      param.Type = "int"
-      param.ValueInt = value
-    } else {
-      param.Type = "str"
-      param.ValueStr = elems[1]
-    }
+	for _, arg := range args {
+		elems := strings.Split(arg, "=")
+		param := proto.Param{}
 
+		param.Name = elems[0]
+		value, err := strconv.ParseInt(elems[1], 10, 64)
+		if err == nil {
+			param.Type = "int"
+			param.ValueInt = value
+		} else {
+			param.Type = "str"
+			param.ValueStr = elems[1]
+		}
 
-    params = append(params, &param)
-  }
+		params = append(params, &param)
+	}
 
-  return params
+	return params
 }
 
 // doStartCmd
 func doCpCmd(cmd *cobra.Command, args []string) {
-  if len(args) == 0 {
-    cmd.Help()
-  }
-  
-  jobId, err := strconv.Atoi(args[0])
-  if err != nil || jobId == 0 {
-    fmt.Printf("invalid job ID: %d", jobId)
-    os.Exit(1)
-  }
+	if len(args) == 0 {
+		cmd.Help()
+	}
 
-  _, err = Wayfinder.JobService.CreatePermutationJob(context.TODO(), &proto.CreatePermutationJobRequest{
-    Id:     int64(jobId),
-    Params: parseSet(cpCfg.params),
-  })
-  if err != nil {
-    fmt.Printf("could not start permutation: %s\n", err)
-    os.Exit(1)
-  }
+	jobId, err := strconv.Atoi(args[0])
+	if err != nil || jobId == 0 {
+		fmt.Printf("invalid job ID: %d", jobId)
+		os.Exit(1)
+	}
 
-  fmt.Printf("Successfully added permutation to job with ID=%d\n", jobId)
+	_, err = Wayfinder.JobService.CreatePermutationJob(context.TODO(), &proto.CreatePermutationJobRequest{
+		Id:     int64(jobId),
+		Params: parseSet(cpCfg.params),
+	})
+	if err != nil {
+		fmt.Printf("could not start permutation: %s\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Successfully added permutation to job with ID=%d\n", jobId)
 }

@@ -1,4 +1,5 @@
 package proc
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -31,42 +32,42 @@ package proc
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "path"
-  "bytes"
-  "strconv"
-  "io/ioutil"
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"path"
+	"strconv"
 )
 
 // ProcPIDSchedStat defines the fields of a /proc/[pid]/schedstat file
 // cf. https://www.kernel.org/doc/Documentation/scheduler/sched-stats.txt
 type ProcPIDSchedStat struct {
-  // The process ID.
-  PID        int
-  // time spent on the cpu
-  Cputime    uint64
-  // time spent waiting on a runqueue
-  Runqueue   uint64
-  // # of timeslices run on this cpu
-  Timeslices uint64
+	// The process ID.
+	PID int
+	// time spent on the cpu
+	Cputime uint64
+	// time spent waiting on a runqueue
+	Runqueue uint64
+	// # of timeslices run on this cpu
+	Timeslices uint64
 }
 
 // GetProcPIDSchedStat reads and returns the schedstat for a process from the proc fs
 func GetProcPIDSchedStat(procfs string, pid int) ProcPIDSchedStat {
-  stats := ProcPIDSchedStat{PID: pid}
-  filepath := path.Join(procfs, strconv.Itoa(pid), "/schedstat")
-  filecontent, _ := ioutil.ReadFile(filepath)
+	stats := ProcPIDSchedStat{PID: pid}
+	filepath := path.Join(procfs, strconv.Itoa(pid), "/schedstat")
+	filecontent, _ := ioutil.ReadFile(filepath)
 
-  _, err := fmt.Fscan(
-    bytes.NewBuffer(filecontent),
-    &stats.Cputime,
-    &stats.Runqueue,
-    &stats.Timeslices,
-  )
+	_, err := fmt.Fscan(
+		bytes.NewBuffer(filecontent),
+		&stats.Cputime,
+		&stats.Runqueue,
+		&stats.Timeslices,
+	)
 
-  if err != nil {
-    return ProcPIDSchedStat{}
-  }
+	if err != nil {
+		return ProcPIDSchedStat{}
+	}
 
-  return stats
+	return stats
 }

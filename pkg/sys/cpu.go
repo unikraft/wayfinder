@@ -1,4 +1,5 @@
 package sys
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,94 +32,94 @@ package sys
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "bytes"
-  "runtime"
-  "io/ioutil"
-  "path/filepath"
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"runtime"
 
-  "golang.org/x/sys/unix"
+	"golang.org/x/sys/unix"
 )
 
 // SysCPU reflects cpu system information from /sys/devices/system/cpu/cpu*
 type SysCPU struct {
-  MaxFreq float32
-  MinFreq float32
-  CurFreq float32
+	MaxFreq float32
+	MinFreq float32
+	CurFreq float32
 }
 
 // GetSysCPU returns the system CPU information for available cores
 func GetSysCPU(cpuSets string) []SysCPU {
-  stats := []SysCPU{}
+	stats := []SysCPU{}
 
-  files, err := filepath.Glob(fmt.Sprintf("/sys/devices/system/cpu/cpu%s", cpuSets))
-  if err != nil {
-    fmt.Fprintf(os.Stderr, "Cannot read cpu infos from sys fs: %s\n", err)
-    return stats
-  }
+	files, err := filepath.Glob(fmt.Sprintf("/sys/devices/system/cpu/cpu%s", cpuSets))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot read cpu infos from sys fs: %s\n", err)
+		return stats
+	}
 
-  var filepath string
-  var filecontent []byte
-  for _, f := range files {
-    cpuStat := SysCPU{}
+	var filepath string
+	var filecontent []byte
+	for _, f := range files {
+		cpuStat := SysCPU{}
 
-    filepath = fmt.Sprint(f + "/cpufreq/cpuinfo_max_freq")
-    filecontent, _ = ioutil.ReadFile(filepath)
-    fmt.Fscan(
-      bytes.NewBuffer(filecontent),
-      &cpuStat.MaxFreq,
-    )
+		filepath = fmt.Sprint(f + "/cpufreq/cpuinfo_max_freq")
+		filecontent, _ = ioutil.ReadFile(filepath)
+		fmt.Fscan(
+			bytes.NewBuffer(filecontent),
+			&cpuStat.MaxFreq,
+		)
 
-    filepath = fmt.Sprint(f + "/cpufreq/cpuinfo_min_freq")
-    filecontent, _ = ioutil.ReadFile(filepath)
-    fmt.Fscan(
-      bytes.NewBuffer(filecontent),
-      &cpuStat.MinFreq,
-    )
+		filepath = fmt.Sprint(f + "/cpufreq/cpuinfo_min_freq")
+		filecontent, _ = ioutil.ReadFile(filepath)
+		fmt.Fscan(
+			bytes.NewBuffer(filecontent),
+			&cpuStat.MinFreq,
+		)
 
-    filepath = fmt.Sprint(f + "/cpufreq/scaling_cur_freq")
-    filecontent, _ = ioutil.ReadFile(filepath)
-    fmt.Fscan(
-      bytes.NewBuffer(filecontent),
-      &cpuStat.CurFreq,
-    )
+		filepath = fmt.Sprint(f + "/cpufreq/scaling_cur_freq")
+		filecontent, _ = ioutil.ReadFile(filepath)
+		fmt.Fscan(
+			bytes.NewBuffer(filecontent),
+			&cpuStat.CurFreq,
+		)
 
-    stats = append(stats, cpuStat)
+		stats = append(stats, cpuStat)
 
-  }
+	}
 
-  return stats
+	return stats
 }
 
 // SetAffinity pins a set of CPUs to a process ID
 func SetAffinity(set []uint64, pid int) ([]uint64, error) {
-  if len(set) == 0 {
-    return set, nil
-  }
+	if len(set) == 0 {
+		return set, nil
+	}
 
-  var filteredSet []uint64
-  num := runtime.NumCPU()
-  for _, index := range set {
-    if index == 0 || int(index) >= num {
-      continue
-    }
-    filteredSet = append(filteredSet, index)
-  }
+	var filteredSet []uint64
+	num := runtime.NumCPU()
+	for _, index := range set {
+		if index == 0 || int(index) >= num {
+			continue
+		}
+		filteredSet = append(filteredSet, index)
+	}
 
-  if len(filteredSet) == 0 {
-    return filteredSet, fmt.Errorf("unable to set affinity: no valid cpu ids specified")
-  }
+	if len(filteredSet) == 0 {
+		return filteredSet, fmt.Errorf("unable to set affinity: no valid cpu ids specified")
+	}
 
-  cpuset := unix.CPUSet{}
-  for _, index := range filteredSet {
-    cpuset.Set(int(index))
-  }
+	cpuset := unix.CPUSet{}
+	for _, index := range filteredSet {
+		cpuset.Set(int(index))
+	}
 
-  err := unix.SchedSetaffinity(0, &cpuset)
-  if err != nil {
-    return filteredSet, err
-  }
+	err := unix.SchedSetaffinity(0, &cpuset)
+	if err != nil {
+		return filteredSet, err
+	}
 
-  return filteredSet, nil
+	return filteredSet, nil
 }

@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -32,11 +33,11 @@ package models
 
 // Param type that extends gorm.Model
 type Param struct {
-  Base
+	Base
 
-  Name         string  `gorm:"column:name"`
-  // TODO: proto...
-  Type         string  `gorm:"column:type"` // only "str" or "int"
-  ValueInt     int64   `gorm:"column:value_int"`
-  ValueStr     string  `gorm:"column:value_str"`
+	Name string `gorm:"column:name"`
+	// TODO: proto...
+	Type     string `gorm:"column:type"` // only "str" or "int"
+	ValueInt int64  `gorm:"column:value_int"`
+	ValueStr string `gorm:"column:value_str"`
 }

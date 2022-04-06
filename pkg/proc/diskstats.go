@@ -1,4 +1,5 @@
 package proc
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,71 +32,71 @@ package proc
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "bufio"
+	"bufio"
+	"fmt"
+	"os"
 )
 
 // ProcDiskstat defines the fields of one row (one block device) of a
 // /proc/diskstats file cf.
 // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
 type ProcDiskstat struct {
-  Majornumber        int    //  1 - major number
-  Minornumber        int    //  2 - minor mumber
-  Devicename         string //  3 - device name
-  Reads              uint64 //  4 - reads completed successfully f1
-  ReadsMerged        uint64 //  5 - reads merged f2
-  SectorsRead        uint64 //  6 - sectors read f3
-  TimeReading        uint64 //  7 - time spent reading (ms) f4
-  Writes             uint64 //  8 - writes completed f5
-  WritesMerged       uint64 //  9 - writes merged f6
-  SectorsWritten     uint64 // 10 - sectors written f7
-  TimeWriting        uint64 // 11 - time spent writing (ms) f8
-  CurrentOps         uint64 // 12 - I/Os currently in progress f9
-  TimeForOps         uint64 // 13 - time spent doing I/Os (ms) f10
-  WeightedTimeForOps uint64 // 14 - weighted time spent doing I/Os (ms) f11
+	Majornumber        int    //  1 - major number
+	Minornumber        int    //  2 - minor mumber
+	Devicename         string //  3 - device name
+	Reads              uint64 //  4 - reads completed successfully f1
+	ReadsMerged        uint64 //  5 - reads merged f2
+	SectorsRead        uint64 //  6 - sectors read f3
+	TimeReading        uint64 //  7 - time spent reading (ms) f4
+	Writes             uint64 //  8 - writes completed f5
+	WritesMerged       uint64 //  9 - writes merged f6
+	SectorsWritten     uint64 // 10 - sectors written f7
+	TimeWriting        uint64 // 11 - time spent writing (ms) f8
+	CurrentOps         uint64 // 12 - I/Os currently in progress f9
+	TimeForOps         uint64 // 13 - time spent doing I/Os (ms) f10
+	WeightedTimeForOps uint64 // 14 - weighted time spent doing I/Os (ms) f11
 }
 
 // GetProcDiskstats reads and returns the diskstats from the proc fs
 func GetProcDiskstats(procfs string) map[string]ProcDiskstat {
-  stats := make(map[string]ProcDiskstat)
+	stats := make(map[string]ProcDiskstat)
 
-  filepath := fmt.Sprint(procfs, "/diskstats")
-  file, _ := os.Open(filepath)
-  scanner := bufio.NewScanner(file)
-  scanner.Split(bufio.ScanLines)
+	filepath := fmt.Sprint(procfs, "/diskstats")
+	file, _ := os.Open(filepath)
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
-  format := "%d %d %s %d %d %d %d %d %d %d %d %d %d %d"
+	format := "%d %d %s %d %d %d %d %d %d %d %d %d %d %d"
 
-  for scanner.Scan() {
-    row := scanner.Text()
-    diskstat := ProcDiskstat{}
+	for scanner.Scan() {
+		row := scanner.Text()
+		diskstat := ProcDiskstat{}
 
-    _, err := fmt.Sscanf(
-      string(row), format,
-      &diskstat.Majornumber,
-      &diskstat.Minornumber,
-      &diskstat.Devicename,
-      &diskstat.Reads,
-      &diskstat.ReadsMerged,
-      &diskstat.SectorsRead,
-      &diskstat.TimeReading,
-      &diskstat.Writes,
-      &diskstat.WritesMerged,
-      &diskstat.SectorsWritten,
-      &diskstat.TimeWriting,
-      &diskstat.CurrentOps,
-      &diskstat.TimeForOps,
-      &diskstat.WeightedTimeForOps,
-    )
+		_, err := fmt.Sscanf(
+			string(row), format,
+			&diskstat.Majornumber,
+			&diskstat.Minornumber,
+			&diskstat.Devicename,
+			&diskstat.Reads,
+			&diskstat.ReadsMerged,
+			&diskstat.SectorsRead,
+			&diskstat.TimeReading,
+			&diskstat.Writes,
+			&diskstat.WritesMerged,
+			&diskstat.SectorsWritten,
+			&diskstat.TimeWriting,
+			&diskstat.CurrentOps,
+			&diskstat.TimeForOps,
+			&diskstat.WeightedTimeForOps,
+		)
 
-    if err != nil {
-      fmt.Fprintf(os.Stderr, "Cannot parse row in proc diskstats: %s\n", err)
-      continue
-    }
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot parse row in proc diskstats: %s\n", err)
+			continue
+		}
 
-    stats[diskstat.Devicename] = diskstat
-  }
+		stats[diskstat.Devicename] = diskstat
+	}
 
-  return stats
+	return stats
 }

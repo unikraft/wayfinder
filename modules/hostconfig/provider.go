@@ -1,4 +1,5 @@
 package hostconfig
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,160 +32,160 @@ package hostconfig
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "strings"
-  "reflect"
-  "context"
+	"context"
+	"fmt"
+	"os"
+	"reflect"
+	"strings"
 
-  "github.com/erda-project/erda-infra/base/logs"
-  "github.com/erda-project/erda-infra/base/servicehub"
+	"github.com/erda-project/erda-infra/base/logs"
+	"github.com/erda-project/erda-infra/base/servicehub"
 
-  "github.com/unikraft/wayfinder/pkg/sys"
-  "github.com/unikraft/wayfinder/modules/postgres"
+	"github.com/unikraft/wayfinder/modules/postgres"
+	"github.com/unikraft/wayfinder/pkg/sys"
 
-  "github.com/unikraft/wayfinder/internal/models"
-  "github.com/unikraft/wayfinder/internal/parsecpusets"
+	"github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/internal/parsecpusets"
 )
 
 type config struct {
-  CpuSets           string `file:"cpu_sets"         env:"HOSTCONFIG_CPU_SETS"`
-  ScalingGovernor   string `file:"scaling_governor" env:"HOSTCONFIG_SCALING_GOVERNOR" default:"performance"`
-  Procfs          []string `file:"procfs"           env:"HOSTCONFIG_PROCFS"`
+	CpuSets         string   `file:"cpu_sets"         env:"HOSTCONFIG_CPU_SETS"`
+	ScalingGovernor string   `file:"scaling_governor" env:"HOSTCONFIG_SCALING_GOVERNOR" default:"performance"`
+	Procfs          []string `file:"procfs"           env:"HOSTCONFIG_PROCFS"`
 }
 
 type Provider struct {
-  Cfg    *config
-  Log     logs.Logger
-  DB      postgres.Interface `autowired:"postgres"`
-  procfs *ProcFs
+	Cfg    *config
+	Log    logs.Logger
+	DB     postgres.Interface `autowired:"postgres"`
+	procfs *ProcFs
 }
 
 func (p *Provider) Init(ctx servicehub.Context) error {
-  // TODO: Clean up when the servce exits, restoring the host back to its
-  // original configuration.
-  // p.exited = ctx.Hub().Events().Exited()
+	// TODO: Clean up when the servce exits, restoring the host back to its
+	// original configuration.
+	// p.exited = ctx.Hub().Events().Exited()
 
-  ctx.AddTask(p.PrepareEnvironmentTask)
-  ctx.AddTask(p.SaveHostDetailsTask)
+	ctx.AddTask(p.PrepareEnvironmentTask)
+	ctx.AddTask(p.SaveHostDetailsTask)
 
-  return nil
+	return nil
 }
 
 func (p *Provider) PrepareEnvironmentTask(ctx context.Context) error {
-  var err error
-  cpuSets, err := parsecpusets.ParseCpuSets(p.Cfg.CpuSets)
-  if err != nil {
-    return fmt.Errorf("could not parse CPU sets: %s", err)
-  }
+	var err error
+	cpuSets, err := parsecpusets.ParseCpuSets(p.Cfg.CpuSets)
+	if err != nil {
+		return fmt.Errorf("could not parse CPU sets: %s", err)
+	}
 
-  procVals := make(map[string]string)
+	procVals := make(map[string]string)
 
-  for _, val := range p.Cfg.Procfs {
-    fields := strings.Split(val, ":")
-    if len(fields) < 2 {
-      p.Log.Warnf("could not parse: %s: invalid format", val)
-      continue
-    }
+	for _, val := range p.Cfg.Procfs {
+		fields := strings.Split(val, ":")
+		if len(fields) < 2 {
+			p.Log.Warnf("could not parse: %s: invalid format", val)
+			continue
+		}
 
-    key := strings.TrimSpace(fields[0])
-    value := strings.TrimSpace(fields[1])
+		key := strings.TrimSpace(fields[0])
+		value := strings.TrimSpace(fields[1])
 
-    procVals[key] = value
-  }
+		procVals[key] = value
+	}
 
-  p.procfs = &ProcFs{
-    Log: p.Log.Sub("procfs"),
-  }
+	p.procfs = &ProcFs{
+		Log: p.Log.Sub("procfs"),
+	}
 
-  // Setup the host environment
-  err = p.procfs.Prepare(p.Cfg.ScalingGovernor, cpuSets, procVals)
-  if err != nil {
-    return fmt.Errorf("could not prepare host environment: %s", err)
-  }
+	// Setup the host environment
+	err = p.procfs.Prepare(p.Cfg.ScalingGovernor, cpuSets, procVals)
+	if err != nil {
+		return fmt.Errorf("could not prepare host environment: %s", err)
+	}
 
-  return nil
+	return nil
 }
 
 func (p *Provider) SaveHostDetailsTask(ctx context.Context) error {
-  dmiUuid, err := sys.GetSysDmiUUID()
-  if err != nil {
-    return err
-  }
+	dmiUuid, err := sys.GetSysDmiUUID()
+	if err != nil {
+		return err
+	}
 
-  // Check if the host already exists in the database
-  host := &models.Host{}
-  if err := p.DB.DB().Where("dmi_uuid = ?", dmiUuid).First(&host).Error; err != nil {
-    cpuInfo, err := sys.GetCpuInfo()
-    if err != nil {
-      return fmt.Errorf("could not retrieve contents of lscpu: %s", err)
-    }
+	// Check if the host already exists in the database
+	host := &models.Host{}
+	if err := p.DB.DB().Where("dmi_uuid = ?", dmiUuid).First(&host).Error; err != nil {
+		cpuInfo, err := sys.GetCpuInfo()
+		if err != nil {
+			return fmt.Errorf("could not retrieve contents of lscpu: %s", err)
+		}
 
-    // Otherwise, save it
-    host.Hostname, err        = os.Hostname()
-    if err != nil {
-      return fmt.Errorf("could not get hostname: %s", err)
-    }
+		// Otherwise, save it
+		host.Hostname, err = os.Hostname()
+		if err != nil {
+			return fmt.Errorf("could not get hostname: %s", err)
+		}
 
-    host.DmiUUID              = dmiUuid
-    host.Architecture         = cpuInfo.Architecture
-    host.ByteOrder            = cpuInfo.ByteOrder
-    host.AddressSizesPhysical = cpuInfo.AddressSizesPhysical
-    host.AddressSizesVirtual  = cpuInfo.AddressSizesVirtual
-    host.CPUs                 = cpuInfo.CPUs
-    host.ThreadsPerCore       = cpuInfo.ThreadsPerCore
-    host.CoresPerSocket       = cpuInfo.CoresPerSocket
-    host.Sockets              = cpuInfo.Sockets
-    host.NUMAnodes            = cpuInfo.NUMAnodes
-    host.VendorID             = cpuInfo.VendorID
-    host.CPUFamily            = cpuInfo.CPUFamily
-    host.Model                = cpuInfo.Model
-    host.ModelName            = cpuInfo.ModelName
-    host.Stepping             = cpuInfo.Stepping
-    host.CPUMHz               = cpuInfo.CPUMHz
-    host.CPUMaxMHz            = cpuInfo.CPUMaxMHz
-    host.CPUMinMHz            = cpuInfo.CPUMinMHz
-    host.BogoMIPS             = cpuInfo.BogoMIPS
-    host.Virtualization       = cpuInfo.Virtualization
-    host.L1dCache             = cpuInfo.L1dCache
-    host.L1iCache             = cpuInfo.L1iCache
-    host.L2Cache              = cpuInfo.L2Cache
-    host.L3Cache              = cpuInfo.L3Cache
-    host.NUMANode0CPUs        = cpuInfo.NUMANode0CPUs
-    host.NUMANode1CPUs        = cpuInfo.NUMANode1CPUs
-    host.Flags                = cpuInfo.Flags
+		host.DmiUUID = dmiUuid
+		host.Architecture = cpuInfo.Architecture
+		host.ByteOrder = cpuInfo.ByteOrder
+		host.AddressSizesPhysical = cpuInfo.AddressSizesPhysical
+		host.AddressSizesVirtual = cpuInfo.AddressSizesVirtual
+		host.CPUs = cpuInfo.CPUs
+		host.ThreadsPerCore = cpuInfo.ThreadsPerCore
+		host.CoresPerSocket = cpuInfo.CoresPerSocket
+		host.Sockets = cpuInfo.Sockets
+		host.NUMAnodes = cpuInfo.NUMAnodes
+		host.VendorID = cpuInfo.VendorID
+		host.CPUFamily = cpuInfo.CPUFamily
+		host.Model = cpuInfo.Model
+		host.ModelName = cpuInfo.ModelName
+		host.Stepping = cpuInfo.Stepping
+		host.CPUMHz = cpuInfo.CPUMHz
+		host.CPUMaxMHz = cpuInfo.CPUMaxMHz
+		host.CPUMinMHz = cpuInfo.CPUMinMHz
+		host.BogoMIPS = cpuInfo.BogoMIPS
+		host.Virtualization = cpuInfo.Virtualization
+		host.L1dCache = cpuInfo.L1dCache
+		host.L1iCache = cpuInfo.L1iCache
+		host.L2Cache = cpuInfo.L2Cache
+		host.L3Cache = cpuInfo.L3Cache
+		host.NUMANode0CPUs = cpuInfo.NUMANode0CPUs
+		host.NUMANode1CPUs = cpuInfo.NUMANode1CPUs
+		host.Flags = cpuInfo.Flags
 
-    host, err = p.DB.Repos().Hosts().CreateHost(host)
-    if err != nil {
-      return fmt.Errorf("could not save host: %s", err)
-    }
-  }
+		host, err = p.DB.Repos().Hosts().CreateHost(host)
+		if err != nil {
+			return fmt.Errorf("could not save host: %s", err)
+		}
+	}
 
-  // TODO: What happens if the machine is upgraded?
+	// TODO: What happens if the machine is upgraded?
 
-  return nil
+	return nil
 }
 
 func (p *Provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
-  return p
+	return p
 }
 
 func init() {
-  servicehub.Register("hostconfig", &servicehub.Spec{
-    Services:             []string{
-      "hostconfig",
-    },
-    Types:                []reflect.Type{  },
-    Dependencies:         []string{},
-    OptionalDependencies: []string{
-      "service-register",
-    },
-    Description:            "",
-    ConfigFunc:             func() interface{} {
-      return &config{}
-    },
-    Creator:                func() servicehub.Provider {
-      return &Provider{}
-    },
-  })
+	servicehub.Register("hostconfig", &servicehub.Spec{
+		Services: []string{
+			"hostconfig",
+		},
+		Types:        []reflect.Type{},
+		Dependencies: []string{},
+		OptionalDependencies: []string{
+			"service-register",
+		},
+		Description: "",
+		ConfigFunc: func() interface{} {
+			return &config{}
+		},
+		Creator: func() servicehub.Provider {
+			return &Provider{}
+		},
+	})
 }

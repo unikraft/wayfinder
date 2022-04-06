@@ -1,4 +1,5 @@
 package errors
+
 // Copyright (c) 2021 Terminus, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,103 +15,103 @@ package errors
 // limitations under the License.
 
 import (
-  "fmt"
-  "strings"
-  "net/http"
+	"fmt"
+	"net/http"
+	"strings"
 )
 
 // InvalidParameterError .
 type InvalidParameterError struct {
-  Name    string
-  Message string
+	Name    string
+	Message string
 }
 
 var _ Error = (*InvalidParameterError)(nil)
 
 // NewInvalidParameterError .
 func NewInvalidParameterError(name, message string) *InvalidParameterError {
-  return &InvalidParameterError{
-    Name:    name,
-    Message: message,
-  }
+	return &InvalidParameterError{
+		Name:    name,
+		Message: message,
+	}
 }
 
 func (e *InvalidParameterError) Error() string {
-  if len(e.Message) > 0 {
-    return fmt.Sprintf("parameter %s invalid: %s", e.Name, e.Message)
-  }
-  return fmt.Sprintf("parameter %s invalid", e.Name)
+	if len(e.Message) > 0 {
+		return fmt.Sprintf("parameter %s invalid: %s", e.Name, e.Message)
+	}
+	return fmt.Sprintf("parameter %s invalid", e.Name)
 }
 
 func (e *InvalidParameterError) HTTPStatus() int {
-  return http.StatusBadRequest
+	return http.StatusBadRequest
 }
 
 // MissingParameterError .
 type MissingParameterError struct {
-  Name string
+	Name string
 }
 
 var _ Error = (*MissingParameterError)(nil)
 
 func NewMissingParameterError(name string) *MissingParameterError {
-  return &MissingParameterError{Name: name}
+	return &MissingParameterError{Name: name}
 }
 
 func (e *MissingParameterError) Error() string {
-  return fmt.Sprintf("parameter %s missing", e.Name)
+	return fmt.Sprintf("parameter %s missing", e.Name)
 }
 
 func (e *MissingParameterError) HTTPStatus() int {
-  return http.StatusBadRequest
+	return http.StatusBadRequest
 }
 
 // ParameterTypeError
 type ParameterTypeError struct {
-  Name      string
-  ValidType string
+	Name      string
+	ValidType string
 }
 
 var _ Error = (*ParameterTypeError)(nil)
 
 // NewParameterTypeError .
 func NewParameterTypeError(name string) *ParameterTypeError {
-  return &ParameterTypeError{Name: name}
+	return &ParameterTypeError{Name: name}
 }
 
 func (e *ParameterTypeError) Error() string {
-  if len(e.ValidType) > 0 {
-    return fmt.Sprintf("parameter %s want %s type", e.Name, e.ValidType)
-  }
-  return fmt.Sprintf("parameter %s type error", e.Name)
+	if len(e.ValidType) > 0 {
+		return fmt.Sprintf("parameter %s want %s type", e.Name, e.ValidType)
+	}
+	return fmt.Sprintf("parameter %s type error", e.Name)
 }
 
 func (e *ParameterTypeError) HTTPStatus() int {
-  return http.StatusBadRequest
+	return http.StatusBadRequest
 }
 
 // ParseValidateError
 func ParseValidateError(err error) error {
-  if err == nil {
-    return err
-  }
+	if err == nil {
+		return err
+	}
 
-  msg := err.Error()
-  if !strings.HasPrefix(msg, "invalid field ") {
-    return err
-  }
+	msg := err.Error()
+	if !strings.HasPrefix(msg, "invalid field ") {
+		return err
+	}
 
-  idx := strings.Index(msg, ": ")
-  if idx <= 0 {
-    return err
-  }
+	idx := strings.Index(msg, ": ")
+	if idx <= 0 {
+		return err
+	}
 
-  field := msg[len("invalid field "):idx]
-  msg = msg[idx+2:]
+	field := msg[len("invalid field "):idx]
+	msg = msg[idx+2:]
 
-  if strings.Contains(msg, "message must exist") || strings.Contains(msg, "must not be an empty string") {
-    return NewMissingParameterError(field)
-  }
+	if strings.Contains(msg, "message must exist") || strings.Contains(msg, "must not be an empty string") {
+		return NewMissingParameterError(field)
+	}
 
-  return NewInvalidParameterError(field, msg)
+	return NewInvalidParameterError(field, msg)
 }

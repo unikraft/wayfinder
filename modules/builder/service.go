@@ -1,4 +1,5 @@
 package builder
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,360 +32,360 @@ package builder
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "time"
-  "sync"
-  "context"
+	"context"
+	"fmt"
+	"sync"
+	"time"
 
-  "google.golang.org/grpc/codes"
-  "google.golang.org/grpc/status"
-  
-  "github.com/unikraft/wayfinder/api/proto"
-  "github.com/unikraft/wayfinder/internal/models"
-  "github.com/unikraft/wayfinder/internal/strutils"
-  "github.com/unikraft/wayfinder/modules/container"
-  "github.com/unikraft/wayfinder/pkg/common/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/internal/strutils"
+	"github.com/unikraft/wayfinder/modules/container"
+	"github.com/unikraft/wayfinder/pkg/common/errors"
 )
 
 type build struct {
-  sync.RWMutex
-  container    *container.Container
-  err           error
-  runtime       time.Duration
+	sync.RWMutex
+	container *container.Container
+	err       error
+	runtime   time.Duration
 }
 
 type Service struct {
-  p      *provider
-  builds map[string]*build
+	p      *provider
+	builds map[string]*build
 }
 
 func (s *Service) CreateBuild(ctx context.Context, req *proto.CreateBuildRequest) (*proto.CreateBuildResponse, error) {
-  if req.PermutationId <= 0 {
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("permutation_id")
-  }
+	if req.PermutationId <= 0 {
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("permutation_id")
+	}
 
-  if req.Image == "" {
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("image")
-  }
+	if req.Image == "" {
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("image")
+	}
 
-  if req.Commands == "" {
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("commands")
-  }
+	if req.Commands == "" {
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("commands")
+	}
 
-  if len(req.Cores) == 0 {
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("cores")
-  }
+	if len(req.Cores) == 0 {
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("cores")
+	}
 
-  if len(req.EnvVars) == 0 {
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("envvars")
-  }
+	if len(req.EnvVars) == 0 {
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("envvars")
+	}
 
-  // Create a new entry in the database for this build
-  buildModel, err := s.p.DB.Repos().Builds().CreateBuildForPermutation(&models.Build{
-    PermutationId: uint(req.PermutationId),
-    Cores: strutils.JoinUint64(req.Cores, ","),
-  })
-  if err != nil {
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "could not create build in database: %s", err)
-  }
+	// Create a new entry in the database for this build
+	buildModel, err := s.p.DB.Repos().Builds().CreateBuildForPermutation(&models.Build{
+		PermutationId: uint(req.PermutationId),
+		Cores:         strutils.JoinUint64(req.Cores, ","),
+	})
+	if err != nil {
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "could not create build in database: %s", err)
+	}
 
-  uuid := buildModel.UUID.String()
+	uuid := buildModel.UUID.String()
 
-  // This is likely never going to occur
-  if _, ok := s.builds[uuid]; ok {
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "build with uuid=%s already exists: %s", uuid)
-  }
+	// This is likely never going to occur
+	if _, ok := s.builds[uuid]; ok {
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "build with uuid=%s already exists: %s", uuid)
+	}
 
-  builder, err := s.p.Container.NewContainer(uuid)
-  if err != nil {
-    s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "cannot create build container: %s", err)
-  }
-  
-  if err := builder.PullAndAttachImage(req.Image); err != nil {
-    s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "cannot pull image: %s", err)
-  }
+	builder, err := s.p.Container.NewContainer(uuid)
+	if err != nil {
+		s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "cannot create build container: %s", err)
+	}
 
-  if err := builder.SetCommands(req.Commands); err != nil {
-    s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "cannot set build container command: %s", err)
-  }
+	if err := builder.PullAndAttachImage(req.Image); err != nil {
+		s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "cannot pull image: %s", err)
+	}
 
-  builder.SetCores(req.Cores)
+	if err := builder.SetCommands(req.Commands); err != nil {
+		s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "cannot set build container command: %s", err)
+	}
 
-  if err = builder.SetDevices(req.Devices); err != nil {
-    s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
-    return &proto.CreateBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "cannot attach devices to container: %s", err)
-  }
+	builder.SetCores(req.Cores)
 
-  if len(req.Capabilities) > 0 {
-    builder.SetCapabilities(req.Capabilities)
-  }
+	if err = builder.SetDevices(req.Devices); err != nil {
+		s.p.DB.Repos().Builds().SetStatusKilledByBuildUuid(uuid)
+		return &proto.CreateBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "cannot attach devices to container: %s", err)
+	}
 
-  if len(req.Workdir) > 0 {
-    builder.SetWorkdir(req.Workdir)
-  }
+	if len(req.Capabilities) > 0 {
+		builder.SetCapabilities(req.Capabilities)
+	}
 
-  var envVars []string
-  for _, env := range req.EnvVars {
-    envVars = append(envVars, fmt.Sprintf("%s=%s", env.Name, env.Value))
-  }
+	if len(req.Workdir) > 0 {
+		builder.SetWorkdir(req.Workdir)
+	}
 
-  builder.AddEnvVars(envVars)
+	var envVars []string
+	for _, env := range req.EnvVars {
+		envVars = append(envVars, fmt.Sprintf("%s=%s", env.Name, env.Value))
+	}
 
-  // Save the build
-  s.builds[uuid] = &build{
-    container: builder,
-  }
+	builder.AddEnvVars(envVars)
 
-  return &proto.CreateBuildResponse{
-    Success: true,
-    Uuid:    uuid,
-  }, nil
+	// Save the build
+	s.builds[uuid] = &build{
+		container: builder,
+	}
+
+	return &proto.CreateBuildResponse{
+		Success: true,
+		Uuid:    uuid,
+	}, nil
 }
 
 func (s *Service) StartBuild(ctx context.Context, req *proto.StartBuildRequest) (*proto.StartBuildResponse, error) {
-  if req.Uuid == "" {
-    return &proto.StartBuildResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("uuid")
-  }
+	if req.Uuid == "" {
+		return &proto.StartBuildResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("uuid")
+	}
 
-  // TODO: Look up builds with jobId/permId rather than via container ID (this
-  // is for the proto/API).
+	// TODO: Look up builds with jobId/permId rather than via container ID (this
+	// is for the proto/API).
 
-  build, ok := s.builds[req.Uuid]
-  if !ok {
-    return &proto.StartBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
-  }
+	build, ok := s.builds[req.Uuid]
+	if !ok {
+		return &proto.StartBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
+	}
 
-  // Lock the build from other requests
-  build.RLock()
-  defer build.RUnlock()
+	// Lock the build from other requests
+	build.RLock()
+	defer build.RUnlock()
 
-  err := build.container.Init()
-  if err != nil {
-    s.p.DB.Repos().Builds().SetStatusFailedByBuildUuid(req.Uuid)
+	err := build.container.Init()
+	if err != nil {
+		s.p.DB.Repos().Builds().SetStatusFailedByBuildUuid(req.Uuid)
 
-    return &proto.StartBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "could not initialize build container: %s", err)
-  }
+		return &proto.StartBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "could not initialize build container: %s", err)
+	}
 
-  s.p.DB.Repos().Builds().SetStatusRunningByBuildUuid(req.Uuid)
+	s.p.DB.Repos().Builds().SetStatusRunningByBuildUuid(req.Uuid)
 
-  // Start a thread which oversees this build
-  go func(){
-    runtime, err := build.container.StartAndWait()
+	// Start a thread which oversees this build
+	go func() {
+		runtime, err := build.container.StartAndWait()
 
-    build.RLock()
-    defer build.RUnlock()
-    
-    build.runtime = runtime
+		build.RLock()
+		defer build.RUnlock()
 
-    // TODO: Putting note here not sure where to put it.  There's a bug where
-    // the build time for a job with which has the permutation as another
-    // saves to this.  This is a relational database model error.
-    s.p.DB.Repos().Builds().SetRuntimeByBuildUuid(req.Uuid, runtime)
+		build.runtime = runtime
 
-    if err != nil {
-      build.err = err
-      s.p.DB.Repos().Builds().SetStatusFailedByBuildUuid(req.Uuid)
-    } else {
-      s.p.DB.Repos().Builds().SetStatusSuccessByBuildUuid(req.Uuid)
-    }
-  }()
+		// TODO: Putting note here not sure where to put it.  There's a bug where
+		// the build time for a job with which has the permutation as another
+		// saves to this.  This is a relational database model error.
+		s.p.DB.Repos().Builds().SetRuntimeByBuildUuid(req.Uuid, runtime)
 
-  return &proto.StartBuildResponse{
-    Success: true,
-  }, nil
+		if err != nil {
+			build.err = err
+			s.p.DB.Repos().Builds().SetStatusFailedByBuildUuid(req.Uuid)
+		} else {
+			s.p.DB.Repos().Builds().SetStatusSuccessByBuildUuid(req.Uuid)
+		}
+	}()
+
+	return &proto.StartBuildResponse{
+		Success: true,
+	}, nil
 }
 
 func (s *Service) GetBuildStatus(ctx context.Context, req *proto.GetBuildStatusRequest) (*proto.GetBuildStatusResponse, error) {
-  if req.Uuid == "" {
-    return &proto.GetBuildStatusResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("uuid")
-  }
+	if req.Uuid == "" {
+		return &proto.GetBuildStatusResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("uuid")
+	}
 
-  buildModel := &models.Build{}
-  if err := s.p.DB.DB().Where("uuid = ?", req.Uuid).First(&buildModel).Error; err != nil {
-    return &proto.GetBuildStatusResponse{
-      Success: false,
-    }, status.Errorf(codes.NotFound, "build with uuid=%d not found", req.Uuid)
-  }
+	buildModel := &models.Build{}
+	if err := s.p.DB.DB().Where("uuid = ?", req.Uuid).First(&buildModel).Error; err != nil {
+		return &proto.GetBuildStatusResponse{
+			Success: false,
+		}, status.Errorf(codes.NotFound, "build with uuid=%d not found", req.Uuid)
+	}
 
-  // TODO: Look up builds with jobId/permId rather than via container ID (this
-  // is for the proto/API).
+	// TODO: Look up builds with jobId/permId rather than via container ID (this
+	// is for the proto/API).
 
-  build, ok := s.builds[req.Uuid]
-  if !ok {
-    return &proto.GetBuildStatusResponse{
-      Success: false,
-    }, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
-  }
+	build, ok := s.builds[req.Uuid]
+	if !ok {
+		return &proto.GetBuildStatusResponse{
+			Success: false,
+		}, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
+	}
 
-  return &proto.GetBuildStatusResponse{
-    Success: true,
-    Status:  buildModel.Status,
-    Runtime: build.runtime.String(),
-  }, nil
+	return &proto.GetBuildStatusResponse{
+		Success: true,
+		Status:  buildModel.Status,
+		Runtime: build.runtime.String(),
+	}, nil
 }
 
 func (s *Service) SaveBuildOutputsToDisk(ctx context.Context, req *proto.SaveBuildOutputsToDiskRequest) (*proto.SaveBuildOutputsToDiskResponse, error) {
-  if req.Uuid == "" {
-    return &proto.SaveBuildOutputsToDiskResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("uuid")
-  }
+	if req.Uuid == "" {
+		return &proto.SaveBuildOutputsToDiskResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("uuid")
+	}
 
-  if req.Outputs == nil {
-    return &proto.SaveBuildOutputsToDiskResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("outputs")
-  }
+	if req.Outputs == nil {
+		return &proto.SaveBuildOutputsToDiskResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("outputs")
+	}
 
-  if req.Outputs.Kernel == "" {
-    return &proto.SaveBuildOutputsToDiskResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("outputs.kernel")
-  }
+	if req.Outputs.Kernel == "" {
+		return &proto.SaveBuildOutputsToDiskResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("outputs.kernel")
+	}
 
-  // TODO: Look up builds with jobId/permId rather than via container ID (this
-  // is for the proto/API).
+	// TODO: Look up builds with jobId/permId rather than via container ID (this
+	// is for the proto/API).
 
-  build, ok := s.builds[req.Uuid]
-  if !ok {
-    return &proto.SaveBuildOutputsToDiskResponse{
-      Success: false,
-    }, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
-  }
-  
-  // Save kernel
-  kernel, err := build.container.SaveOutput(s.p.Cfg.OutputDir, req.Outputs.Kernel)
-  if err != nil {
-    return &proto.SaveBuildOutputsToDiskResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "build kernel could not be saved: %s", err)
-  }
+	build, ok := s.builds[req.Uuid]
+	if !ok {
+		return &proto.SaveBuildOutputsToDiskResponse{
+			Success: false,
+		}, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
+	}
 
-  s.p.Log.Infof("Saved: %s", kernel)
-  if err := s.p.DB.Repos().Builds().SetKernelPathByBuildUuid(req.Uuid, kernel); err != nil {
-    return &proto.SaveBuildOutputsToDiskResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "build kernel path could not be saved database: %s", err)
-  }
+	// Save kernel
+	kernel, err := build.container.SaveOutput(s.p.Cfg.OutputDir, req.Outputs.Kernel)
+	if err != nil {
+		return &proto.SaveBuildOutputsToDiskResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "build kernel could not be saved: %s", err)
+	}
 
-  initrd := ""
+	s.p.Log.Infof("Saved: %s", kernel)
+	if err := s.p.DB.Repos().Builds().SetKernelPathByBuildUuid(req.Uuid, kernel); err != nil {
+		return &proto.SaveBuildOutputsToDiskResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "build kernel path could not be saved database: %s", err)
+	}
 
-  if req.Outputs.InitRd != "" {
-    initrd, err = build.container.SaveOutput(s.p.Cfg.OutputDir, req.Outputs.InitRd)
-    if err != nil {
-      return &proto.SaveBuildOutputsToDiskResponse{
-        Success: false,
-      }, status.Errorf(codes.Internal, "build could not be saved: %s", err)
-    }
+	initrd := ""
 
-    if err := s.p.DB.Repos().Builds().SetInitRdPathByBuildUuid(req.Uuid, initrd); err != nil {
-      return &proto.SaveBuildOutputsToDiskResponse{
-        Success: false,
-      }, status.Errorf(codes.Internal, "build initrd path could not be saved database: %s", err)
-    }
+	if req.Outputs.InitRd != "" {
+		initrd, err = build.container.SaveOutput(s.p.Cfg.OutputDir, req.Outputs.InitRd)
+		if err != nil {
+			return &proto.SaveBuildOutputsToDiskResponse{
+				Success: false,
+			}, status.Errorf(codes.Internal, "build could not be saved: %s", err)
+		}
 
-    s.p.Log.Infof("Saved: %s", initrd)
-  }
+		if err := s.p.DB.Repos().Builds().SetInitRdPathByBuildUuid(req.Uuid, initrd); err != nil {
+			return &proto.SaveBuildOutputsToDiskResponse{
+				Success: false,
+			}, status.Errorf(codes.Internal, "build initrd path could not be saved database: %s", err)
+		}
 
-  disks := []*proto.BuildOutputDiskImage{}
+		s.p.Log.Infof("Saved: %s", initrd)
+	}
 
-  if len(req.Outputs.Disks) > 0 {
-    for _, disk := range req.Outputs.Disks {
-      diskPath, err := build.container.SaveOutput(s.p.Cfg.OutputDir, disk.Path)
-      if err != nil {
-        return &proto.SaveBuildOutputsToDiskResponse{
-          Success: false,
-        }, status.Errorf(codes.Internal, "build disk image could not be saved: %s", err)
-      }
+	disks := []*proto.BuildOutputDiskImage{}
 
-      if _, err := s.p.DB.Repos().Builds().AddDiskPathByBuildUuid(req.Uuid, &models.BuildOutputDisk{
-        Type: disk.Type,
-        Path: diskPath,
-      }); err != nil {
-        return &proto.SaveBuildOutputsToDiskResponse{
-          Success: false,
-        }, status.Errorf(codes.Internal, "build disk image path could not be saved database: %s", err)
-      }
+	if len(req.Outputs.Disks) > 0 {
+		for _, disk := range req.Outputs.Disks {
+			diskPath, err := build.container.SaveOutput(s.p.Cfg.OutputDir, disk.Path)
+			if err != nil {
+				return &proto.SaveBuildOutputsToDiskResponse{
+					Success: false,
+				}, status.Errorf(codes.Internal, "build disk image could not be saved: %s", err)
+			}
 
-      disk.Path = diskPath
-      disks = append(disks, disk)
+			if _, err := s.p.DB.Repos().Builds().AddDiskPathByBuildUuid(req.Uuid, &models.BuildOutputDisk{
+				Type: disk.Type,
+				Path: diskPath,
+			}); err != nil {
+				return &proto.SaveBuildOutputsToDiskResponse{
+					Success: false,
+				}, status.Errorf(codes.Internal, "build disk image path could not be saved database: %s", err)
+			}
 
-      s.p.Log.Infof("Saved disk image: %s", diskPath)
-    }
-  }
+			disk.Path = diskPath
+			disks = append(disks, disk)
 
-  return &proto.SaveBuildOutputsToDiskResponse{
-    Success: true,
-    Outputs: &proto.BuildOutputs{
-      Kernel: kernel,
-      InitRd: initrd,
-      Disks:  disks,
-    },
-  }, nil
+			s.p.Log.Infof("Saved disk image: %s", diskPath)
+		}
+	}
+
+	return &proto.SaveBuildOutputsToDiskResponse{
+		Success: true,
+		Outputs: &proto.BuildOutputs{
+			Kernel: kernel,
+			InitRd: initrd,
+			Disks:  disks,
+		},
+	}, nil
 }
 
 func (s *Service) DestroyBuild(ctx context.Context, req *proto.DestroyBuildRequest) (*proto.DestroyBuildResponse, error) {
-  if req.Uuid == "" {
-    return &proto.DestroyBuildResponse{
-      Success: false,
-    }, errors.NewMissingParameterError("uuid")
-  }
+	if req.Uuid == "" {
+		return &proto.DestroyBuildResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("uuid")
+	}
 
-  // TODO: Look up builds with jobId/permId rather than via container ID (this
-  // is for the proto/API).
+	// TODO: Look up builds with jobId/permId rather than via container ID (this
+	// is for the proto/API).
 
-  build, ok := s.builds[req.Uuid]
-  if !ok {
-    return &proto.DestroyBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
-  }
-  
-  // TODO: Actually we should try and garbage collect this later too.
+	build, ok := s.builds[req.Uuid]
+	if !ok {
+		return &proto.DestroyBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.NotFound, "cannot find build with id=%s", req.Uuid)
+	}
 
-  if err := build.container.Destroy(); err != nil {
-    return &proto.DestroyBuildResponse{
-      Success: false,
-    }, status.Errorf(codes.Internal, "cannot destroy build container: %s", err)
-  }
+	// TODO: Actually we should try and garbage collect this later too.
 
-  // wipe the build from memory
-  delete(s.builds, req.Uuid)
+	if err := build.container.Destroy(); err != nil {
+		return &proto.DestroyBuildResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "cannot destroy build container: %s", err)
+	}
 
-  return &proto.DestroyBuildResponse{
-    Success: true,
-  }, nil
+	// wipe the build from memory
+	delete(s.builds, req.Uuid)
+
+	return &proto.DestroyBuildResponse{
+		Success: true,
+	}, nil
 }

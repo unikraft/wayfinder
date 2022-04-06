@@ -1,4 +1,5 @@
 package main
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,208 +32,208 @@ package main
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "context"
-  "strconv"
+	"context"
+	"fmt"
+	"os"
+	"strconv"
 
-  "github.com/spf13/cobra"
-  "github.com/thediveo/enumflag"
+	"github.com/spf13/cobra"
+	"github.com/thediveo/enumflag"
 
-  "github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/api/proto"
 )
 
 // TODO iterate over proto.JobScheduler to generate enumflag.Flag from IDs
 type SchedulerType enumflag.Flag
 
 const (
-  Grid SchedulerType = iota
-  Random
-  Bayesian
+	Grid SchedulerType = iota
+	Random
+	Bayesian
 )
 
 type IsolLevelType enumflag.Flag
 
 const (
-  // Tasks can be scheduled on any core
-  NoIsol IsolLevelType = iota
+	// Tasks can be scheduled on any core
+	NoIsol IsolLevelType = iota
 
-  // Tasks will be scheduled on cores belonging to the same socket
-  DiffSocketIsol
+	// Tasks will be scheduled on cores belonging to the same socket
+	DiffSocketIsol
 
-  // Tasks will only be scheduled on the same numa node
-  DiffNumaIsol
+	// Tasks will only be scheduled on the same numa node
+	DiffNumaIsol
 
-  // Tasks will be scheduled on cores sharing the same L3 cache
-  DiffCacheIsol
+	// Tasks will be scheduled on cores sharing the same L3 cache
+	DiffCacheIsol
 
-  // Tasks will be scheduled on cores on the same Socket/NUMA/L3 cache
-  FullIsol
+	// Tasks will be scheduled on cores on the same Socket/NUMA/L3 cache
+	FullIsol
 )
 
 type IsolSplitType enumflag.Flag
 
 const (
-  SplitBoth IsolSplitType = iota
-  SplitBuilds
-  SplitTests
+	SplitBoth IsolSplitType = iota
+	SplitBuilds
+	SplitTests
 )
 
 type StartJobConfig struct {
-  Scheduler        proto.JobScheduler
-  IsolLevel        proto.JobIsolLevel
-  IsolSplit        proto.JobIsolSplit
-  PermutationLimit int
-  Repeats          int
-  DryRun           bool
-  SeqScheduler     bool
+	Scheduler        proto.JobScheduler
+	IsolLevel        proto.JobIsolLevel
+	IsolSplit        proto.JobIsolSplit
+	PermutationLimit int
+	Repeats          int
+	DryRun           bool
+	SeqScheduler     bool
 }
 
 var (
-  startCmd = &cobra.Command{
-    Use:                   "start [OPTIONS...] ID",
-    Aliases:               []string{"sj"},
-    Short:                 `Start a job on the wayfinder server.`,
-    Run:                   doStartCmd,
-    Args:                  cobra.ExactArgs(1),
-    DisableFlagsInUseLine: true,
-  }
+	startCmd = &cobra.Command{
+		Use:                   "start [OPTIONS...] ID",
+		Aliases:               []string{"sj"},
+		Short:                 `Start a job on the wayfinder server.`,
+		Run:                   doStartCmd,
+		Args:                  cobra.ExactArgs(1),
+		DisableFlagsInUseLine: true,
+	}
 
-  // Evaluated additional configuration for the job
-  jobCfg = &StartJobConfig{}
-  
-  // Map scheduler enumeration values to their textual representations
-  // (value identifiers).
-  SchedulerTypeIds = map[SchedulerType][]string{
-    Grid:     {"grid"},
-    Random:   {"random"},
-    Bayesian: {"bayesian"},
-  }
-  
-  // Map isolation level enumeration values to their textual representations
-  // (value identifiers).
-  IsolLevelTypeIds = map[IsolLevelType][]string{
-    NoIsol:         {"none"},
-    DiffNumaIsol:   {"numa"},
-    DiffCacheIsol:  {"cache"},
-    DiffSocketIsol: {"socket"},
-    FullIsol:       {"full"},
-  }
-  
-  // Map isolation split enumeration values to their textual representations
-  // (value identifiers).
-  IsolSplitTypeIds = map[IsolSplitType][]string{
-    SplitBoth:   {"both"},
-    SplitBuilds: {"builds"},
-    SplitTests:  {"tests"},
-  }
+	// Evaluated additional configuration for the job
+	jobCfg = &StartJobConfig{}
+
+	// Map scheduler enumeration values to their textual representations
+	// (value identifiers).
+	SchedulerTypeIds = map[SchedulerType][]string{
+		Grid:     {"grid"},
+		Random:   {"random"},
+		Bayesian: {"bayesian"},
+	}
+
+	// Map isolation level enumeration values to their textual representations
+	// (value identifiers).
+	IsolLevelTypeIds = map[IsolLevelType][]string{
+		NoIsol:         {"none"},
+		DiffNumaIsol:   {"numa"},
+		DiffCacheIsol:  {"cache"},
+		DiffSocketIsol: {"socket"},
+		FullIsol:       {"full"},
+	}
+
+	// Map isolation split enumeration values to their textual representations
+	// (value identifiers).
+	IsolSplitTypeIds = map[IsolSplitType][]string{
+		SplitBoth:   {"both"},
+		SplitBuilds: {"builds"},
+		SplitTests:  {"tests"},
+	}
 )
 
 func init() {
-  startCmd.PersistentFlags().VarP(
-    enumflag.New(
-      &jobCfg.Scheduler,
-      "grid",
-      SchedulerTypeIds,
-      enumflag.EnumCaseInsensitive,
-    ),
-    "scheduler",
-    "s",
-    "Specify the scheduler for job permutations.",
-  )
+	startCmd.PersistentFlags().VarP(
+		enumflag.New(
+			&jobCfg.Scheduler,
+			"grid",
+			SchedulerTypeIds,
+			enumflag.EnumCaseInsensitive,
+		),
+		"scheduler",
+		"s",
+		"Specify the scheduler for job permutations.",
+	)
 
-  startCmd.PersistentFlags().BoolVarP(
-    &jobCfg.SeqScheduler,
-    "sequential",
-    "S",
-    false,
-    "Use sequential generation for permutations.",
-  )
+	startCmd.PersistentFlags().BoolVarP(
+		&jobCfg.SeqScheduler,
+		"sequential",
+		"S",
+		false,
+		"Use sequential generation for permutations.",
+	)
 
-  startCmd.PersistentFlags().IntVarP(
-    &jobCfg.Repeats,
-    "repeats",
-    "r",
-    0,
-    "Number of times to repeat a permutation. Useful for random search. (default 0)",
-  )
+	startCmd.PersistentFlags().IntVarP(
+		&jobCfg.Repeats,
+		"repeats",
+		"r",
+		0,
+		"Number of times to repeat a permutation. Useful for random search. (default 0)",
+	)
 
-  startCmd.PersistentFlags().BoolVarP(
-    &jobCfg.DryRun,
-    "dry-run",
-    "D",
-    false,
-    "Specify whether to save output to the database or not.",
-  )
+	startCmd.PersistentFlags().BoolVarP(
+		&jobCfg.DryRun,
+		"dry-run",
+		"D",
+		false,
+		"Specify whether to save output to the database or not.",
+	)
 
-  startCmd.PersistentFlags().VarP(
-    enumflag.New(
-      &jobCfg.IsolLevel,
-      "none",
-      IsolLevelTypeIds,
-      enumflag.EnumCaseInsensitive,
-    ),
-    "isol-level",
-    "i",
-    "Specify the level of isolation for job permutations.",
-  )
+	startCmd.PersistentFlags().VarP(
+		enumflag.New(
+			&jobCfg.IsolLevel,
+			"none",
+			IsolLevelTypeIds,
+			enumflag.EnumCaseInsensitive,
+		),
+		"isol-level",
+		"i",
+		"Specify the level of isolation for job permutations.",
+	)
 
-  startCmd.PersistentFlags().VarP(
-    enumflag.New(
-      &jobCfg.IsolSplit,
-      "both",
-      IsolSplitTypeIds,
-      enumflag.EnumCaseInsensitive,
-    ),
-    "isol-split",
-    "x",
-    "Specify the split of isolation for job permutations.",
-  )
+	startCmd.PersistentFlags().VarP(
+		enumflag.New(
+			&jobCfg.IsolSplit,
+			"both",
+			IsolSplitTypeIds,
+			enumflag.EnumCaseInsensitive,
+		),
+		"isol-split",
+		"x",
+		"Specify the split of isolation for job permutations.",
+	)
 
-  startCmd.PersistentFlags().IntVarP(
-    &jobCfg.PermutationLimit,
-    "permutation-limit",
-    "l",
-    0,
-    "Number of permutations to iterate over (grid - powers of 2; random - exact).  Zero means all.",
-  )
+	startCmd.PersistentFlags().IntVarP(
+		&jobCfg.PermutationLimit,
+		"permutation-limit",
+		"l",
+		0,
+		"Number of permutations to iterate over (grid - powers of 2; random - exact).  Zero means all.",
+	)
 
-  // TODO: Flag to skip existing permutations of this job seen in the database
-  // startCmd.PersistentFlags().BoolVarP(
-  //   &jobCfg.SkipExisting,
-  //   "skip-exisiting",
-  //   "S",
-  //   false,
-  //   "",
-  // )
+	// TODO: Flag to skip existing permutations of this job seen in the database
+	// startCmd.PersistentFlags().BoolVarP(
+	//   &jobCfg.SkipExisting,
+	//   "skip-exisiting",
+	//   "S",
+	//   false,
+	//   "",
+	// )
 }
 
 // doStartCmd
 func doStartCmd(cmd *cobra.Command, args []string) {
-  if len(args) == 0 {
-    cmd.Help()
-  }
-  
-  jobId, err := strconv.Atoi(args[0])
-  if err != nil || jobId == 0 {
-    fmt.Printf("invalid job ID: %d", jobId)
-    os.Exit(1)
-  }
+	if len(args) == 0 {
+		cmd.Help()
+	}
 
-  _, err = Wayfinder.JobService.StartJob(context.TODO(), &proto.StartJobRequest{
-    Id:               int64(jobId),
-    Scheduler:        jobCfg.Scheduler,
-    SeqScheduler:     jobCfg.SeqScheduler,
-    IsolLevel:        jobCfg.IsolLevel,
-    IsolSplit:        jobCfg.IsolSplit,
-    PermutationLimit: int64(jobCfg.PermutationLimit),
-    Repeats:          uint64(jobCfg.Repeats),
-    DryRun:           jobCfg.DryRun,
-  })
-  if err != nil {
-    fmt.Printf("could not start job: %s\n", err)
-    os.Exit(1)
-  }
+	jobId, err := strconv.Atoi(args[0])
+	if err != nil || jobId == 0 {
+		fmt.Printf("invalid job ID: %d", jobId)
+		os.Exit(1)
+	}
 
-  fmt.Printf("Successfully started job with ID=%d\n", jobId)
+	_, err = Wayfinder.JobService.StartJob(context.TODO(), &proto.StartJobRequest{
+		Id:               int64(jobId),
+		Scheduler:        jobCfg.Scheduler,
+		SeqScheduler:     jobCfg.SeqScheduler,
+		IsolLevel:        jobCfg.IsolLevel,
+		IsolSplit:        jobCfg.IsolSplit,
+		PermutationLimit: int64(jobCfg.PermutationLimit),
+		Repeats:          uint64(jobCfg.Repeats),
+		DryRun:           jobCfg.DryRun,
+	})
+	if err != nil {
+		fmt.Printf("could not start job: %s\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Successfully started job with ID=%d\n", jobId)
 }

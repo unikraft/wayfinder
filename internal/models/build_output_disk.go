@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,16 +32,16 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/api/proto"
 )
 
 // BuildOutputDisk type that extends gorm.Model
 type BuildOutputDisk struct {
-  Base
+	Base
 
-  BuildId uint                           `gorm:"column:build_id" json:"build_id"`
+	BuildId uint `gorm:"column:build_id" json:"build_id"`
 
-  Type    proto.BuildOutputDiskImageType `gorm:"column:type"     json:"type"`
-  Name    string                         `gorm:"column:name"     json:"name"`
-  Path    string                         `gorm:"column:path"     json:"path"`
+	Type proto.BuildOutputDiskImageType `gorm:"column:type"     json:"type"`
+	Name string                         `gorm:"column:name"     json:"name"`
+	Path string                         `gorm:"column:path"     json:"path"`
 }

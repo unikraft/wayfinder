@@ -1,4 +1,5 @@
 package repositories
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,185 +32,184 @@ package repositories
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "time"
-  "gorm.io/gorm"
+	"gorm.io/gorm"
+	"time"
 
-  "github.com/unikraft/wayfinder/api/proto"
-  "github.com/unikraft/wayfinder/internal/models"
-  "github.com/unikraft/wayfinder/internal/version"
+	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/internal/version"
 )
 
 // BuildsRepository uses gorm.DB for querying the database
 type BuildsRepository struct {
-  db *gorm.DB
+	db *gorm.DB
 }
 
 // NewBuildsRepository returns a BuildsRepository which uses
 // gorm.DB for querying the database
 func NewBuildsRepository(db *gorm.DB) *BuildsRepository {
-  return &BuildsRepository{db}
+	return &BuildsRepository{db}
 }
 
 // CreateBuildForPermutation adds a new test row to the Tests table in the
 // database
 func (repo *BuildsRepository) CreateBuildForPermutation(build *models.Build) (*models.Build, error) {
-  build.Status = proto.BuildStatus_BUILD_CREATED
-  build.WayfinderVersion = version.String()
+	build.Status = proto.BuildStatus_BUILD_CREATED
+	build.WayfinderVersion = version.String()
 
-  if err := repo.db.Create(build).Error; err != nil {
-    return nil, err
-  }
-  return build, nil
+	if err := repo.db.Create(build).Error; err != nil {
+		return nil, err
+	}
+	return build, nil
 }
 
 // Deletes build. If purge is used, the entry is deleted permanently
 func (repo *BuildsRepository) DeleteBuild(build *models.Build, purge bool) error {
-  var deleteType *gorm.DB
+	var deleteType *gorm.DB
 
-  if purge {
-    deleteType = repo.db.Unscoped()
-  } else {
-    deleteType = repo.db
-  }
+	if purge {
+		deleteType = repo.db.Unscoped()
+	} else {
+		deleteType = repo.db
+	}
 
-  if err := deleteType.Delete(&models.Build{}, "uuid = ?", build.UUID).Error; err != nil {
-    return err
-  }
+	if err := deleteType.Delete(&models.Build{}, "uuid = ?", build.UUID).Error; err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // Deletes build from the builds table. If purge is used,
 // the entry is deleted permanently
 func (repo *BuildsRepository) DeleteBuildByBuildUuid(uuid string, purge bool) error {
-  var deleteType *gorm.DB
+	var deleteType *gorm.DB
 
-  if purge {
-    deleteType = repo.db.Unscoped()
-  } else {
-    deleteType = repo.db
-  }
+	if purge {
+		deleteType = repo.db.Unscoped()
+	} else {
+		deleteType = repo.db
+	}
 
-  if err := deleteType.Delete(&models.Build{}, "uuid = ?", uuid).Error; err != nil {
-    return err
-  }
+	if err := deleteType.Delete(&models.Build{}, "uuid = ?", uuid).Error; err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // SetStatusByBuildUuid sets the status of the build to the desired status by
 // the Build's UUID.
 func (repo *BuildsRepository) SetStatusByBuildUuid(uuid string, status proto.BuildStatus) error {
-  build := &models.Build{}
+	build := &models.Build{}
 
-  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
+		return err
+	}
 
-  build.Status = status;
+	build.Status = status
 
-  if err := repo.db.Save(build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Save(build).Error; err != nil {
+		return err
+	}
 
-  return nil;
+	return nil
 }
 
 // SetStatusCreatedByBuildId sets the state of the build to "created"
 func (repo *BuildsRepository) SetStatusCreatedByBuildUuid(uuid string) error {
-  return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_CREATED)
+	return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_CREATED)
 }
 
 // SetStatusRunningByBuildUuid sets the state of the build to "running"
 func (repo *BuildsRepository) SetStatusRunningByBuildUuid(uuid string) error {
-  return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_RUNNING)
+	return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_RUNNING)
 }
 
 // SetStatusPausedByBuildUuid sets the state of the build to "paused"
 func (repo *BuildsRepository) SetStatusPausedByBuildUuid(uuid string) error {
-  return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_PAUSED)
+	return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_PAUSED)
 }
 
 // SetStatusSuccessByBuildUuid sets the state of the build to "success"
 func (repo *BuildsRepository) SetStatusSuccessByBuildUuid(uuid string) error {
-  return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_SUCCESS)
+	return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_SUCCESS)
 }
 
 // SetStatusKilledByBuildUuid sets the state of the build to "killed"
 func (repo *BuildsRepository) SetStatusKilledByBuildUuid(uuid string) error {
-  return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_KILLED)
+	return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_KILLED)
 }
 
 // SetStatusFailedByBuildUuid sets the state of the build to "failed"
 func (repo *BuildsRepository) SetStatusFailedByBuildUuid(uuid string) error {
-  return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_FAILED)
+	return repo.SetStatusByBuildUuid(uuid, proto.BuildStatus_BUILD_FAILED)
 }
 
 // SetRuntimeByBuildUuid sets the state of the build to "created"
 func (repo *BuildsRepository) SetRuntimeByBuildUuid(uuid string, runtime time.Duration) error {
-  build := &models.Build{}
+	build := &models.Build{}
 
-  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
+		return err
+	}
 
-  build.Runtime = runtime;
+	build.Runtime = runtime
 
-  if err := repo.db.Save(build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Save(build).Error; err != nil {
+		return err
+	}
 
-  return nil;
+	return nil
 }
 
 // SetKernelPathByBuildUuid sets the location on disk of the kernel binary
 func (repo *BuildsRepository) SetKernelPathByBuildUuid(uuid, path string) error {
-  build := &models.Build{}
+	build := &models.Build{}
 
-  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
+		return err
+	}
 
-  build.KernelPath = path;
+	build.KernelPath = path
 
-  if err := repo.db.Save(build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Save(build).Error; err != nil {
+		return err
+	}
 
-  return nil;
+	return nil
 }
 
 // SetInitRdPathByBuildUuid sets the location on disk of the initrd file
 func (repo *BuildsRepository) SetInitRdPathByBuildUuid(uuid, path string) error {
-  build := &models.Build{}
+	build := &models.Build{}
 
-  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
+		return err
+	}
 
-  build.InitRdPath = path;
+	build.InitRdPath = path
 
-  if err := repo.db.Save(build).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Save(build).Error; err != nil {
+		return err
+	}
 
-  return nil;
+	return nil
 }
-
 
 // AddDiskPathByBuildUuid sets the location on disk of the initrd file
 func (repo *BuildsRepository) AddDiskPathByBuildUuid(uuid string, buildOutputDisk *models.BuildOutputDisk) (*models.BuildOutputDisk, error) {
-  build := &models.Build{}
+	build := &models.Build{}
 
-  if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
-    return nil, err
-  }
+	if err := repo.db.Where("uuid = ?", uuid).First(&build).Error; err != nil {
+		return nil, err
+	}
 
-  buildOutputDisk.BuildId = build.ID
+	buildOutputDisk.BuildId = build.ID
 
-  if err := repo.db.Create(buildOutputDisk).Error; err != nil {
-    return nil, err
-  }
+	if err := repo.db.Create(buildOutputDisk).Error; err != nil {
+		return nil, err
+	}
 
-  return buildOutputDisk, nil
+	return buildOutputDisk, nil
 }

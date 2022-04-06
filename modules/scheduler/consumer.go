@@ -1,4 +1,5 @@
 package scheduler
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,124 +32,125 @@ package scheduler
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "time"
-  "context"
-  "encoding/json"
-  "compress/zlib"
-  "bytes"
-  "io"
-  "os"
-  "strings"
+	"bytes"
+	"compress/zlib"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"strings"
+	"time"
 
-  "github.com/adjust/rmq/v4"
-  
-  "github.com/unikraft/wayfinder/spec"
-  "github.com/unikraft/wayfinder/api/proto"
-  "github.com/erda-project/erda-infra/base/logs"
-  "github.com/unikraft/wayfinder/internal/coremap"
-  "github.com/unikraft/wayfinder/internal/strutils"
+	"github.com/adjust/rmq/v4"
+
+	"github.com/erda-project/erda-infra/base/logs"
+	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/internal/coremap"
+	"github.com/unikraft/wayfinder/internal/strutils"
+	"github.com/unikraft/wayfinder/spec"
 )
 
 type TaskConsumer struct {
-  p                *provider
-  prevBuildChecksum string
-  prevBuildOutput  *proto.SaveBuildOutputsToDiskResponse
-  Log               logs.Logger
+	p                 *provider
+	prevBuildChecksum string
+	prevBuildOutput   *proto.SaveBuildOutputsToDiskResponse
+	Log               logs.Logger
 }
 
 const (
-  stageBuild = iota
-  stageTest
+	stageBuild = iota
+	stageTest
 )
 
 type stage int
 
 type build struct {
-  uuid string
+	uuid string
 }
 
 type test struct {
-  uuid string
+	uuid string
 }
 
 func NewTaskConsumer(p *provider) *TaskConsumer {
-  return &TaskConsumer{p: p}
+	return &TaskConsumer{p: p}
 }
 
 func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
-  taskBytes := delivery.Payload()
-  task := spec.JobSpec{}
+	taskBytes := delivery.Payload()
+	task := spec.JobSpec{}
 
-  var compressed bytes.Buffer
-  compressed = *bytes.NewBuffer([]byte(taskBytes))
-  var decompressed bytes.Buffer
-  r, _ := zlib.NewReader(&compressed)
-  io.Copy(&decompressed, r)
-  r.Close()
+	var compressed bytes.Buffer
+	compressed = *bytes.NewBuffer([]byte(taskBytes))
+	var decompressed bytes.Buffer
+	r, _ := zlib.NewReader(&compressed)
+	io.Copy(&decompressed, r)
+	r.Close()
 
-  // Check if we received the full job specification
-  err := json.Unmarshal(decompressed.Bytes(), &task)
-  if err != nil {
-    c.p.Log.Errorf("could not unmarshal job: %s", err)
-    if err := delivery.Reject(); err != nil {
-      c.p.Log.Errorf("failed to reject job: %s", err)
-    }
-  }
+	// Check if we received the full job specification
+	err := json.Unmarshal(decompressed.Bytes(), &task)
+	if err != nil {
+		c.p.Log.Errorf("could not unmarshal job: %s", err)
+		if err := delivery.Reject(); err != nil {
+			c.p.Log.Errorf("failed to reject job: %s", err)
+		}
+	}
 
-  // Create a new logger for this task
-  c.Log = c.p.Log.Sub(task.CurrentPerm.Checksum)
+	// Create a new logger for this task
+	c.Log = c.p.Log.Sub(task.CurrentPerm.Checksum)
 
-  // Start the task
-  err = c.StartTask(&task)
+	// Start the task
+	err = c.StartTask(&task)
 
-  if err != nil {
-    c.Log.Errorf("could not complete permutation: %s", err)
-    if err = delivery.Reject(); err != nil {
-      c.Log.Errorf("failed to reject permutation: %s", err)
-    }
-  } else {
-    delivery.Ack()
-  }
+	if err != nil {
+		c.Log.Errorf("could not complete permutation: %s", err)
+		if err = delivery.Reject(); err != nil {
+			c.Log.Errorf("failed to reject permutation: %s", err)
+		}
+	} else {
+		delivery.Ack()
+	}
 }
 
 // Busy-waits to release all cores. This happens because sometimes the
 // containers don't have time to exit, after signaling that work is done.
 // Most of the time this should complete in a single pass.
 func (c *TaskConsumer) releaseCoresById(coresToFree []uint64) error {
-  c.Log.Debugf("releasing cores: %s", strutils.JoinUint64(coresToFree, ","))
+	c.Log.Debugf("releasing cores: %s", strutils.JoinUint64(coresToFree, ","))
 
-  for _, coreId := range coresToFree {
-    retries := 0
-    freecore:for {
-      err := c.p.CoreMap().ReleaseCore(coreId)
-      if err != nil {
-        if retries > 10 {
-          return fmt.Errorf("could not release core with id=%d", coreId)
-        }
+	for _, coreId := range coresToFree {
+		retries := 0
+	freecore:
+		for {
+			err := c.p.CoreMap().ReleaseCore(coreId)
+			if err != nil {
+				if retries > 10 {
+					return fmt.Errorf("could not release core with id=%d", coreId)
+				}
 
-        retries++
-        time.Sleep(1 * time.Second)
-        continue
-      }
+				retries++
+				time.Sleep(1 * time.Second)
+				continue
+			}
 
-      break freecore
-    }
-  }
-  return nil
+			break freecore
+		}
+	}
+	return nil
 }
 
 // Returns the restriction level asked for when it corresponds to the isolated stage
 // Otherwise, reserve cores with no restriction
 func (c *TaskConsumer) calculateCoremap(taskStage stage, level proto.JobIsolLevel,
-                        split proto.JobIsolSplit) coremap.CoreRestriction {
-  if (split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BOTH) ||
-    (taskStage == stageBuild && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BUILDS) ||
-    (taskStage == stageTest && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_TESTS) {
-    return coremap.CoreRestriction(level)
-  }
+	split proto.JobIsolSplit) coremap.CoreRestriction {
+	if (split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BOTH) ||
+		(taskStage == stageBuild && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BUILDS) ||
+		(taskStage == stageTest && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_TESTS) {
+		return coremap.CoreRestriction(level)
+	}
 
-  return coremap.CoreOptionNoRestriction
+	return coremap.CoreOptionNoRestriction
 }
 
 // Busy-waits to reserve a core.  This method is required for builds and tests
@@ -157,452 +159,453 @@ func (c *TaskConsumer) calculateCoremap(taskStage stage, level proto.JobIsolLeve
 // which will be assigned to the core, and the list of core IDs which are then
 // reserved will be returned.
 func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface{}, taskStage stage,
-                        level proto.JobIsolLevel, split proto.JobIsolSplit) ([]uint64) {
-  var buildCoreIds []uint64
-  var buildCores []*coremap.Core
-  
-  // Wait until we have some free cores.
-  for {
+	level proto.JobIsolLevel, split proto.JobIsolSplit) []uint64 {
+	var buildCoreIds []uint64
+	var buildCores []*coremap.Core
 
-    c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
+	// Wait until we have some free cores.
+	for {
 
-    restriction := c.calculateCoremap(taskStage, level, split)
-    cores := c.p.CoreMap().FindFreeCores(restriction)
-    for _, core := range cores {
-      // Immediately reserve this core
-      if err := c.p.CoreMap().SetCoreActivity(core.Id(), activity); err != nil {
-        // To see core mapping during allocation, use:
-        // c.p.CoreMap().Print()
-        continue
-      }
+		c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
 
-      // To see core mapping during allocation, use:
-      // c.p.CoreMap().Print()
+		restriction := c.calculateCoremap(taskStage, level, split)
+		cores := c.p.CoreMap().FindFreeCores(restriction)
+		for _, core := range cores {
+			// Immediately reserve this core
+			if err := c.p.CoreMap().SetCoreActivity(core.Id(), activity); err != nil {
+				// To see core mapping during allocation, use:
+				// c.p.CoreMap().Print()
+				continue
+			}
 
-      buildCoreIds = append(buildCoreIds, core.Id())
-      buildCores = append(buildCores, core)
+			// To see core mapping during allocation, use:
+			// c.p.CoreMap().Print()
 
-      // Also check here in case we received more cores than requested
-      if len(buildCores) >= requiredNumCores {
-        break
-      }
-    }
+			buildCoreIds = append(buildCoreIds, core.Id())
+			buildCores = append(buildCores, core)
 
-    if len(buildCores) >= requiredNumCores {
-      break
-    } else {
-      time.Sleep(c.p.Cfg.GraceTime)
-    }
-  }
+			// Also check here in case we received more cores than requested
+			if len(buildCores) >= requiredNumCores {
+				break
+			}
+		}
 
-  c.Log.Debugf("Reserved cores: %s", strutils.JoinUint64(buildCoreIds, ", "))
+		if len(buildCores) >= requiredNumCores {
+			break
+		} else {
+			time.Sleep(c.p.Cfg.GraceTime)
+		}
+	}
 
-  return buildCoreIds;
+	c.Log.Debugf("Reserved cores: %s", strutils.JoinUint64(buildCoreIds, ", "))
+
+	return buildCoreIds
 }
 
 // Formats the environment variables for the test
 // The duration is added to the environment variables
 func (c *TaskConsumer) packEnvVars(task *spec.JobSpec) []*proto.TestEnvVar {
-  var envVars []*proto.TestEnvVar
+	var envVars []*proto.TestEnvVar
 
-  var duration string
-  if task.Test.BenchTool.Duration == 0 {
-    duration = "30"
-  } else {
-    duration = fmt.Sprint(task.Test.BenchTool.Duration)
-  }
+	var duration string
+	if task.Test.BenchTool.Duration == 0 {
+		duration = "30"
+	} else {
+		duration = fmt.Sprint(task.Test.BenchTool.Duration)
+	}
 
+	envVars = append(envVars, &proto.TestEnvVar{
+		Name:  "DURATION",
+		Value: duration,
+	})
 
-  envVars = append(envVars, &proto.TestEnvVar{
-    Name: "DURATION",
-    Value: duration,
-  })
+	for name, value := range task.Test.BenchTool.Environment {
+		envVars = append(envVars, &proto.TestEnvVar{
+			Name:  name,
+			Value: value,
+		})
+	}
 
-  for name, value := range task.Test.BenchTool.Environment {
-    envVars = append(envVars, &proto.TestEnvVar{
-      Name: name,
-      Value: value,
-    })
-  }
-
-  return envVars
+	return envVars
 }
 
 func (c *TaskConsumer) replaceArgs(task *spec.JobSpec) string {
-  argsString := task.Test.Kernel.Args
+	argsString := task.Test.Kernel.Args
 
-  for _, param := range task.CurrentPerm.Params {
-    argsString = strings.Replace(argsString, "${" + param.Name + "}", param.Value, -1)
-  }
+	for _, param := range task.CurrentPerm.Params {
+		argsString = strings.Replace(argsString, "${"+param.Name+"}", param.Value, -1)
+	}
 
-  task.Test.Kernel.Args = argsString
-  
-  return argsString
+	task.Test.Kernel.Args = argsString
+
+	return argsString
 }
 
 func cleanPreviousBuild(output *proto.BuildOutputs) error {
-  initRd := output.InitRd
-  kernel := output.Kernel
-  disks  := output.Disks
+	initRd := output.InitRd
+	kernel := output.Kernel
+	disks := output.Disks
 
-  // Run on a different thread to avoid IO blocking
-  go func ()  {
-    if initRd != "" {
-      if err := os.Remove(initRd); err != nil {
-        fmt.Printf("Could not remove initrd: %s err: %s\n", initRd, err)
-      }
-    }
-    if kernel != "" {
-      if err := os.Remove(kernel); err != nil {
-        fmt.Printf("Could not remove kernel: %s err: %s\n", kernel, err)
-      }
-    }
-    for _, disk := range disks {
-      if disk.Path != "" {
-        if err := os.Remove(disk.Path); err != nil {
-          fmt.Printf("Could not remove disk: %s err: %s\n", disk, err)
-        }
-      }
-    }
-  }()
-  
-  return nil
+	// Run on a different thread to avoid IO blocking
+	go func() {
+		if initRd != "" {
+			if err := os.Remove(initRd); err != nil {
+				fmt.Printf("Could not remove initrd: %s err: %s\n", initRd, err)
+			}
+		}
+		if kernel != "" {
+			if err := os.Remove(kernel); err != nil {
+				fmt.Printf("Could not remove kernel: %s err: %s\n", kernel, err)
+			}
+		}
+		for _, disk := range disks {
+			if disk.Path != "" {
+				if err := os.Remove(disk.Path); err != nil {
+					fmt.Printf("Could not remove disk: %s err: %s\n", disk, err)
+				}
+			}
+		}
+	}()
+
+	return nil
 }
 
 func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
-  // TODO: Implement a *real* scheduler.  For now this consumer accepts any task
-  // it receives and attempts to complete it.  This method should essentially
-  // determine which core/socket to schedule the task on based on the request
-  // as well as "intelligently" reject permutations.
+	// TODO: Implement a *real* scheduler.  For now this consumer accepts any task
+	// it receives and attempts to complete it.  This method should essentially
+	// determine which core/socket to schedule the task on based on the request
+	// as well as "intelligently" reject permutations.
 
-  // Find or create this permutation in the database
-  permutation, err := c.p.DB.Repos().Permutations().FindOrCreateFromJobSpec(task)
-  if err != nil {
-    return err
-  }
+	// Find or create this permutation in the database
+	permutation, err := c.p.DB.Repos().Permutations().FindOrCreateFromJobSpec(task)
+	if err != nil {
+		return err
+	}
 
-  // if req.JobId <= 0 {
-  //   return &proto.CreateBuildResponse{
-  //     Success: false,
-  //     Status:  proto.BuildStatus_BUILD_FAILED,
-  //   }, errors.NewMissingParameterError("job_id")
-  // }
+	// if req.JobId <= 0 {
+	//   return &proto.CreateBuildResponse{
+	//     Success: false,
+	//     Status:  proto.BuildStatus_BUILD_FAILED,
+	//   }, errors.NewMissingParameterError("job_id")
+	// }
 
-  // if req.PermutationId <= 0 {
-  //   return &proto.CreateBuildResponse{
-  //     Success: false,
-  //     Status:  proto.BuildStatus_BUILD_FAILED,
-  //   }, errors.NewMissingParameterError("permutation_id")
-  // }
+	// if req.PermutationId <= 0 {
+	//   return &proto.CreateBuildResponse{
+	//     Success: false,
+	//     Status:  proto.BuildStatus_BUILD_FAILED,
+	//   }, errors.NewMissingParameterError("permutation_id")
+	// }
 
-  // job := &models.Job{}
-  // if err := s.p.DB.Repos().Job().FindJob(req.JobId, job); err != nil {
-  //   return &proto.CreateBuildResponse{
-  //     Success: false,
-  //     Status:  proto.BuildStatus_BUILD_FAILED,
-  //   }, status.Errorf(codes.NotFound, "job with id=%d not found", req.JobId)
-  // }
+	// job := &models.Job{}
+	// if err := s.p.DB.Repos().Job().FindJob(req.JobId, job); err != nil {
+	//   return &proto.CreateBuildResponse{
+	//     Success: false,
+	//     Status:  proto.BuildStatus_BUILD_FAILED,
+	//   }, status.Errorf(codes.NotFound, "job with id=%d not found", req.JobId)
+	// }
 
-  // permutation := &models.Permutation{}
-  // if err := c.p.DB.DB().Where("id = ?", perm.Id).First(&permutation).Error; err != nil {
-  //   return fmt.Errorf("permutation with id=%d not found", perm.Id)
-  // }
+	// permutation := &models.Permutation{}
+	// if err := c.p.DB.DB().Where("id = ?", perm.Id).First(&permutation).Error; err != nil {
+	//   return fmt.Errorf("permutation with id=%d not found", perm.Id)
+	// }
 
-  var buildOutput *proto.SaveBuildOutputsToDiskResponse
-  build := build{}
-  if (c.prevBuildChecksum != task.CurrentPerm.BuildChecksum) {
-    c.prevBuildChecksum = task.CurrentPerm.BuildChecksum
+	var buildOutput *proto.SaveBuildOutputsToDiskResponse
+	build := build{}
+	if c.prevBuildChecksum != task.CurrentPerm.BuildChecksum {
+		c.prevBuildChecksum = task.CurrentPerm.BuildChecksum
 
-    buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit)
+		buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit)
 
-    var buildEnvVars []*proto.BuildEnvVar
-    for _, param := range task.CurrentPerm.Params {
-      buildEnvVars = append(buildEnvVars, &proto.BuildEnvVar{
-        Name: param.Name,
-        Value: param.Value,
-      })
-    }
+		var buildEnvVars []*proto.BuildEnvVar
+		for _, param := range task.CurrentPerm.Params {
+			buildEnvVars = append(buildEnvVars, &proto.BuildEnvVar{
+				Name:  param.Name,
+				Value: param.Value,
+			})
+		}
 
-    // Create the build
-    c.Log.Infof("creating build container for permutation_id=%d", permutation.Id)
-    createBuildResp, err := c.p.Builder.CreateBuild(context.TODO(), &proto.CreateBuildRequest{
-      PermutationId: int64(permutation.Id),
-      Image:         task.Build.Image,
-      Devices:       task.Build.Devices,
-      Capabilities:  task.Build.Capabilities,
-      Cores:         buildCoreIds,
-      Workdir:       task.Build.Workdir,
-      Commands:      task.Build.Commands,
-      EnvVars:       buildEnvVars,
-    })
-    if err != nil {
-      c.releaseCoresById(buildCoreIds)
-      return fmt.Errorf("could not create build: %s", err)
-    }
+		// Create the build
+		c.Log.Infof("creating build container for permutation_id=%d", permutation.Id)
+		createBuildResp, err := c.p.Builder.CreateBuild(context.TODO(), &proto.CreateBuildRequest{
+			PermutationId: int64(permutation.Id),
+			Image:         task.Build.Image,
+			Devices:       task.Build.Devices,
+			Capabilities:  task.Build.Capabilities,
+			Cores:         buildCoreIds,
+			Workdir:       task.Build.Workdir,
+			Commands:      task.Build.Commands,
+			EnvVars:       buildEnvVars,
+		})
+		if err != nil {
+			c.releaseCoresById(buildCoreIds)
+			return fmt.Errorf("could not create build: %s", err)
+		}
 
-    build.uuid = createBuildResp.Uuid
+		build.uuid = createBuildResp.Uuid
 
-    // Start the build
-    c.Log.Infof("starting build container for permutation_id=%d", permutation.Id)
-    _, err = c.p.Builder.StartBuild(context.TODO(), &proto.StartBuildRequest{
-      Uuid: build.uuid,
-    })
-    if err != nil {
-      c.releaseCoresById(buildCoreIds)
-      return fmt.Errorf("could not start build: %s", err)
-    }
+		// Start the build
+		c.Log.Infof("starting build container for permutation_id=%d", permutation.Id)
+		_, err = c.p.Builder.StartBuild(context.TODO(), &proto.StartBuildRequest{
+			Uuid: build.uuid,
+		})
+		if err != nil {
+			c.releaseCoresById(buildCoreIds)
+			return fmt.Errorf("could not start build: %s", err)
+		}
 
-    // Wait for the build to complete
-    c.Log.Infof("waiting for build container for permutation_id=%d to complete...", permutation.Id)
-    var numRetries uint64 = 0;
-    buildstatus:for {
-      statusBuildResp, err := c.p.Builder.GetBuildStatus(context.TODO(), &proto.GetBuildStatusRequest{
-        Uuid: build.uuid,
-      })
+		// Wait for the build to complete
+		c.Log.Infof("waiting for build container for permutation_id=%d to complete...", permutation.Id)
+		var numRetries uint64 = 0
+	buildstatus:
+		for {
+			statusBuildResp, err := c.p.Builder.GetBuildStatus(context.TODO(), &proto.GetBuildStatusRequest{
+				Uuid: build.uuid,
+			})
 
-      // Retry 5 times waiting a second each, fail if no response
-      if err != nil {
-        numRetries++
-        if numRetries >= 5 {
-          c.releaseCoresById(buildCoreIds)
-          return fmt.Errorf("could not get build status: %s", err)
-        }
-        time.Sleep(time.Second)
-        continue
-      }
+			// Retry 5 times waiting a second each, fail if no response
+			if err != nil {
+				numRetries++
+				if numRetries >= 5 {
+					c.releaseCoresById(buildCoreIds)
+					return fmt.Errorf("could not get build status: %s", err)
+				}
+				time.Sleep(time.Second)
+				continue
+			}
 
-      switch statusBuildResp.Status {
-        case proto.BuildStatus_BUILD_SUCCESS,
-            proto.BuildStatus_BUILD_KILLED,
-            proto.BuildStatus_BUILD_FAILED:
-          
-          _, err = time.ParseDuration(statusBuildResp.Runtime)
-          if err != nil {
-            c.releaseCoresById(buildCoreIds)
-            return fmt.Errorf("could not convert test runtime into duration: %s", err)
-          }
+			switch statusBuildResp.Status {
+			case proto.BuildStatus_BUILD_SUCCESS,
+				proto.BuildStatus_BUILD_KILLED,
+				proto.BuildStatus_BUILD_FAILED:
 
-          break buildstatus;
-      }
+				_, err = time.ParseDuration(statusBuildResp.Runtime)
+				if err != nil {
+					c.releaseCoresById(buildCoreIds)
+					return fmt.Errorf("could not convert test runtime into duration: %s", err)
+				}
 
-      time.Sleep(c.p.Cfg.GraceTime)
-    }
+				break buildstatus
+			}
 
-    c.Log.Infof("build container for permutation_id=%d exited!", permutation.Id)
+			time.Sleep(c.p.Cfg.GraceTime)
+		}
 
-    disks := []*proto.BuildOutputDiskImage{}
+		c.Log.Infof("build container for permutation_id=%d exited!", permutation.Id)
 
-    // TODO: This is where spec/proto map, this should be done in proto or in spec
-    // and not here.  This, or spec should be derived from proto.  The problem is
-    // named enums.
-    for _, disk := range task.Build.Outputs.Disks {
-      outputDisk := &proto.BuildOutputDiskImage{
-        Path: disk.Path,
-        Name: disk.Name,
-      }
-      switch disk.Type {
-      case spec.OutputDiskImageTypeRaw:
-        outputDisk.Type = proto.BuildOutputDiskImageType_BUILD_OUTPUT_DISK_RAW
-      }
+		disks := []*proto.BuildOutputDiskImage{}
 
-      disks = append(disks, outputDisk)
-    }
+		// TODO: This is where spec/proto map, this should be done in proto or in spec
+		// and not here.  This, or spec should be derived from proto.  The problem is
+		// named enums.
+		for _, disk := range task.Build.Outputs.Disks {
+			outputDisk := &proto.BuildOutputDiskImage{
+				Path: disk.Path,
+				Name: disk.Name,
+			}
+			switch disk.Type {
+			case spec.OutputDiskImageTypeRaw:
+				outputDisk.Type = proto.BuildOutputDiskImageType_BUILD_OUTPUT_DISK_RAW
+			}
 
-    // Save the outputs from the build
-    c.Log.Infof("saving outputs from permutation_id=%d", permutation.Id)
-    saveBuildOutputsResp, err := c.p.Builder.SaveBuildOutputsToDisk(context.TODO(), &proto.SaveBuildOutputsToDiskRequest{
-      Uuid:       build.uuid,
-      Outputs:   &proto.BuildOutputs{
-        Kernel:   task.Build.Outputs.Kernel,
-        InitRd:   task.Build.Outputs.InitRd,
-        Disks:    disks,
-      },
-    })
-    if err != nil {
-      c.releaseCoresById(buildCoreIds)
-      return fmt.Errorf("could not save build outputs: %s", err)
-    }
+			disks = append(disks, outputDisk)
+		}
 
-    // Previous output needs to be replaced and deleted
-    if (c.prevBuildOutput != nil) {
-      err = cleanPreviousBuild(c.prevBuildOutput.Outputs)
-      if err != nil {
-        c.releaseCoresById(buildCoreIds)
-        return fmt.Errorf("could not clean previous build: %s", err)
-      }
-    }
-    buildOutput = saveBuildOutputsResp
-    c.prevBuildOutput = buildOutput
+		// Save the outputs from the build
+		c.Log.Infof("saving outputs from permutation_id=%d", permutation.Id)
+		saveBuildOutputsResp, err := c.p.Builder.SaveBuildOutputsToDisk(context.TODO(), &proto.SaveBuildOutputsToDiskRequest{
+			Uuid: build.uuid,
+			Outputs: &proto.BuildOutputs{
+				Kernel: task.Build.Outputs.Kernel,
+				InitRd: task.Build.Outputs.InitRd,
+				Disks:  disks,
+			},
+		})
+		if err != nil {
+			c.releaseCoresById(buildCoreIds)
+			return fmt.Errorf("could not save build outputs: %s", err)
+		}
 
-    // Destroy the build
-    c.Log.Infof("destroying the build environment for permutation_id=%d", permutation.Id)
-    _, err = c.p.Builder.DestroyBuild(context.TODO(), &proto.DestroyBuildRequest{
-      Uuid: build.uuid,
-    })
-    if err != nil {
-      c.releaseCoresById(buildCoreIds)
-      return fmt.Errorf("could not destroy build environment%s", err)
-    }
+		// Previous output needs to be replaced and deleted
+		if c.prevBuildOutput != nil {
+			err = cleanPreviousBuild(c.prevBuildOutput.Outputs)
+			if err != nil {
+				c.releaseCoresById(buildCoreIds)
+				return fmt.Errorf("could not clean previous build: %s", err)
+			}
+		}
+		buildOutput = saveBuildOutputsResp
+		c.prevBuildOutput = buildOutput
 
-    // Free up cores
-    err = c.releaseCoresById(buildCoreIds)
-    if (err != nil) {
-      return fmt.Errorf("could not release cores: %s", err)
-    }
-  } else {
-    c.Log.Infof("skipping build for permutation_id=%d", permutation.Id)
-    buildOutput = c.prevBuildOutput
-  }
+		// Destroy the build
+		c.Log.Infof("destroying the build environment for permutation_id=%d", permutation.Id)
+		_, err = c.p.Builder.DestroyBuild(context.TODO(), &proto.DestroyBuildRequest{
+			Uuid: build.uuid,
+		})
+		if err != nil {
+			c.releaseCoresById(buildCoreIds)
+			return fmt.Errorf("could not destroy build environment%s", err)
+		}
 
-  //
-  // Test
-  //
-  test := test{}
+		// Free up cores
+		err = c.releaseCoresById(buildCoreIds)
+		if err != nil {
+			return fmt.Errorf("could not release cores: %s", err)
+		}
+	} else {
+		c.Log.Infof("skipping build for permutation_id=%d", permutation.Id)
+		buildOutput = c.prevBuildOutput
+	}
 
-  vmmCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
-  benchToolCoreIds := c.busyWaitForCores(int(task.Test.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
-  kernelCoreIds := c.busyWaitForCores(int(task.Test.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
-  testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
-  testCoreIds = append(testCoreIds, kernelCoreIds...)
+	//
+	// Test
+	//
+	test := test{}
 
-  // Create the test
-  c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
-  createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
-    PermutationId:  int64(permutation.Id),
-    VmmCores:       vmmCoreIds,
-    Kernel:        &proto.TestKernel{
-      Image:        buildOutput.Outputs.Kernel,
-      InitRd:       buildOutput.Outputs.InitRd,
-      Disks:        buildOutput.Outputs.Disks,
-      Cores:        kernelCoreIds,
-      Args:         c.replaceArgs(task),
-      Memory:       task.Test.Kernel.Memory,
-    },
-    BenchTool:     &proto.TestBenchTool{
-      Image:        task.Test.BenchTool.Image,
-      Devices:      task.Test.BenchTool.Devices,
-      Capabilities: task.Test.BenchTool.Capabilities,
-      Commands:     task.Test.BenchTool.Commands,
-      Cores:        benchToolCoreIds,
-      StartDelay:   task.Test.BenchTool.StartDelay,
-      EnvVars:      c.packEnvVars(task),
-    },
-  })
-  if err != nil {
-    c.releaseCoresById(testCoreIds)
-    return fmt.Errorf("could not create test: %s", err)
-  }
+	vmmCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
+	benchToolCoreIds := c.busyWaitForCores(int(task.Test.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
+	kernelCoreIds := c.busyWaitForCores(int(task.Test.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
+	testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
+	testCoreIds = append(testCoreIds, kernelCoreIds...)
 
-  test.uuid = createTestResp.Uuid
+	// Create the test
+	c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
+	createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
+		PermutationId: int64(permutation.Id),
+		VmmCores:      vmmCoreIds,
+		Kernel: &proto.TestKernel{
+			Image:  buildOutput.Outputs.Kernel,
+			InitRd: buildOutput.Outputs.InitRd,
+			Disks:  buildOutput.Outputs.Disks,
+			Cores:  kernelCoreIds,
+			Args:   c.replaceArgs(task),
+			Memory: task.Test.Kernel.Memory,
+		},
+		BenchTool: &proto.TestBenchTool{
+			Image:        task.Test.BenchTool.Image,
+			Devices:      task.Test.BenchTool.Devices,
+			Capabilities: task.Test.BenchTool.Capabilities,
+			Commands:     task.Test.BenchTool.Commands,
+			Cores:        benchToolCoreIds,
+			StartDelay:   task.Test.BenchTool.StartDelay,
+			EnvVars:      c.packEnvVars(task),
+		},
+	})
+	if err != nil {
+		c.releaseCoresById(testCoreIds)
+		return fmt.Errorf("could not create test: %s", err)
+	}
 
-  var results []*proto.TestResult
-  var resultType proto.TestResultType 
-  for _, result := range task.Test.Results {
+	test.uuid = createTestResp.Uuid
 
-    // TODO: This switch should be abstract in case we need it elsewhere.
-    // The proto definitions should probably have it and the spec should be
-    // merged with the proto.
-    switch result.Type {
-      case "int",
-           "integer":
-        resultType = proto.TestResultType_TEST_RESULT_INT
-      case "str",
-           "string":
-        resultType = proto.TestResultType_TEST_RESULT_STR
-      case "bool":
-        resultType = proto.TestResultType_TEST_RESULT_BOOL
-      case "float":
-        resultType = proto.TestResultType_TEST_RESULT_FLOAT
-    }
+	var results []*proto.TestResult
+	var resultType proto.TestResultType
+	for _, result := range task.Test.Results {
 
-    results = append(results, &proto.TestResult{
-      Name: result.Name,
-      Path: result.Path,
-      Type: resultType,
-    })
-  }
+		// TODO: This switch should be abstract in case we need it elsewhere.
+		// The proto definitions should probably have it and the spec should be
+		// merged with the proto.
+		switch result.Type {
+		case "int",
+			"integer":
+			resultType = proto.TestResultType_TEST_RESULT_INT
+		case "str",
+			"string":
+			resultType = proto.TestResultType_TEST_RESULT_STR
+		case "bool":
+			resultType = proto.TestResultType_TEST_RESULT_BOOL
+		case "float":
+			resultType = proto.TestResultType_TEST_RESULT_FLOAT
+		}
 
-  // Start the test
-  c.Log.Infof("starting test for permutation_id=%d", permutation.Id)
-  _, err = c.p.Tester.StartTest(context.TODO(), &proto.StartTestRequest{
-    Uuid:    test.uuid,
-    Results: results,
-  })
-  if err != nil {
-    c.releaseCoresById(testCoreIds)
-    return fmt.Errorf("could not start test: %s", err)
-  }
+		results = append(results, &proto.TestResult{
+			Name: result.Name,
+			Path: result.Path,
+			Type: resultType,
+		})
+	}
 
-  // Wait for the test to complete
-  numRetries := 0
-  c.Log.Infof("waiting for test for permutation_id=%d to complete...", permutation.Id)
-  teststatus:for {
-    statusTestResp, err := c.p.Tester.GetTestStatus(context.TODO(), &proto.GetTestStatusRequest{
-      Uuid: test.uuid,
-    })
-    // Retry 5 times waiting a second each, fail if no response
-    if err != nil {
-      numRetries++
-      if numRetries >= 5 {
-        c.releaseCoresById(testCoreIds)
-        return fmt.Errorf("could not get test status: %s", err)
-      }
-      time.Sleep(time.Second)
-      continue
-    }
+	// Start the test
+	c.Log.Infof("starting test for permutation_id=%d", permutation.Id)
+	_, err = c.p.Tester.StartTest(context.TODO(), &proto.StartTestRequest{
+		Uuid:    test.uuid,
+		Results: results,
+	})
+	if err != nil {
+		c.releaseCoresById(testCoreIds)
+		return fmt.Errorf("could not start test: %s", err)
+	}
 
-    switch statusTestResp.Status {
-      case proto.TestStatus_TEST_SUCCESS,
-           proto.TestStatus_TEST_KILLED,
-           proto.TestStatus_TEST_KERNEL_FAILED,
-           proto.TestStatus_TEST_BENCHTOOL_FAILED:
-        
-        _, err = time.ParseDuration(statusTestResp.Runtime)
-        if err != nil {
-          c.releaseCoresById(testCoreIds)
-          return fmt.Errorf("could not convert test runtime into duration: %s", err)
-        }
+	// Wait for the test to complete
+	numRetries := 0
+	c.Log.Infof("waiting for test for permutation_id=%d to complete...", permutation.Id)
+teststatus:
+	for {
+		statusTestResp, err := c.p.Tester.GetTestStatus(context.TODO(), &proto.GetTestStatusRequest{
+			Uuid: test.uuid,
+		})
+		// Retry 5 times waiting a second each, fail if no response
+		if err != nil {
+			numRetries++
+			if numRetries >= 5 {
+				c.releaseCoresById(testCoreIds)
+				return fmt.Errorf("could not get test status: %s", err)
+			}
+			time.Sleep(time.Second)
+			continue
+		}
 
-        break teststatus;
-    }
+		switch statusTestResp.Status {
+		case proto.TestStatus_TEST_SUCCESS,
+			proto.TestStatus_TEST_KILLED,
+			proto.TestStatus_TEST_KERNEL_FAILED,
+			proto.TestStatus_TEST_BENCHTOOL_FAILED:
 
-    time.Sleep(c.p.Cfg.GraceTime)
-  }
+			_, err = time.ParseDuration(statusTestResp.Runtime)
+			if err != nil {
+				c.releaseCoresById(testCoreIds)
+				return fmt.Errorf("could not convert test runtime into duration: %s", err)
+			}
 
-  c.Log.Infof("test for permutation_id=%d to complete!", permutation.Id)
+			break teststatus
+		}
 
-  // Destroy the test
-  c.Log.Infof("destroying test permutation_id=%d", permutation.Id)
-  _, err = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
-    Uuid: test.uuid,
-  })
-  if err != nil {
-    c.releaseCoresById(testCoreIds)
-    return fmt.Errorf("could not destroy test: %s", err)
-  }
+		time.Sleep(c.p.Cfg.GraceTime)
+	}
 
-  err = c.releaseCoresById(testCoreIds)
-  if err != nil {
-    return fmt.Errorf("could not release cores: %s", err)
-  }
+	c.Log.Infof("test for permutation_id=%d to complete!", permutation.Id)
 
-  // Delete all created entries related to the task
-  if task.DryRun {
-    err = c.p.DB.Repos().Results().DeleteResultByTestUuid(test.uuid, true)
-    if err != nil {
-      return fmt.Errorf("could not delete test: %s", err)
-    }
-    err = c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid, true)
-    if err != nil {
-      return fmt.Errorf("could not delete test: %s", err)
-    }
-    if build.uuid != "" {
-      err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
-      if err != nil {
-        return fmt.Errorf("could not delete build: %s", err)
-      }
-    }
-  }
+	// Destroy the test
+	c.Log.Infof("destroying test permutation_id=%d", permutation.Id)
+	_, err = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
+		Uuid: test.uuid,
+	})
+	if err != nil {
+		c.releaseCoresById(testCoreIds)
+		return fmt.Errorf("could not destroy test: %s", err)
+	}
 
-  return nil
+	err = c.releaseCoresById(testCoreIds)
+	if err != nil {
+		return fmt.Errorf("could not release cores: %s", err)
+	}
+
+	// Delete all created entries related to the task
+	if task.DryRun {
+		err = c.p.DB.Repos().Results().DeleteResultByTestUuid(test.uuid, true)
+		if err != nil {
+			return fmt.Errorf("could not delete test: %s", err)
+		}
+		err = c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid, true)
+		if err != nil {
+			return fmt.Errorf("could not delete test: %s", err)
+		}
+		if build.uuid != "" {
+			err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
+			if err != nil {
+				return fmt.Errorf("could not delete build: %s", err)
+			}
+		}
+	}
+
+	return nil
 }

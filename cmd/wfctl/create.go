@@ -1,4 +1,5 @@
 package main
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,84 +32,84 @@ package main
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "bytes"
-  "context"
-  "io/ioutil"
+	"bytes"
+	"context"
+	"fmt"
+	"io/ioutil"
+	"os"
 
-  "github.com/spf13/cobra"
+	"github.com/spf13/cobra"
 
-  "github.com/unikraft/wayfinder/api/proto"
-  "github.com/unikraft/wayfinder/internal/gzip"
+	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/internal/gzip"
 )
 
 type CreateJobConfig struct {
-  Name *string
+	Name *string
 }
 
 var (
-  createCmd = &cobra.Command{
-    Use:                   "create [OPTIONS...] FILE",
-    Aliases:               []string{"cj"},
-    Short:                 `Create a new job to be executed by the wayfinder server.`,
-    Run:                   doCreateCmd,
-    Args:                  cobra.ExactArgs(1),
-    DisableFlagsInUseLine: true,
-  }
+	createCmd = &cobra.Command{
+		Use:                   "create [OPTIONS...] FILE",
+		Aliases:               []string{"cj"},
+		Short:                 `Create a new job to be executed by the wayfinder server.`,
+		Run:                   doCreateCmd,
+		Args:                  cobra.ExactArgs(1),
+		DisableFlagsInUseLine: true,
+	}
 
-  jobCreateCfg = &CreateJobConfig{}
+	jobCreateCfg = &CreateJobConfig{}
 )
 
 func init() {
-  jobCreateCfg.Name = createCmd.PersistentFlags().StringP(
-    "name",
-    "n",
-    "",
-    "The name of the job to be created.",
-  )
+	jobCreateCfg.Name = createCmd.PersistentFlags().StringP(
+		"name",
+		"n",
+		"",
+		"The name of the job to be created.",
+	)
 }
 
-// doCreateCmd 
+// doCreateCmd
 func doCreateCmd(cmd *cobra.Command, args []string) {
-  if len(args) == 0 {
-    cmd.Help()
-  }
-  
-  filePath := args[0]
-  if _, err := os.Stat(filePath); err != nil {
-    fmt.Printf("file does not exist: %s\n", filePath)
-    os.Exit(1)
-  }
+	if len(args) == 0 {
+		cmd.Help()
+	}
 
-  // Slurp the file contents into memory
-  dat, err := ioutil.ReadFile(filePath)
-  if err != nil {
-    fmt.Printf("could not read file: %s: %s\n", err, filePath)
-    os.Exit(1)
-  }
+	filePath := args[0]
+	if _, err := os.Stat(filePath); err != nil {
+		fmt.Printf("file does not exist: %s\n", filePath)
+		os.Exit(1)
+	}
 
-  if len(dat) == 0 {
-    fmt.Printf("file is empty: %s\n", filePath)
-    os.Exit(1)
-  }
+	// Slurp the file contents into memory
+	dat, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		fmt.Printf("could not read file: %s: %s\n", err, filePath)
+		os.Exit(1)
+	}
 
-  var buf bytes.Buffer
-  err = gzip.Compress(&buf, []byte(dat))
-  if err != nil {
-    fmt.Printf("could not compress file: %s\n", err)
-    os.Exit(1)
-  }
+	if len(dat) == 0 {
+		fmt.Printf("file is empty: %s\n", filePath)
+		os.Exit(1)
+	}
 
-  resp, err := Wayfinder.JobService.CreateJob(context.TODO(), &proto.CreateJobRequest{
-    Name:       *jobCreateCfg.Name,
-    Data:       buf.Bytes(),
-    Compressed: true,
-  })
-  if err != nil {
-    fmt.Printf("could not create job: %s\n", err)
-    os.Exit(1)
-  }
+	var buf bytes.Buffer
+	err = gzip.Compress(&buf, []byte(dat))
+	if err != nil {
+		fmt.Printf("could not compress file: %s\n", err)
+		os.Exit(1)
+	}
 
-  fmt.Printf("Successfully created new job with ID=%d\n", resp.Id)
+	resp, err := Wayfinder.JobService.CreateJob(context.TODO(), &proto.CreateJobRequest{
+		Name:       *jobCreateCfg.Name,
+		Data:       buf.Bytes(),
+		Compressed: true,
+	})
+	if err != nil {
+		fmt.Printf("could not create job: %s\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Successfully created new job with ID=%d\n", resp.Id)
 }

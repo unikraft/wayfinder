@@ -1,4 +1,5 @@
 package printer
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,35 +32,35 @@ package printer
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "strings"
+	"strings"
 
-  blogs "github.com/erda-project/erda-infra/base/logs"
+	blogs "github.com/erda-project/erda-infra/base/logs"
 )
 
 type Printer struct {
-  log  blogs.Logger
-  path string
+	log  blogs.Logger
+	path string
 }
 
 func New(l blogs.Logger, p string) *Printer {
-  printer := &Printer{
-    log: l,
-    path: p,
-  }
+	printer := &Printer{
+		log:  l,
+		path: p,
+	}
 
-  return printer
+	return printer
 }
 
 // Write implements io.Writer
 func (p Printer) Write(b []byte) (n int, err error) {
-  if len(string(b)) > 0 {
-    args := strings.Split(string(b), "\n")
-    for _, arg := range args {
-      if len(arg) > 0 {
-        p.log.Infof("%s", arg)
-      }
-    }
-  }
+	if len(string(b)) > 0 {
+		args := strings.Split(string(b), "\n")
+		for _, arg := range args {
+			if len(arg) > 0 {
+				p.log.Infof("%s", arg)
+			}
+		}
+	}
 
-  return len(b), nil
+	return len(b), nil
 }

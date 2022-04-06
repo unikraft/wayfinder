@@ -1,4 +1,5 @@
 package scheduler
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -31,147 +32,147 @@ package scheduler
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "time"
-  "context"
-  "reflect"
+	"context"
+	"fmt"
+	"reflect"
+	"time"
 
-  "github.com/adjust/rmq/v4"
-  "github.com/go-redis/redis/v8"
-  "github.com/erda-project/erda-infra/base/servicehub"
-  
-  "github.com/unikraft/wayfinder/pkg/sys"
-  "github.com/erda-project/erda-infra/base/logs"
-  "github.com/unikraft/wayfinder/modules/tester"
-  "github.com/unikraft/wayfinder/modules/builder"
-  "github.com/unikraft/wayfinder/modules/postgres"
-  "github.com/unikraft/wayfinder/internal/coremap"
-  "github.com/unikraft/wayfinder/modules/hostconfig"
+	"github.com/adjust/rmq/v4"
+	"github.com/erda-project/erda-infra/base/servicehub"
+	"github.com/go-redis/redis/v8"
+
+	"github.com/erda-project/erda-infra/base/logs"
+	"github.com/unikraft/wayfinder/internal/coremap"
+	"github.com/unikraft/wayfinder/modules/builder"
+	"github.com/unikraft/wayfinder/modules/hostconfig"
+	"github.com/unikraft/wayfinder/modules/postgres"
+	"github.com/unikraft/wayfinder/modules/tester"
+	"github.com/unikraft/wayfinder/pkg/sys"
 )
 
 type Interface interface {
-  TaskQueue() rmq.Queue
-  CoreMap()  *coremap.CoreMap
+	TaskQueue() rmq.Queue
+	CoreMap() *coremap.CoreMap
 }
 
 var (
-  queueType = reflect.TypeOf((*rmq.Queue)(nil))
+	queueType = reflect.TypeOf((*rmq.Queue)(nil))
 )
 
 type config struct {
-  PrefetchLimit   int64         `file:"prefetch_limit" env:"SCHEDULER_PREFETCH_LIMIT" default:"1000"`
-  PollDuration    time.Duration `file:"poll_duration"  env:"SCHEDULER_POLL_DURATION"  default:"100ms"`
-  GraceTime       time.Duration `file:"grace_time"     env:"SCHEDULER_GRACE_TIME"     default:"5s"`
-  MaxRetries      int64         `file:"max_retries"    env:"SCHEDULER_MAX_RETRIES"    default:"3"`
+	PrefetchLimit int64         `file:"prefetch_limit" env:"SCHEDULER_PREFETCH_LIMIT" default:"1000"`
+	PollDuration  time.Duration `file:"poll_duration"  env:"SCHEDULER_POLL_DURATION"  default:"100ms"`
+	GraceTime     time.Duration `file:"grace_time"     env:"SCHEDULER_GRACE_TIME"     default:"5s"`
+	MaxRetries    int64         `file:"max_retries"    env:"SCHEDULER_MAX_RETRIES"    default:"3"`
 }
 
 type provider struct {
-  Cfg        *config
-  Log         logs.Logger
-  Redis      *redis.Client        `autowired:"redis-client"`
-  DB          postgres.Interface  `autowired:"postgres"`
-  Builder    *builder.Service     `autowired:"builder"`
-  Tester     *tester.Service      `autowired:"tester"`
-  HostConfig *hostconfig.Provider `autowired:"hostconfig"`
+	Cfg        *config
+	Log        logs.Logger
+	Redis      *redis.Client        `autowired:"redis-client"`
+	DB         postgres.Interface   `autowired:"postgres"`
+	Builder    *builder.Service     `autowired:"builder"`
+	Tester     *tester.Service      `autowired:"tester"`
+	HostConfig *hostconfig.Provider `autowired:"hostconfig"`
 
-  // Internal
-  taskQueue   rmq.Queue
-  redisErr    chan error
-  coreMap    *coremap.CoreMap
+	// Internal
+	taskQueue rmq.Queue
+	redisErr  chan error
+	coreMap   *coremap.CoreMap
 }
 
 // Init this is optional
 func (p *provider) Init(ctx servicehub.Context) error {
-  // Initialize global task queue
-  p.redisErr = make(chan error)
-  conn, err := rmq.OpenConnectionWithRedisClient("tasks", p.Redis, p.redisErr)
-  if err != nil {
-    return fmt.Errorf("could not create connect to redis: %s", err)
-  }
+	// Initialize global task queue
+	p.redisErr = make(chan error)
+	conn, err := rmq.OpenConnectionWithRedisClient("tasks", p.Redis, p.redisErr)
+	if err != nil {
+		return fmt.Errorf("could not create connect to redis: %s", err)
+	}
 
-  p.taskQueue, err = conn.OpenQueue("task-queue")
-  if err != nil {
-    return fmt.Errorf("could not create job queue: %s", err)
-  }
+	p.taskQueue, err = conn.OpenQueue("task-queue")
+	if err != nil {
+		return fmt.Errorf("could not create job queue: %s", err)
+	}
 
-  if err := p.taskQueue.StartConsuming(p.Cfg.PrefetchLimit, p.Cfg.PollDuration); err != nil {
-    return fmt.Errorf("cannot start consuming jobs: %s", err)
-  }
+	if err := p.taskQueue.StartConsuming(p.Cfg.PrefetchLimit, p.Cfg.PollDuration); err != nil {
+		return fmt.Errorf("cannot start consuming jobs: %s", err)
+	}
 
-  cpuLayoutInfo, err := sys.GetCpuLayoutInfo()
-  if err != nil {
-    return fmt.Errorf("could not get host CPU information: %s", err)
-  }
+	cpuLayoutInfo, err := sys.GetCpuLayoutInfo()
+	if err != nil {
+		return fmt.Errorf("could not get host CPU information: %s", err)
+	}
 
-  // Initialize the coremap
-  p.coreMap, err = coremap.New(p.HostConfig.Cfg.CpuSets, cpuLayoutInfo)
+	// Initialize the coremap
+	p.coreMap, err = coremap.New(p.HostConfig.Cfg.CpuSets, cpuLayoutInfo)
 
-  if err != nil {
-    return fmt.Errorf("could not initialize core map: %s", err)
-  }
+	if err != nil {
+		return fmt.Errorf("could not initialize core map: %s", err)
+	}
 
-  return nil
+	return nil
 }
 
 func (p *provider) Run(ctx context.Context) error {
 
-  // TODO: Implement a *real* scheduler.  For now this consumer accepts any task
-  // it receives and attempts to complete it.
+	// TODO: Implement a *real* scheduler.  For now this consumer accepts any task
+	// it receives and attempts to complete it.
 
-  if _, err := p.taskQueue.AddConsumer("task-consumer", NewTaskConsumer(p)); err != nil {
-    return fmt.Errorf("cannot initialize task consumer: %s", err)
-  }
+	if _, err := p.taskQueue.AddConsumer("task-consumer", NewTaskConsumer(p)); err != nil {
+		return fmt.Errorf("cannot initialize task consumer: %s", err)
+	}
 
-  // TODO: Catch redis channel errors?
+	// TODO: Catch redis channel errors?
 
-  return nil
+	return nil
 }
 
 func (p *provider) Start() error {
-  return nil
+	return nil
 }
 
 func (p *provider) Close() error {
-  <-p.taskQueue.StopConsuming()
-  return nil
+	<-p.taskQueue.StopConsuming()
+	return nil
 }
 
 func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
-  switch {
-    case ctx.Service() == "scheduler-queue",
-         ctx.Type() == queueType:
-    return p.taskQueue
-  }
-  return p
+	switch {
+	case ctx.Service() == "scheduler-queue",
+		ctx.Type() == queueType:
+		return p.taskQueue
+	}
+	return p
 }
 
 func (p *provider) CoreMap() *coremap.CoreMap {
-  return p.coreMap
+	return p.coreMap
 }
 
 func init() {
-  servicehub.Register("scheduler", &servicehub.Spec{
-    Services:             []string{
-      "scheduler",
-      "scheduler-queue",
-    },
-    Types:                []reflect.Type{
-      queueType,
-    },
-    Dependencies:         []string{
-      "postgres",
-      "builder",
-      "tester",
-    },
-    OptionalDependencies: []string{
-      "service-register",
-    },
-    Description:            "",
-    ConfigFunc:             func() interface{} {
-      return &config{}
-    },
-    Creator:                func() servicehub.Provider {
-      return &provider{}
-    },
-  })
+	servicehub.Register("scheduler", &servicehub.Spec{
+		Services: []string{
+			"scheduler",
+			"scheduler-queue",
+		},
+		Types: []reflect.Type{
+			queueType,
+		},
+		Dependencies: []string{
+			"postgres",
+			"builder",
+			"tester",
+		},
+		OptionalDependencies: []string{
+			"service-register",
+		},
+		Description: "",
+		ConfigFunc: func() interface{} {
+			return &config{}
+		},
+		Creator: func() servicehub.Provider {
+			return &provider{}
+		},
+	})
 }

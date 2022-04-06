@@ -42,18 +42,18 @@ import (
 )
 
 var (
-  flushCmd = &cobra.Command{
-    Use:                   "flush [OPTIONS...] 'task'/'job'/'all'",
-    Aliases:               []string{"fq"},
-    Short:                 `Flush elements from the Redis queues.`,
-    Run:                   doFqCmd,
-    Args:                  cobra.ExactArgs(1),
-    DisableFlagsInUseLine: true,
-  }
+	flushCmd = &cobra.Command{
+		Use:                   "flush [OPTIONS...] 'task'/'job'/'all'",
+		Aliases:               []string{"fq"},
+		Short:                 `Flush elements from the Redis queues.`,
+		Run:                   doFqCmd,
+		Args:                  cobra.ExactArgs(1),
+		DisableFlagsInUseLine: true,
+	}
 
-  flushCfg = &flushConfig{}
+	flushCfg = &flushConfig{}
 )
-  
+
 type flushConfig struct {
 }
 
@@ -62,33 +62,32 @@ func init() {
 
 // doFqCmd
 func doFqCmd(cmd *cobra.Command, args []string) {
-  if len(args) == 0 {
-      cmd.Help()
-  }
+	if len(args) == 0 {
+		cmd.Help()
+	}
 
-  flushType := args[0]
-  var flushTypeId proto.RedisQueueType
+	flushType := args[0]
+	var flushTypeId proto.RedisQueueType
 
-  switch flushType {
-    case "task":
-      flushTypeId = proto.RedisQueueType_REDIS_QUEUE_TYPE_PERMUTATION
-    case "job":
-      flushTypeId = proto.RedisQueueType_REDIS_QUEUE_TYPE_JOB
-    case "all":
-      flushTypeId = proto.RedisQueueType_REDIS_QUEUE_TYPE_ALL
-    default:
-      fmt.Println("Invalid flush type:", flushType)
-      os.Exit(1)
-  }
+	switch flushType {
+	case "task":
+		flushTypeId = proto.RedisQueueType_REDIS_QUEUE_TYPE_PERMUTATION
+	case "job":
+		flushTypeId = proto.RedisQueueType_REDIS_QUEUE_TYPE_JOB
+	case "all":
+		flushTypeId = proto.RedisQueueType_REDIS_QUEUE_TYPE_ALL
+	default:
+		fmt.Println("Invalid flush type:", flushType)
+		os.Exit(1)
+	}
 
-  _, err := Wayfinder.JobService.FlushRedisQueue(context.TODO(), &proto.FlushRedisQueueRequest{
-      QueueType: flushTypeId,
-  })
-  if err != nil {
-      fmt.Printf("could not start flushing: %s\n", err)
-      os.Exit(1)
-  }
+	_, err := Wayfinder.JobService.FlushRedisQueue(context.TODO(), &proto.FlushRedisQueueRequest{
+		QueueType: flushTypeId,
+	})
+	if err != nil {
+		fmt.Printf("could not start flushing: %s\n", err)
+		os.Exit(1)
+	}
 
-  fmt.Printf("Sucessfully started flushing queue %s\n", flushType)
+	fmt.Printf("Sucessfully started flushing queue %s\n", flushType)
 }
-  

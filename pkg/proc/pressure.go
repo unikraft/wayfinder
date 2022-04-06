@@ -1,4 +1,5 @@
 package proc
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -31,9 +32,9 @@ package proc
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "bufio"
+	"bufio"
+	"fmt"
+	"os"
 )
 
 // some avg10=0.00 avg60=0.00 avg300=0.00 total=109155294
@@ -43,70 +44,70 @@ import (
 type ProcPressureMetric string
 
 const (
-  // ProcPressureMetricSome defines the metric type "some" for a ProcPressure
-  // element
-  ProcPressureMetricSome ProcPressureMetric = "some"
-  // ProcPressureMetricFull defines the metric type "full" for a ProcPressure
-  // element
-  ProcPressureMetricFull ProcPressureMetric = "Full"
+	// ProcPressureMetricSome defines the metric type "some" for a ProcPressure
+	// element
+	ProcPressureMetricSome ProcPressureMetric = "some"
+	// ProcPressureMetricFull defines the metric type "full" for a ProcPressure
+	// element
+	ProcPressureMetricFull ProcPressureMetric = "Full"
 )
 
 // ProcPressureResource describes the resource (cpu,io,mem)
 type ProcPressureResource string
 
 const (
-  // ProcPressureResourceCPU defines the resource type "cpu" for a ProcPressure
-  // element
-  ProcPressureResourceCPU ProcPressureResource    = "cpu"
-  // ProcPressureResourceIO defines the metric type "io" for a ProcPressure
-  // element
-  ProcPressureResourceIO ProcPressureResource     = "io"
-  // ProcPressureResourceMemory defines the metric type "memory" for a
-  // ProcPressure element
-  ProcPressureResourceMemory ProcPressureResource = "memory"
+	// ProcPressureResourceCPU defines the resource type "cpu" for a ProcPressure
+	// element
+	ProcPressureResourceCPU ProcPressureResource = "cpu"
+	// ProcPressureResourceIO defines the metric type "io" for a ProcPressure
+	// element
+	ProcPressureResourceIO ProcPressureResource = "io"
+	// ProcPressureResourceMemory defines the metric type "memory" for a
+	// ProcPressure element
+	ProcPressureResourceMemory ProcPressureResource = "memory"
 )
 
 // ProcPressure describes one row in /proc/pressure/{io,cpu,mem}
 type ProcPressure struct {
-  Metric ProcPressureMetric // some or full
-  Avg10  float64
-  Avg60  float64
-  Avg300 float64
-  Total  uint64
+	Metric ProcPressureMetric // some or full
+	Avg10  float64
+	Avg60  float64
+	Avg300 float64
+	Total  uint64
 }
 
 // GetProcPressure reads and returns the pressures for the given resource
 func GetProcPressure(procfs string, resource ProcPressureResource) []ProcPressure {
-  pressures := []ProcPressure{}
-  filepath := fmt.Sprint(procfs, "/pressure/", resource)
+	pressures := []ProcPressure{}
+	filepath := fmt.Sprint(procfs, "/pressure/", resource)
 
-  file, err := os.Open(filepath)
-  if err != nil {
-    // cannot open file ...
-    return pressures
-  }
-  scanner := bufio.NewScanner(file)
-  scanner.Split(bufio.ScanLines)
+	file, err := os.Open(filepath)
+	if err != nil {
+		// cannot open file ...
+		return pressures
+	}
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
-  format := "%s avg10=%f avg60=%f avg300=%f total=%d"
+	format := "%s avg10=%f avg60=%f avg300=%f total=%d"
 
-  for scanner.Scan() {
-    row := scanner.Text()
-    pressure := ProcPressure{}
+	for scanner.Scan() {
+		row := scanner.Text()
+		pressure := ProcPressure{}
 
-    _, err := fmt.Sscanf(
-      string(row), format,
-      &pressure.Metric,
-      &pressure.Avg10,
-      &pressure.Avg60,
-      &pressure.Avg300,
-      &pressure.Total,
-    )
-    if err != nil {
-      fmt.Fprintf(os.Stderr, "Cannot parse row in proc pressure %s: %s\n", resource, err)
-      continue
-    }
-    pressures = append(pressures, pressure)
-  }
-  return pressures
+		_, err := fmt.Sscanf(
+			string(row), format,
+			&pressure.Metric,
+			&pressure.Avg10,
+			&pressure.Avg60,
+			&pressure.Avg300,
+			&pressure.Total,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot parse row in proc pressure %s: %s\n", resource, err)
+			continue
+		}
+		pressures = append(pressures, pressure)
+	}
+	return pressures
 }

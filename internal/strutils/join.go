@@ -1,4 +1,5 @@
 package strutils
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,12 +32,12 @@ package strutils
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "strings"
+	"fmt"
+	"strings"
 )
 
 func JoinUint64(items []uint64, delim string) string {
-  return strings.Trim(
-    strings.Join(strings.Fields(fmt.Sprint(items)), delim), "[]",
-  )
+	return strings.Trim(
+		strings.Join(strings.Fields(fmt.Sprint(items)), delim), "[]",
+	)
 }

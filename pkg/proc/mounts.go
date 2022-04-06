@@ -1,4 +1,5 @@
 package proc
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,51 +32,51 @@ package proc
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "bufio"
+	"bufio"
+	"fmt"
+	"os"
 )
 
 // ProcMount describes one entry (row) of /proc/mounts
 type ProcMount struct {
-  Device         string
-  Mountpoint     string
-  FileSystemType string
-  Options        string
-  dummy1         int
-  dummy2         int
+	Device         string
+	Mountpoint     string
+	FileSystemType string
+	Options        string
+	dummy1         int
+	dummy2         int
 }
 
 // GetProcMounts reads and returns an array of mount points defined in /proc/mounts
 func GetProcMounts(procfs string) []ProcMount {
-  mounts := []ProcMount{}
-  filepath := fmt.Sprint(procfs, "/mounts")
+	mounts := []ProcMount{}
+	filepath := fmt.Sprint(procfs, "/mounts")
 
-  file, _ := os.Open(filepath)
-  scanner := bufio.NewScanner(file)
-  scanner.Split(bufio.ScanLines)
+	file, _ := os.Open(filepath)
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
-  format := "%s %s %s %s %d %d"
+	format := "%s %s %s %s %d %d"
 
-  for scanner.Scan() {
-    row := scanner.Text()
-    mount := ProcMount{}
+	for scanner.Scan() {
+		row := scanner.Text()
+		mount := ProcMount{}
 
-    _, err := fmt.Sscanf(
-      string(row), format,
-      &mount.Device,
-      &mount.Mountpoint,
-      &mount.FileSystemType,
-      &mount.Options,
-      &mount.dummy1,
-      &mount.dummy2,
-    )
-    if err != nil {
-      fmt.Fprintf(os.Stderr, "Cannot parse row in proc mounts: %s\n", err)
-      continue
-    }
-    mounts = append(mounts, mount)
-  }
+		_, err := fmt.Sscanf(
+			string(row), format,
+			&mount.Device,
+			&mount.Mountpoint,
+			&mount.FileSystemType,
+			&mount.Options,
+			&mount.dummy1,
+			&mount.dummy2,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot parse row in proc mounts: %s\n", err)
+			continue
+		}
+		mounts = append(mounts, mount)
+	}
 
-  return mounts
+	return mounts
 }

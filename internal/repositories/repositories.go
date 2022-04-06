@@ -1,4 +1,5 @@
 package repositories
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,57 +32,57 @@ package repositories
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "gorm.io/gorm"
+	"gorm.io/gorm"
 )
 
 type Repositories struct {
-  jobs         *JobsRepository
-  hosts        *HostsRepository
-  params       *ParamsRepository
-  permutations *PermutationsRepository
-  builds       *BuildsRepository
-  tests        *TestsRepository
-  results      *ResultsRepository
+	jobs         *JobsRepository
+	hosts        *HostsRepository
+	params       *ParamsRepository
+	permutations *PermutationsRepository
+	builds       *BuildsRepository
+	tests        *TestsRepository
+	results      *ResultsRepository
 }
 
 func (t *Repositories) Jobs() *JobsRepository {
-  return t.jobs
+	return t.jobs
 }
 
 func (t *Repositories) Hosts() *HostsRepository {
-  return t.hosts
+	return t.hosts
 }
 
 func (t *Repositories) Params() *ParamsRepository {
-  return t.params
+	return t.params
 }
 
 func (t *Repositories) Permutations() *PermutationsRepository {
-  return t.permutations
+	return t.permutations
 }
 
 func (t *Repositories) Builds() *BuildsRepository {
-  return t.builds
+	return t.builds
 }
 
 func (t *Repositories) Tests() *TestsRepository {
-  return t.tests
+	return t.tests
 }
 
 func (t *Repositories) Results() *ResultsRepository {
-  return t.results
+	return t.results
 }
 
-// NewRepositories returns all repos which persists in memory and accepts a 
+// NewRepositories returns all repos which persists in memory and accepts a
 // parameter that can trigger read/write errors.
 func NewRepositories(db *gorm.DB, key *[32]byte) *Repositories {
-  return &Repositories{
-    jobs:         NewJobsRepository(db),
-    hosts:        NewHostsRepository(db),
-    params:       NewParamsRepository(db),
-    permutations: NewPermutationsRepository(db),
-    builds:       NewBuildsRepository(db),
-    tests:        NewTestsRepository(db),
-    results:      NewResultsRepository(db),
-  }
+	return &Repositories{
+		jobs:         NewJobsRepository(db),
+		hosts:        NewHostsRepository(db),
+		params:       NewParamsRepository(db),
+		permutations: NewPermutationsRepository(db),
+		builds:       NewBuildsRepository(db),
+		tests:        NewTestsRepository(db),
+		results:      NewResultsRepository(db),
+	}
 }

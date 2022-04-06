@@ -1,4 +1,5 @@
 package spec
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -33,169 +34,169 @@ package spec
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "math"
-  "strconv"
+	"fmt"
+	"math"
+	"strconv"
 )
 
 type ParamSpec struct {
-  Name      string    `json:"Name,omitempty"      yaml:"name,omitempty"`
-  Type      string    `json:"Type,omitempty"      yaml:"type,omitempty"`
-  Default   string    `json:"Default,omitempty"   yaml:"default,omitempty"`
-  Only    []string    `json:"Only,omitempty"      yaml:"only,omitempty"`
-  Min       string    `json:"Min,omitempty"       yaml:"min,omitempty"`
-  Max       string    `json:"Max,omitempty"       yaml:"max,omitempty"`
-  Step      string    `json:"Step,omitempty"      yaml:"step,omitempty"`
-  StepMode  string    `json:"Step_mode,omitempty" yaml:"step_mode,omitempty"`
+	Name     string   `json:"Name,omitempty"      yaml:"name,omitempty"`
+	Type     string   `json:"Type,omitempty"      yaml:"type,omitempty"`
+	Default  string   `json:"Default,omitempty"   yaml:"default,omitempty"`
+	Only     []string `json:"Only,omitempty"      yaml:"only,omitempty"`
+	Min      string   `json:"Min,omitempty"       yaml:"min,omitempty"`
+	Max      string   `json:"Max,omitempty"       yaml:"max,omitempty"`
+	Step     string   `json:"Step,omitempty"      yaml:"step,omitempty"`
+	StepMode string   `json:"Step_mode,omitempty" yaml:"step_mode,omitempty"`
 
-  // Child parameters
-  Params   *ParamSpec `yaml:"params"`
-  When      string    `json:"When,omitempty" yaml:"when,omitempty"`
-  If        string    `json:"If,omitempty"   yaml:"if,omitempty"`
+	// Child parameters
+	Params *ParamSpec `yaml:"params"`
+	When   string     `json:"When,omitempty" yaml:"when,omitempty"`
+	If     string     `json:"If,omitempty"   yaml:"if,omitempty"`
 }
 
 type ParamPermutation struct {
-  Name  string `yaml:"name"`
-  Type  string `yaml:"type"`
-  Value string `yaml:"value"`
-  Cond  string `json:"Cond,omitempty" yaml:"cond,omitempty"`
-  When  string `json:"when"`
+	Name  string `yaml:"name"`
+	Type  string `yaml:"type"`
+	Value string `yaml:"value"`
+	Cond  string `json:"Cond,omitempty" yaml:"cond,omitempty"`
+	When  string `json:"when"`
 }
 
 // parseParamInt attends to string parameters and its possible permutations
 func parseParamStr(param *ParamSpec) ([]ParamPermutation, error) {
-  var params []ParamPermutation
+	var params []ParamPermutation
 
-  if len(param.Only) > 0 {
-    for _, val := range param.Only {
-      params = append(params, ParamPermutation{
-        Name:  param.Name,
-        Type:  param.Type,
-        Value: val,
-        Cond:  param.If,
-        When:  param.When,
-      })
-    }
-  } else if len(param.Default) > 0 {
-    params = append(params, ParamPermutation{
-      Name:  param.Name,
-      Type:  param.Type,
-      Value: param.Default,
-      Cond:  param.If,
-      When:  param.When,
-    })
-  }
+	if len(param.Only) > 0 {
+		for _, val := range param.Only {
+			params = append(params, ParamPermutation{
+				Name:  param.Name,
+				Type:  param.Type,
+				Value: val,
+				Cond:  param.If,
+				When:  param.When,
+			})
+		}
+	} else if len(param.Default) > 0 {
+		params = append(params, ParamPermutation{
+			Name:  param.Name,
+			Type:  param.Type,
+			Value: param.Default,
+			Cond:  param.If,
+			When:  param.When,
+		})
+	}
 
-  return params, nil
+	return params, nil
 }
 
 // parseParamInt attends to integer parameters and its possible permutations
 func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
-  var params []ParamPermutation
+	var params []ParamPermutation
 
-  // Parse values in only
-  if len(param.Only) > 0 {
-    for _, val := range param.Only {
-      params = append(params, ParamPermutation{
-        Name:  param.Name,
-        Type:  param.Type,
-        Value: val,
-        Cond:  param.If,
-        When:  param.When,
-      })
-    }
+	// Parse values in only
+	if len(param.Only) > 0 {
+		for _, val := range param.Only {
+			params = append(params, ParamPermutation{
+				Name:  param.Name,
+				Type:  param.Type,
+				Value: val,
+				Cond:  param.If,
+				When:  param.When,
+			})
+		}
 
-  // Parse range between min and max
-  } else if len(param.Min) > 0 {
-    min, err := strconv.Atoi(param.Min)
-    if err != nil {
-      return nil, err
-    }
-    
-    max, err := strconv.Atoi(param.Max)
-    if err != nil {
-      return nil, err
-    }
+		// Parse range between min and max
+	} else if len(param.Min) > 0 {
+		min, err := strconv.Atoi(param.Min)
+		if err != nil {
+			return nil, err
+		}
 
-    if max < min {
-      return nil, fmt.Errorf(
-        "Min can't be greater than max for %s: %d < %d", param.Name, min, max,
-      )
-    }
+		max, err := strconv.Atoi(param.Max)
+		if err != nil {
+			return nil, err
+		}
 
-    // Figure out the step
-    step := 1
-    if len(param.Step) > 0 {
-      step, err = strconv.Atoi(param.Step)
-      if err != nil || step == 0 {
-        return nil, fmt.Errorf(
-          "Invalid step for %s: %s", param.Name, param.Step,
-        )
-      }
-    }
+		if max < min {
+			return nil, fmt.Errorf(
+				"Min can't be greater than max for %s: %d < %d", param.Name, min, max,
+			)
+		}
 
-    // Use iterative step
-    if len(param.StepMode) == 0 || param.StepMode == "increment" {
-      for i := min; i <= max; i += step {
-        params = append(params, ParamPermutation{
-          Name:  param.Name,
-          Type:  param.Type,
-          Value: strconv.Itoa(i),
-          Cond:  param.If,
-          When:  param.When,
-        })
-      }
+		// Figure out the step
+		step := 1
+		if len(param.Step) > 0 {
+			step, err = strconv.Atoi(param.Step)
+			if err != nil || step == 0 {
+				return nil, fmt.Errorf(
+					"Invalid step for %s: %s", param.Name, param.Step,
+				)
+			}
+		}
 
-    // Use exponential step
-    } else if param.StepMode == "power" {
-      for i, j := min, min; i <= max; j++ {
-        params = append(params, ParamPermutation{
-          Name:  param.Name,
-          Type:  param.Type,
-          Value: strconv.Itoa(i),
-          Cond:  param.If,
-          When:  param.When,
-        })
-        i = int(math.Pow(float64(step), float64(j)))
-      }
+		// Use iterative step
+		if len(param.StepMode) == 0 || param.StepMode == "increment" {
+			for i := min; i <= max; i += step {
+				params = append(params, ParamPermutation{
+					Name:  param.Name,
+					Type:  param.Type,
+					Value: strconv.Itoa(i),
+					Cond:  param.If,
+					When:  param.When,
+				})
+			}
 
-    // Unknown step mode
-    } else {
-      return nil, fmt.Errorf(
-        "Unknown step mode for param %s: %s", param.Name, param.StepMode,
-      )
-    }
+			// Use exponential step
+		} else if param.StepMode == "power" {
+			for i, j := min, min; i <= max; j++ {
+				params = append(params, ParamPermutation{
+					Name:  param.Name,
+					Type:  param.Type,
+					Value: strconv.Itoa(i),
+					Cond:  param.If,
+					When:  param.When,
+				})
+				i = int(math.Pow(float64(step), float64(j)))
+			}
 
-  } else if len(param.Default) > 0 {
-    params = append(params, ParamPermutation{
-      Name:  param.Name,
-      Type:  param.Type,
-      Value: param.Default,
-      Cond:  param.If,
-      When:  param.When,
-    })
+			// Unknown step mode
+		} else {
+			return nil, fmt.Errorf(
+				"Unknown step mode for param %s: %s", param.Name, param.StepMode,
+			)
+		}
 
-  } else {
-    // log.Warnf("Parameter not parsed: %s", param.Name)
-  }
+	} else if len(param.Default) > 0 {
+		params = append(params, ParamPermutation{
+			Name:  param.Name,
+			Type:  param.Type,
+			Value: param.Default,
+			Cond:  param.If,
+			When:  param.When,
+		})
 
-  return params, nil
+	} else {
+		// log.Warnf("Parameter not parsed: %s", param.Name)
+	}
+
+	return params, nil
 }
 
 // paramPermutations discovers all the possible variants of a particular
 // parameter based on its type and options.
 func paramPermutations(param *ParamSpec) ([]ParamPermutation, error) {
-  switch t := param.Type; t {
-  case "str",
-       "string":
-    param.Type = "str" // force rename the type
-    return parseParamStr(param)
-  case "int",
-       "integer":
-    param.Type = "int" // force rename the type
-    return parseParamInt(param)
-  }
-  return nil, fmt.Errorf(
-    "Unknown parameter type: \"%s\" for %s", param.Type, param.Name,
-  )
+	switch t := param.Type; t {
+	case "str",
+		"string":
+		param.Type = "str" // force rename the type
+		return parseParamStr(param)
+	case "int",
+		"integer":
+		param.Type = "int" // force rename the type
+		return parseParamInt(param)
+	}
+	return nil, fmt.Errorf(
+		"Unknown parameter type: \"%s\" for %s", param.Type, param.Name,
+	)
 }

@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,21 +32,20 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/api/proto"
 )
-
 
 // Job type that extends gorm.Model
 type Result struct {
-  Base
+	Base
 
-  PermutationId uint                 `gorm:"column:permutation_id" json:"permutation_id"`
-  TestId        uint                 `gorm:"column:test_id"        json:"test_id"`
+	PermutationId uint `gorm:"column:permutation_id" json:"permutation_id"`
+	TestId        uint `gorm:"column:test_id"        json:"test_id"`
 
-  Name          string               `gorm:"column:name"`
-  Type          proto.TestResultType `gorm:"column:type"`
-  ValueStr      string               `gorm:"column:value_str"      json:"value_str"`
-  ValueInt      int64                `gorm:"column:value_int"      json:"value_int"`
-  ValueFloat    float64              `gorm:"column:value_float"    json:"value_float"`
-  ValueBool     bool                 `gorm:"column:value_bool"     json:"value_bool"`
+	Name       string               `gorm:"column:name"`
+	Type       proto.TestResultType `gorm:"column:type"`
+	ValueStr   string               `gorm:"column:value_str"      json:"value_str"`
+	ValueInt   int64                `gorm:"column:value_int"      json:"value_int"`
+	ValueFloat float64              `gorm:"column:value_float"    json:"value_float"`
+	ValueBool  bool                 `gorm:"column:value_bool"     json:"value_bool"`
 }

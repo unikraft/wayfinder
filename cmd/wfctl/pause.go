@@ -43,18 +43,18 @@ import (
 )
 
 var (
-  pauseCmd = &cobra.Command{
-    Use:                   "pause [OPTIONS...] TimeMS",
-    Aliases:               []string{"pp"},
-    Short:                 `Pause all Redis queues for given milliseconds.`,
-    Run:                   doPpCmd,
-    Args:                  cobra.ExactArgs(1),
-    DisableFlagsInUseLine: true,
-  }
+	pauseCmd = &cobra.Command{
+		Use:                   "pause [OPTIONS...] TimeMS",
+		Aliases:               []string{"pp"},
+		Short:                 `Pause all Redis queues for given milliseconds.`,
+		Run:                   doPpCmd,
+		Args:                  cobra.ExactArgs(1),
+		DisableFlagsInUseLine: true,
+	}
 
-  pauseCfg = &pauseConfig{}
+	pauseCfg = &pauseConfig{}
 )
-  
+
 type pauseConfig struct {
 }
 
@@ -63,24 +63,23 @@ func init() {
 
 // doPpCmd
 func doPpCmd(cmd *cobra.Command, args []string) {
-  if len(args) == 0 {
-    cmd.Help()
-  }
+	if len(args) == 0 {
+		cmd.Help()
+	}
 
-  pauseTime, err := strconv.Atoi(args[0])
-  if err != nil {
-    fmt.Println("Invalid pause time:", err)
-    os.Exit(1)
-  }
+	pauseTime, err := strconv.Atoi(args[0])
+	if err != nil {
+		fmt.Println("Invalid pause time:", err)
+		os.Exit(1)
+	}
 
-  _, err = Wayfinder.JobService.PauseRedisQueues(context.TODO(), &proto.PauseRedisQueuesRequest{
-      Time: int64(pauseTime),
-  })
-  if err != nil {
-      fmt.Printf("could not start pausing: %s\n", err)
-      os.Exit(1)
-  }
+	_, err = Wayfinder.JobService.PauseRedisQueues(context.TODO(), &proto.PauseRedisQueuesRequest{
+		Time: int64(pauseTime),
+	})
+	if err != nil {
+		fmt.Printf("could not start pausing: %s\n", err)
+		os.Exit(1)
+	}
 
-  fmt.Printf("Sucessfully paused the queue\n")
+	fmt.Printf("Sucessfully paused the queue\n")
 }
-  

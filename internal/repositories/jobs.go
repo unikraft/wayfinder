@@ -1,4 +1,5 @@
 package repositories
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,160 +32,159 @@ package repositories
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "gorm.io/gorm"
+	"fmt"
+	"gorm.io/gorm"
 
-  "github.com/unikraft/wayfinder/pkg/sys"
-  "github.com/unikraft/wayfinder/api/proto"
-  "github.com/unikraft/wayfinder/internal/base64"
-  "github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/internal/base64"
+	"github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/pkg/sys"
 )
 
 // JobsRepository uses gorm.DB for querying the database
 type JobsRepository struct {
-  db *gorm.DB
+	db *gorm.DB
 }
 
 // NewJobsRepository returns a default JobsRepository which uses
 // gorm.DB for querying the database
 func NewJobsRepository(db *gorm.DB) *JobsRepository {
-  return &JobsRepository{db}
+	return &JobsRepository{db}
 }
 
 // CreateJob adds a new Job row to the Jobs table in the database
 func (repo *JobsRepository) CreateJob(job *models.Job) (*models.Job, error) {
-  // If the host is not set, we can look it up
-  if job.HostId == 0 {
-    host := &models.Host{}
+	// If the host is not set, we can look it up
+	if job.HostId == 0 {
+		host := &models.Host{}
 
-    dmiUuid, err := sys.GetSysDmiUUID()
-    if err != nil {
-      return nil, err
-    }
+		dmiUuid, err := sys.GetSysDmiUUID()
+		if err != nil {
+			return nil, err
+		}
 
-    if err := repo.db.Where("dmi_uuid = ?", dmiUuid).First(&host).Error; err != nil {
-      return nil, fmt.Errorf("unknown host: %s", dmiUuid)
-    }
+		if err := repo.db.Where("dmi_uuid = ?", dmiUuid).First(&host).Error; err != nil {
+			return nil, fmt.Errorf("unknown host: %s", dmiUuid)
+		}
 
-    job.HostId = host.Id
-  }
+		job.HostId = host.Id
+	}
 
-  if !base64.IsBase64(job.Config) {
-    job.Config = base64.Encode(job.Config)
-  }
+	if !base64.IsBase64(job.Config) {
+		job.Config = base64.Encode(job.Config)
+	}
 
-  if err := repo.db.Create(job).Error; err != nil {
-    return nil, err
-  }
-  return job, nil
+	if err := repo.db.Create(job).Error; err != nil {
+		return nil, err
+	}
+	return job, nil
 }
 
 // FindJob finds a job and decodes its config
 func (repo *JobsRepository) FindJob(id int64, offset, limit int, job *models.Job) error {
-  if err := repo.db.
-    Where("id = ?", id).
-    Preload("Permutations", func(db *gorm.DB) *gorm.DB {
-      return repo.db.
-      Offset(offset).
-      Limit(limit).
-      Preload("Params").
-      Preload("Builds").
-      Preload("Tests").
-      Preload("Results")
-    }).
-    First(&job).Error; err != nil {
-    return err
-  }
+	if err := repo.db.
+		Where("id = ?", id).
+		Preload("Permutations", func(db *gorm.DB) *gorm.DB {
+			return repo.db.
+				Offset(offset).
+				Limit(limit).
+				Preload("Params").
+				Preload("Builds").
+				Preload("Tests").
+				Preload("Results")
+		}).
+		First(&job).Error; err != nil {
+		return err
+	}
 
-  if base64.IsBase64(job.Config) {
-    decoded, err := base64.Decode(job.Config)
-    if err != nil {
-      return err
-    }
-    job.Config = decoded
-  }
+	if base64.IsBase64(job.Config) {
+		decoded, err := base64.Decode(job.Config)
+		if err != nil {
+			return err
+		}
+		job.Config = decoded
+	}
 
-  return nil
+	return nil
 }
 
 // Deletes a specific job
-func (repo *JobsRepository) DeleteJob(id int64, purge bool)  error {
-  job := &models.Job{}
+func (repo *JobsRepository) DeleteJob(id int64, purge bool) error {
+	job := &models.Job{}
 
-  if err := repo.FindJob(id, 0, 1, job); err != nil {
-    return err
-  }
+	if err := repo.FindJob(id, 0, 1, job); err != nil {
+		return err
+	}
 
-  if err := repo.db.Delete(job).Error; err != nil {
-    return err
-  }
-  
-  return nil
+	if err := repo.db.Delete(job).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // List all jobs
 func (repo *JobsRepository) ListJobs(offset, limit int) ([]*models.Job, error) {
-  var jobs []*models.Job
-  repo.db.Offset(offset).Limit(limit).
-    Preload("Permutations.Params").
-    Preload("Permutations.Builds").
-    Preload("Permutations.Tests").
-    Preload("Permutations.Results").
-    Find(&jobs)
+	var jobs []*models.Job
+	repo.db.Offset(offset).Limit(limit).
+		Preload("Permutations.Params").
+		Preload("Permutations.Builds").
+		Preload("Permutations.Tests").
+		Preload("Permutations.Results").
+		Find(&jobs)
 
-  for i := range jobs {
-    if base64.IsBase64(jobs[i].Config) {
-      decoded, err := base64.Decode(jobs[i].Config)
-      if err != nil {
-        return nil, err
-      }
-      jobs[i].Config = decoded
-    }
-  }
+	for i := range jobs {
+		if base64.IsBase64(jobs[i].Config) {
+			decoded, err := base64.Decode(jobs[i].Config)
+			if err != nil {
+				return nil, err
+			}
+			jobs[i].Config = decoded
+		}
+	}
 
-  return jobs, nil
+	return jobs, nil
 }
 
 // SetStatusJobById sets the state of the job to the desired state by the Job's
 // ID.
 func (repo *JobsRepository) SetStatusByJobId(id uint, status proto.JobStatus) error {
-  job := &models.Job{}
+	job := &models.Job{}
 
-  if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Where("id = ?", id).First(&job).Error; err != nil {
+		return err
+	}
 
-  job.Status = status;
+	job.Status = status
 
-  if err := repo.db.Save(job).Error; err != nil {
-    return err
-  }
+	if err := repo.db.Save(job).Error; err != nil {
+		return err
+	}
 
-  return nil;
+	return nil
 }
 
 // SetStatusCreatedByJobId sets the state of the job to "created"
 func (repo *JobsRepository) SetStatusCreatedByJobId(id uint) error {
-  return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_CREATED)
+	return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_CREATED)
 }
 
 // SetStatusNotRunningByJobId sets the state of the job to "running"
 func (repo *JobsRepository) SetStatusRunningByJobId(id uint) error {
-  return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_RUNNING)
+	return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_RUNNING)
 }
 
 // SetStatusPausedByJobId sets the state of the job to "paused"
 func (repo *JobsRepository) SetStatusPausedByJobId(id uint) error {
-  return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_PAUSED)
+	return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_PAUSED)
 }
 
 // SetStatusFailedByJobId sets the state of the job to "failed"
 func (repo *JobsRepository) SetStatusFailedByJobId(id uint) error {
-  return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_FAILED)
+	return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_FAILED)
 }
 
 // SetStatusSuccessByJobId sets the state of the job to "success"
 func (repo *JobsRepository) SetStatusSuccessByJobId(id uint) error {
-  return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_SUCCESS)
+	return repo.SetStatusByJobId(id, proto.JobStatus_JOB_STATUS_SUCCESS)
 }
-

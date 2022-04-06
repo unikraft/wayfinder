@@ -1,4 +1,5 @@
 package spec
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -35,30 +36,30 @@ package spec
 type OutputDiskImageType string
 
 const (
-  OutputDiskImageTypeRaw   = "raw"
-  OutputDiskImageTypeQcow2 = "qcow2"
+	OutputDiskImageTypeRaw   = "raw"
+	OutputDiskImageTypeQcow2 = "qcow2"
 )
 
 type OutputDiskImageSpec struct {
-  Type OutputDiskImageType `yaml:"type"`
-  Name string              `yaml:"name"`
-  Path string              `yaml:"path"`
+	Type OutputDiskImageType `yaml:"type"`
+	Name string              `yaml:"name"`
+	Path string              `yaml:"path"`
 }
 
 type OutputSpec struct {
-  Kernel         string              `yaml:"kernel"`
-  InitRd         string              `yaml:"initrd"`
-  Disks        []OutputDiskImageSpec `yaml:"disks"`
-  Architecture   string              `yaml:"arch"`
-  Platform       string              `yaml:"plat"`
+	Kernel       string                `yaml:"kernel"`
+	InitRd       string                `yaml:"initrd"`
+	Disks        []OutputDiskImageSpec `yaml:"disks"`
+	Architecture string                `yaml:"arch"`
+	Platform     string                `yaml:"plat"`
 }
 
 type BuildSpec struct {
-  Image          string     `yaml:"image"`
-  Outputs        OutputSpec `yaml:"outputs"`
-  Devices      []string     `yaml:"devices"`
-  Capabilities []string     `yaml:"capabilities"`
-  Cores          uint64     `yaml:"cores"`
-  Commands       string     `yaml:"commands"`
-  Workdir        string     `yaml:"workdir"`
+	Image        string     `yaml:"image"`
+	Outputs      OutputSpec `yaml:"outputs"`
+	Devices      []string   `yaml:"devices"`
+	Capabilities []string   `yaml:"capabilities"`
+	Cores        uint64     `yaml:"cores"`
+	Commands     string     `yaml:"commands"`
+	Workdir      string     `yaml:"workdir"`
 }

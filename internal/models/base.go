@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,17 +32,17 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "time"
+	"time"
 
-  "gorm.io/gorm"
+	"gorm.io/gorm"
 )
 
 // Base with id, created_at, updated_at & deleted_at
 type Base struct {
-  gorm.Model
+	gorm.Model
 
-  Id          uint            `gorm:"primaryKey" json:"id"`
-  CreatedAt   time.Time       `json:"created_at"`
-  UpdatedAt   time.Time       `json:"updated_at"`
-  DeletedAt   *gorm.DeletedAt `json:"deleted_at" swaggertype:"primitive,string"`
+	Id        uint            `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
+	DeletedAt *gorm.DeletedAt `json:"deleted_at" swaggertype:"primitive,string"`
 }

@@ -1,4 +1,5 @@
 package builder
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,82 +32,82 @@ package builder
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "time"
-  "reflect"
+	"reflect"
+	"time"
 
-  "github.com/erda-project/erda-infra/pkg/transport"
-  "github.com/erda-project/erda-infra/base/servicehub"
-  
-  "github.com/unikraft/wayfinder/api/proto"
-  "github.com/erda-project/erda-infra/base/logs"
-  "github.com/unikraft/wayfinder/modules/postgres"
-  "github.com/unikraft/wayfinder/modules/container"
+	"github.com/erda-project/erda-infra/base/servicehub"
+	"github.com/erda-project/erda-infra/pkg/transport"
+
+	"github.com/erda-project/erda-infra/base/logs"
+	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/modules/container"
+	"github.com/unikraft/wayfinder/modules/postgres"
 )
 
 type config struct {
-  OutputDir   string        `file:"outputdir"    env:"BUILDER_OUTPUTDIR"    default:"/tmp/wayfinder/builds"`
-  KillTimeout time.Duration `file:"kill_timeout" env:"BUILDER_KILL_TIMEOUT" default:"0s"`
-  Retries     int64         `file:"retries"      env:"BUILDER_RETRIES"      default:"1"`
+	OutputDir   string        `file:"outputdir"    env:"BUILDER_OUTPUTDIR"    default:"/tmp/wayfinder/builds"`
+	KillTimeout time.Duration `file:"kill_timeout" env:"BUILDER_KILL_TIMEOUT" default:"0s"`
+	Retries     int64         `file:"retries"      env:"BUILDER_RETRIES"      default:"1"`
 }
 
 type provider struct {
-  ctx        servicehub.Context
-  Cfg       *config
-  Log        logs.Logger
-  Register   transport.Register
-  service   *Service
-  DB         postgres.Interface `autowired:"postgres"`
-  Container *container.Service  `autowired:"container"`
+	ctx       servicehub.Context
+	Cfg       *config
+	Log       logs.Logger
+	Register  transport.Register
+	service   *Service
+	DB        postgres.Interface `autowired:"postgres"`
+	Container *container.Service `autowired:"container"`
 }
 
 func (p *provider) Init(ctx servicehub.Context) error {
-  p.service = &Service{
-    p:      p,
-    builds: make(map[string]*build),
-  }
+	p.service = &Service{
+		p:      p,
+		builds: make(map[string]*build),
+	}
 
-  if p.Register != nil {
-    proto.RegisterBuilderServiceImp(p.Register, p.service)
-  }
+	if p.Register != nil {
+		proto.RegisterBuilderServiceImp(p.Register, p.service)
+	}
 
-  return nil
+	return nil
 }
 
 func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
-  switch {
-  case ctx.Service() == "builder",
-       ctx.Service() == "wayfinder.BuilderService",
-       ctx.Type() == proto.BuilderServiceServerType(),
-       ctx.Type() == proto.BuilderServiceHandlerType():
-    return p.service
-  }
+	switch {
+	case ctx.Service() == "builder",
+		ctx.Service() == "wayfinder.BuilderService",
+		ctx.Type() == proto.BuilderServiceServerType(),
+		ctx.Type() == proto.BuilderServiceHandlerType():
+		return p.service
+	}
 
-  return p
+	return p
 }
 
 func init() {
-  servicehub.Register("builder", &servicehub.Spec{
-    Services:             []string{
-      "builder",
-      "wayfinder.BuilderService",
-    },
-    Types:                []reflect.Type{
-      proto.BuilderServiceClientType(),
-      proto.BuilderServiceServerType(),
-      proto.BuilderServiceHandlerType(),
-    },
-    Dependencies:         []string{
-      "postgres",
-    },
-    OptionalDependencies: []string{
-      "service-register",
-    },
-    Description:            "",
-    ConfigFunc:             func() interface{} {
-      return &config{}
-    },
-    Creator:                func() servicehub.Provider {
-      return &provider{}
-    },
-  })
+	servicehub.Register("builder", &servicehub.Spec{
+		Services: []string{
+			"builder",
+			"wayfinder.BuilderService",
+		},
+		Types: []reflect.Type{
+			proto.BuilderServiceClientType(),
+			proto.BuilderServiceServerType(),
+			proto.BuilderServiceHandlerType(),
+		},
+		Dependencies: []string{
+			"postgres",
+		},
+		OptionalDependencies: []string{
+			"service-register",
+		},
+		Description: "",
+		ConfigFunc: func() interface{} {
+			return &config{}
+		},
+		Creator: func() servicehub.Provider {
+			return &provider{}
+		},
+	})
 }

@@ -1,4 +1,5 @@
 package libvirt
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -30,71 +31,71 @@ package libvirt
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 import (
-  "fmt"
+	"fmt"
 
-  libvirt "github.com/libvirt/libvirt-go"
-  "github.com/unikraft/wayfinder/pkg/proc"
-  "github.com/unikraft/wayfinder/internal/metrics"
+	libvirt "github.com/libvirt/libvirt-go"
+	"github.com/unikraft/wayfinder/internal/metrics"
+	"github.com/unikraft/wayfinder/pkg/proc"
 )
 
 const pagesize = 4096
 
 func (d *Domain) MemLookup() error {
-  memStats, err := d.domain.MemoryStats(uint32(libvirt.DOMAIN_MEMORY_STAT_NR), 0)
-  if err != nil {
-    return fmt.Errorf("could not get memory stats: %s", err)
-  }
+	memStats, err := d.domain.MemoryStats(uint32(libvirt.DOMAIN_MEMORY_STAT_NR), 0)
+	if err != nil {
+		return fmt.Errorf("could not get memory stats: %s", err)
+	}
 
-  var total, unused, used uint64
+	var total, unused, used uint64
 
-  for _, stat := range memStats {
-    if stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_UNUSED) {
-      unused = stat.Val
-    }
-    if stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_AVAILABLE) {
-      total = stat.Val
-    }
-  }
+	for _, stat := range memStats {
+		if stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_UNUSED) {
+			unused = stat.Val
+		}
+		if stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_AVAILABLE) {
+			total = stat.Val
+		}
+	}
 
-  used = total - unused
-  d.AddMeasurement("ram_total", metrics.CreateMeasurement(total))
-  d.AddMeasurement("ram_used", metrics.CreateMeasurement(used))
+	used = total - unused
+	d.AddMeasurement("ram_total", metrics.CreateMeasurement(total))
+	d.AddMeasurement("ram_used", metrics.CreateMeasurement(used))
 
-  return nil
+	return nil
 }
 
 func (d *Domain) MemMeasure() error {
-  pid, err := d.Pid()
-  if err != nil {
-    return fmt.Errorf("domain has no pid: %s", err)
-  }
+	pid, err := d.Pid()
+	if err != nil {
+		return fmt.Errorf("domain has no pid: %s", err)
+	}
 
-  stats := proc.GetProcPIDStat(d.p.Cfg.ProcFS, pid)
+	stats := proc.GetProcPIDStat(d.p.Cfg.ProcFS, pid)
 
-  d.AddMeasurement("ram_vsize", metrics.CreateMeasurement(uint64(stats.VSize)))
-  d.AddMeasurement("ram_rss", metrics.CreateMeasurement(uint64(stats.RSS * pagesize)))
-  d.AddMeasurement("ram_minflt", metrics.CreateMeasurement(uint64(stats.MinFlt)))
-  d.AddMeasurement("ram_cminflt", metrics.CreateMeasurement(uint64(stats.CMinFlt)))
-  d.AddMeasurement("ram_majflt", metrics.CreateMeasurement(uint64(stats.MajFlt)))
-  d.AddMeasurement("ram_cmajflt", metrics.CreateMeasurement(uint64(stats.CMajFlt)))
+	d.AddMeasurement("ram_vsize", metrics.CreateMeasurement(uint64(stats.VSize)))
+	d.AddMeasurement("ram_rss", metrics.CreateMeasurement(uint64(stats.RSS*pagesize)))
+	d.AddMeasurement("ram_minflt", metrics.CreateMeasurement(uint64(stats.MinFlt)))
+	d.AddMeasurement("ram_cminflt", metrics.CreateMeasurement(uint64(stats.CMinFlt)))
+	d.AddMeasurement("ram_majflt", metrics.CreateMeasurement(uint64(stats.MajFlt)))
+	d.AddMeasurement("ram_cmajflt", metrics.CreateMeasurement(uint64(stats.CMajFlt)))
 
-  return nil
+	return nil
 }
 
 func (d *Domain) MemPrint() map[string]string {
-  total, _ := d.GetMetricUint64("ram_total", 0)
-  used, _  := d.GetMetricUint64("ram_used", 0)
-  vsize, _ := d.GetMetricUint64("ram_vsize", 0)
-  rss, _   := d.GetMetricUint64("ram_rss", 0)
+	total, _ := d.GetMetricUint64("ram_total", 0)
+	used, _ := d.GetMetricUint64("ram_used", 0)
+	vsize, _ := d.GetMetricUint64("ram_vsize", 0)
+	rss, _ := d.GetMetricUint64("ram_rss", 0)
 
-  return map[string]string{
-    "ram_total":   total,
-    "ram_used":    used,
-    "ram_vsize":   vsize,
-    "ram_rss":     rss,
-    "ram_minflt":  d.GetMetricDiffUint64("ram_minflt", false),
-    "ram_cminflt": d.GetMetricDiffUint64("ram_cminflt", false),
-    "ram_majflt":  d.GetMetricDiffUint64("ram_majflt", false),
-    "ram_cmajflt": d.GetMetricDiffUint64("ram_cmajflt", false),
-  }
+	return map[string]string{
+		"ram_total":   total,
+		"ram_used":    used,
+		"ram_vsize":   vsize,
+		"ram_rss":     rss,
+		"ram_minflt":  d.GetMetricDiffUint64("ram_minflt", false),
+		"ram_cminflt": d.GetMetricDiffUint64("ram_cminflt", false),
+		"ram_majflt":  d.GetMetricDiffUint64("ram_majflt", false),
+		"ram_cmajflt": d.GetMetricDiffUint64("ram_cmajflt", false),
+	}
 }

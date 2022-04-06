@@ -1,4 +1,5 @@
 package proc
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -31,73 +32,73 @@ package proc
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "bufio"
-  "strings"
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
 )
 
 // ProcStatCPU describes one CPU row in /proc/stat
 type ProcStatCPU struct {
-  Name string
+	Name string
 
-  // The amount of time, measured in units of USER_HZ
-  // (1/100ths of a second on most architectures)
-  User      uint64
-  Nice      uint64
-  System    uint64
-  Idle      uint64
-  IOWait    uint64
-  IRQ       uint64
-  SoftIRQ   uint64
-  Steal     uint64
-  Guest     uint64
-  GuestNice uint64
+	// The amount of time, measured in units of USER_HZ
+	// (1/100ths of a second on most architectures)
+	User      uint64
+	Nice      uint64
+	System    uint64
+	Idle      uint64
+	IOWait    uint64
+	IRQ       uint64
+	SoftIRQ   uint64
+	Steal     uint64
+	Guest     uint64
+	GuestNice uint64
 }
 
 // GetProcStatCPU reads and returns the cpu related rows in /proc/stat
 func GetProcStatCPU(procfs string) []ProcStatCPU {
-  stats := []ProcStatCPU{}
-  filepath := fmt.Sprint(procfs, "/stat")
+	stats := []ProcStatCPU{}
+	filepath := fmt.Sprint(procfs, "/stat")
 
-  file, err := os.Open(filepath)
-  if err != nil {
-    // cannot open file ...
-    return stats
-  }
-  scanner := bufio.NewScanner(file)
-  scanner.Split(bufio.ScanLines)
+	file, err := os.Open(filepath)
+	if err != nil {
+		// cannot open file ...
+		return stats
+	}
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
-  format := "%s %d %d %d %d %d %d %d %d %d %d"
+	format := "%s %d %d %d %d %d %d %d %d %d %d"
 
-  for scanner.Scan() {
-    row := scanner.Text()
-    stat := ProcStatCPU{}
+	for scanner.Scan() {
+		row := scanner.Text()
+		stat := ProcStatCPU{}
 
-    // filter rows, only consider cpu rows
-    if !strings.HasPrefix(row, "cpu") {
-      continue
-    }
+		// filter rows, only consider cpu rows
+		if !strings.HasPrefix(row, "cpu") {
+			continue
+		}
 
-    _, err := fmt.Sscanf(
-      string(row), format,
-      &stat.Name,
-      &stat.User,
-      &stat.Nice,
-      &stat.System,
-      &stat.Idle,
-      &stat.IOWait,
-      &stat.IRQ,
-      &stat.SoftIRQ,
-      &stat.Steal,
-      &stat.Guest,
-      &stat.GuestNice,
-    )
-    if err != nil {
-      fmt.Fprintf(os.Stderr, "Cannot parse row in proc stat: %s\n", err)
-      continue
-    }
-    stats = append(stats, stat)
-  }
-  return stats
+		_, err := fmt.Sscanf(
+			string(row), format,
+			&stat.Name,
+			&stat.User,
+			&stat.Nice,
+			&stat.System,
+			&stat.Idle,
+			&stat.IOWait,
+			&stat.IRQ,
+			&stat.SoftIRQ,
+			&stat.Steal,
+			&stat.Guest,
+			&stat.GuestNice,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot parse row in proc stat: %s\n", err)
+			continue
+		}
+		stats = append(stats, stat)
+	}
+	return stats
 }

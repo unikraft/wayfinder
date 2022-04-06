@@ -1,4 +1,5 @@
 package repositories
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,103 +32,103 @@ package repositories
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "strconv"
-  "gorm.io/gorm"
+	"fmt"
+	"gorm.io/gorm"
+	"strconv"
 
-  "github.com/unikraft/wayfinder/spec"
-  "github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/internal/models"
+	"github.com/unikraft/wayfinder/spec"
 )
 
 // PermutationsRepository uses gorm.DB for querying the database
 type PermutationsRepository struct {
-  db *gorm.DB
+	db *gorm.DB
 }
 
 // NewPermutationsRepository returns a default PermutationsRepository which uses
 // gorm.DB for querying the database
 func NewPermutationsRepository(db *gorm.DB) *PermutationsRepository {
-  return &PermutationsRepository{db}
+	return &PermutationsRepository{db}
 }
 
 // CreateParam adds a new param-value combination row to the Params table in the
 // database
 func (repo *PermutationsRepository) CreateParam(param *models.Param) (*models.Param, error) {
-  if err := repo.db.Create(param).Error; err != nil {
-    return nil, err
-  }
-  return param, nil
+	if err := repo.db.Create(param).Error; err != nil {
+		return nil, err
+	}
+	return param, nil
 }
 
 // FindOrCreateFromJobSpec is a multi-table function which creates the
 // desired permutation as well as all the parameters needed for this
 // permutation if does not exist.
 func (r *PermutationsRepository) FindOrCreateFromJobSpec(job *spec.JobSpec) (*models.Permutation, error) {
-  var err error
-  permutation := &models.Permutation{}
-  
-  // Have we seen this permutation before?
-  result := r.db.Where("job_id = ? and checksum = ?", &job.Id, &job.CurrentPerm.Checksum).First(&permutation);
-  if result.RowsAffected == 1 {
-    return permutation, nil
-  }
+	var err error
+	permutation := &models.Permutation{}
 
-  permutation.JobId = job.Id
-  permutation.Checksum = job.CurrentPerm.Checksum
+	// Have we seen this permutation before?
+	result := r.db.Where("job_id = ? and checksum = ?", &job.Id, &job.CurrentPerm.Checksum).First(&permutation)
+	if result.RowsAffected == 1 {
+		return permutation, nil
+	}
 
-  // Populate the list of parameters (and their values) for this permutation
-  for _, param := range job.CurrentPerm.Params {
-    p := &models.Param{
-      Name: param.Name,
-      Type: param.Type,
-    }
-    switch param.Type {
-      case "str":
-        p.ValueStr = param.Value
-        if err != nil {
-          return nil, fmt.Errorf("could not parse param integer: %s", err)
-        }
-      case "int":
-        p.ValueInt, err = strconv.ParseInt(param.Value, 10, 64)
-      default:
-        return nil, fmt.Errorf("unknown parameter type: %s", param.Type)
-    }
+	permutation.JobId = job.Id
+	permutation.Checksum = job.CurrentPerm.Checksum
 
-    if err = r.db.Where(&p).FirstOrCreate(&p).Error; err != nil {
-      return nil, fmt.Errorf("could not find or create parameter: %s", err)
-    }
+	// Populate the list of parameters (and their values) for this permutation
+	for _, param := range job.CurrentPerm.Params {
+		p := &models.Param{
+			Name: param.Name,
+			Type: param.Type,
+		}
+		switch param.Type {
+		case "str":
+			p.ValueStr = param.Value
+			if err != nil {
+				return nil, fmt.Errorf("could not parse param integer: %s", err)
+			}
+		case "int":
+			p.ValueInt, err = strconv.ParseInt(param.Value, 10, 64)
+		default:
+			return nil, fmt.Errorf("unknown parameter type: %s", param.Type)
+		}
 
-    permutation.Params = append(permutation.Params, *p)
-  }
+		if err = r.db.Where(&p).FirstOrCreate(&p).Error; err != nil {
+			return nil, fmt.Errorf("could not find or create parameter: %s", err)
+		}
 
-  // Create a new permutation entry
-  if err = r.db.Create(&permutation).Error; err != nil {
-    return nil, err
-  }
+		permutation.Params = append(permutation.Params, *p)
+	}
 
-  return permutation, nil
+	// Create a new permutation entry
+	if err = r.db.Create(&permutation).Error; err != nil {
+		return nil, err
+	}
+
+	return permutation, nil
 }
 
 func (r *PermutationsRepository) DeleteFromJobSpec(job *spec.JobSpec) error {
-  permutation := &models.Permutation{}
-  
-  // Have we seen this permutation before?
-  result := r.db.Where("job_id = ? and checksum = ?", &job.Id, &job.CurrentPerm.Checksum).First(&permutation);
-  if result.RowsAffected == 0 {
-    return fmt.Errorf("No entry to delete")
-  }
+	permutation := &models.Permutation{}
 
-  if err := r.db.Delete(permutation).Error; err != nil {
-    return err
-  }
+	// Have we seen this permutation before?
+	result := r.db.Where("job_id = ? and checksum = ?", &job.Id, &job.CurrentPerm.Checksum).First(&permutation)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("No entry to delete")
+	}
 
-  return nil
+	if err := r.db.Delete(permutation).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // UpdatePermutation updates only the Data field using Key as selector.
 func (s *PermutationsRepository) UpdatePermutation(permutation *models.Permutation) (*models.Permutation, error) {
-  if err := s.db.Model(permutation).Where("id = ?", permutation.Id).Updates(permutation).Error; err != nil {
-    return nil, err
-  }
-  return permutation, nil
+	if err := s.db.Model(permutation).Where("id = ?", permutation.Id).Updates(permutation).Error; err != nil {
+		return nil, err
+	}
+	return permutation, nil
 }

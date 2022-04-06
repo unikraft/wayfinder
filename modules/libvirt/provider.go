@@ -1,4 +1,5 @@
 package libvirt
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,158 +32,158 @@ package libvirt
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "time"
-  "sync"
-  "reflect"
-  "context"
+	"context"
+	"fmt"
+	"reflect"
+	"sync"
+	"time"
 
-  libvirt "github.com/libvirt/libvirt-go"
+	libvirt "github.com/libvirt/libvirt-go"
 
-  "github.com/erda-project/erda-infra/base/logs"
-  "github.com/erda-project/erda-infra/pkg/transport"
-  "github.com/erda-project/erda-infra/base/servicehub"
+	"github.com/erda-project/erda-infra/base/logs"
+	"github.com/erda-project/erda-infra/base/servicehub"
+	"github.com/erda-project/erda-infra/pkg/transport"
 )
 
 var (
-  clientType    = reflect.TypeOf((*libvirt.Connect)(nil))
+	clientType = reflect.TypeOf((*libvirt.Connect)(nil))
 )
 
 type config struct {
-  Endpoint       string        `file:"endpoint"        env:"LIBVIRT_ENDPOINT"        default:"qemu:///system"`
-  Emulator       string        `file:"emulator"        env:"LIBVIRT_EMULATOR"        default:"/usr/bin/qemu-system-x86_64"`
-  SockDir        string        `file:"sockdir"         env:"LIBVIRT_SOCKDIR"         default:"/run/libvirt/qemu/"`
-  Timeout        time.Duration `file:"conn_timeout"    env:"LIBVIRT_CONN_TIMEOUT"    default:"30s"`
-  HostIface      string        `file:"host_iface"      env:"LIBVIRT_HOST_IFACE"      default:"eth0"`
-  Bridge         string        `file:"bridge"          env:"LIBVIRT_BRIDGE"          default:"wayfinder0"`
-  BridgeStateDir string        `file:"bridge_statedir" env:"LIBVIRT_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
-  Subnet         string        `file:"subnet"          env:"LIBVIRT_SUBNET"          default:"172.88.0.1/24"`
-  LogDir         string        `file:"logdir"          env:"LIBVIRT_LOGDIR"          default:"/var/lib/wayfinder/logs"`
-  ProcFS         string        `file:"procfs"          env:"LIBVIRT_PROCFS"          default:"/proc"`
-  MeasureFreq    time.Duration `file:"measure_freq"    env:"LIBVIRT_MEASURE_FREQ"    default:"1s"`
-  EnableCPU      bool          `file:"measure_cpu"     env:"LIBVIRT_MEASURE_CPU"     default:"true"`
-  EnableMEM      bool          `file:"measure_mem"     env:"LIBVIRT_MEASURE_MEM"     default:"true"`
-  EnableNET      bool          `file:"measure_net"     env:"LIBVIRT_MEASURE_NET"     default:"true"`
+	Endpoint       string        `file:"endpoint"        env:"LIBVIRT_ENDPOINT"        default:"qemu:///system"`
+	Emulator       string        `file:"emulator"        env:"LIBVIRT_EMULATOR"        default:"/usr/bin/qemu-system-x86_64"`
+	SockDir        string        `file:"sockdir"         env:"LIBVIRT_SOCKDIR"         default:"/run/libvirt/qemu/"`
+	Timeout        time.Duration `file:"conn_timeout"    env:"LIBVIRT_CONN_TIMEOUT"    default:"30s"`
+	HostIface      string        `file:"host_iface"      env:"LIBVIRT_HOST_IFACE"      default:"eth0"`
+	Bridge         string        `file:"bridge"          env:"LIBVIRT_BRIDGE"          default:"wayfinder0"`
+	BridgeStateDir string        `file:"bridge_statedir" env:"LIBVIRT_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
+	Subnet         string        `file:"subnet"          env:"LIBVIRT_SUBNET"          default:"172.88.0.1/24"`
+	LogDir         string        `file:"logdir"          env:"LIBVIRT_LOGDIR"          default:"/var/lib/wayfinder/logs"`
+	ProcFS         string        `file:"procfs"          env:"LIBVIRT_PROCFS"          default:"/proc"`
+	MeasureFreq    time.Duration `file:"measure_freq"    env:"LIBVIRT_MEASURE_FREQ"    default:"1s"`
+	EnableCPU      bool          `file:"measure_cpu"     env:"LIBVIRT_MEASURE_CPU"     default:"true"`
+	EnableMEM      bool          `file:"measure_mem"     env:"LIBVIRT_MEASURE_MEM"     default:"true"`
+	EnableNET      bool          `file:"measure_net"     env:"LIBVIRT_MEASURE_NET"     default:"true"`
 }
 
 type provider struct {
-  Cfg       *config
-  Log        logs.Logger
-  client    *libvirt.Connect
-  Register   transport.Register
-  clients    map[string]*libvirt.Connect
-  service   *Service
-  lock       sync.Mutex
+	Cfg      *config
+	Log      logs.Logger
+	client   *libvirt.Connect
+	Register transport.Register
+	clients  map[string]*libvirt.Connect
+	service  *Service
+	lock     sync.Mutex
 }
 
 // eventloop keeps the connection to libvirt daemon active, removing this
 // results in client timeouts
 func eventloop() {
-  for {
-    libvirt.EventRunDefaultImpl()
-  }
+	for {
+		libvirt.EventRunDefaultImpl()
+	}
 }
 
 func (p *provider) Init(ctx servicehub.Context) error {
-  var err error
+	var err error
 
-  if p.Register != nil {
-    p.service = &Service{p:p}
-    // proto.RegisterBuilderServiceImp(p.Register, p.Service)
-  }
+	if p.Register != nil {
+		p.service = &Service{p: p}
+		// proto.RegisterBuilderServiceImp(p.Register, p.Service)
+	}
 
-  c, err := p.Connect(context.TODO(), p.Cfg.Endpoint)
-  if err != nil {
-    return fmt.Errorf("could not connect to libvirt: %s", err)
-  }
+	c, err := p.Connect(context.TODO(), p.Cfg.Endpoint)
+	if err != nil {
+		return fmt.Errorf("could not connect to libvirt: %s", err)
+	}
 
-  go eventloop()
+	go eventloop()
 
-  p.client = c
-  
-  return nil
+	p.client = c
+
+	return nil
 }
 
 func (p *provider) Client() *libvirt.Connect {
-  return p.client
+	return p.client
 }
 
 func (p *provider) Connect(ctx context.Context, endpoint string) (*libvirt.Connect, error) {
-  p.lock.Lock()
-  defer p.lock.Unlock()
+	p.lock.Lock()
+	defer p.lock.Unlock()
 
-  if c, ok := p.clients[endpoint]; ok {
-    return c, nil
-  }
+	if c, ok := p.clients[endpoint]; ok {
+		return c, nil
+	}
 
-  err := libvirt.EventRegisterDefaultImpl()
-  if err != nil {
-    return nil, fmt.Errorf("failed to register event loop: %s", err)
-  }
+	err := libvirt.EventRegisterDefaultImpl()
+	if err != nil {
+		return nil, fmt.Errorf("failed to register event loop: %s", err)
+	}
 
-  c, err := libvirt.NewConnect(endpoint)
-  if err != nil {
-    return nil, fmt.Errorf("failed to connect to libvirt: %s", err)
-  }
+	c, err := libvirt.NewConnect(endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to libvirt: %s", err)
+	}
 
-  p.clients[endpoint] = c
-  return c, nil
+	p.clients[endpoint] = c
+	return c, nil
 }
 
 func (p *provider) Close(ctx context.Context, endpoint string) error {
-  p.lock.Lock()
-  defer p.lock.Unlock()
+	p.lock.Lock()
+	defer p.lock.Unlock()
 
-  c, ok := p.clients[endpoint]
-  if !ok {
-    return nil
-  }
+	c, ok := p.clients[endpoint]
+	if !ok {
+		return nil
+	}
 
-  _, err := c.Close()
-  if err != nil {
-    return fmt.Errorf("failed to close connection: %s", err)
-  }
+	_, err := c.Close()
+	if err != nil {
+		return fmt.Errorf("failed to close connection: %s", err)
+	}
 
-  delete(p.clients, endpoint)
+	delete(p.clients, endpoint)
 
-  return nil  
+	return nil
 }
 
 func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
-  switch {
-    case ctx.Service() == "libvirt",
-         ctx.Service() == "wayfinder.LibvirtService":
-      return p.service
-    
-    case ctx.Service() == "libvirt-client",
-         ctx.Type() == clientType:
-      return p.Client()
-  }
+	switch {
+	case ctx.Service() == "libvirt",
+		ctx.Service() == "wayfinder.LibvirtService":
+		return p.service
 
-  return p
+	case ctx.Service() == "libvirt-client",
+		ctx.Type() == clientType:
+		return p.Client()
+	}
+
+	return p
 }
 
 func init() {
-  servicehub.Register("libvirt", &servicehub.Spec{
-    Services:             []string{
-      "libvirt",
-      "libvirt-client",
-    },
-    Types:                []reflect.Type{
-      clientType,
-    },
-    Dependencies:         []string{},
-    OptionalDependencies: []string{
-      "service-register",
-    },
-    Description:            "",
-    ConfigFunc:             func() interface{} {
-      return &config{}
-    },
-    Creator:                func() servicehub.Provider {
-      return &provider{
-        clients:            make(map[string]*libvirt.Connect),
-      }
-    },
-  })
+	servicehub.Register("libvirt", &servicehub.Spec{
+		Services: []string{
+			"libvirt",
+			"libvirt-client",
+		},
+		Types: []reflect.Type{
+			clientType,
+		},
+		Dependencies: []string{},
+		OptionalDependencies: []string{
+			"service-register",
+		},
+		Description: "",
+		ConfigFunc: func() interface{} {
+			return &config{}
+		},
+		Creator: func() servicehub.Provider {
+			return &provider{
+				clients: make(map[string]*libvirt.Connect),
+			}
+		},
+	})
 }

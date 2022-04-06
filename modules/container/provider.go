@@ -1,4 +1,5 @@
 package container
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,94 +32,94 @@ package container
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "os"
-  "fmt"
-  "reflect"
+	"fmt"
+	"os"
+	"reflect"
 
-  "github.com/opencontainers/runc/libcontainer"
+	"github.com/opencontainers/runc/libcontainer"
 
-  "github.com/erda-project/erda-infra/base/logs"
-  "github.com/erda-project/erda-infra/pkg/transport"
-  "github.com/erda-project/erda-infra/base/servicehub"
+	"github.com/erda-project/erda-infra/base/logs"
+	"github.com/erda-project/erda-infra/base/servicehub"
+	"github.com/erda-project/erda-infra/pkg/transport"
 )
 
 type config struct {
-  ContainerRootDir  string `file:"rootdir"          env:"CONTAINER_ROOTDIR"         default:"/var/lib/wayfinder/containers"`
-  CacheDir          string `file:"cachedir"         env:"CONTAINER_CACHEDIR"        default:"/var/lib/wayfinder/cache"`
-  SavedDir          string `file:"saveddir"         env:"CONTAINER_SAVEDDIR"        default:"/var/lib/wayfinder/saved"`
-  LogDir            string `file:"logdir"           env:"CONTAINER_LOGDIR"          default:"/var/lib/wayfinder/logs"`
-  HostIface         string `yaml:"host_iface"       env:"CONTAINER_HOST_IFACE"      default:"eth0"`
-  Bridge            string `yaml:"bridge"           env:"CONTAINER_BRIDGE"          default:"wayfinder0"`
-  BridgeStateDir    string `yaml:"bridge_statedir"  env:"CONTAINER_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
-  Subnet            string `yaml:"subnet"           env:"CONTAINER_SUBNET"          default:"172.88.0.1/16"`
-  Environment     []string `yaml:"environment"`
+	ContainerRootDir string   `file:"rootdir"          env:"CONTAINER_ROOTDIR"         default:"/var/lib/wayfinder/containers"`
+	CacheDir         string   `file:"cachedir"         env:"CONTAINER_CACHEDIR"        default:"/var/lib/wayfinder/cache"`
+	SavedDir         string   `file:"saveddir"         env:"CONTAINER_SAVEDDIR"        default:"/var/lib/wayfinder/saved"`
+	LogDir           string   `file:"logdir"           env:"CONTAINER_LOGDIR"          default:"/var/lib/wayfinder/logs"`
+	HostIface        string   `yaml:"host_iface"       env:"CONTAINER_HOST_IFACE"      default:"eth0"`
+	Bridge           string   `yaml:"bridge"           env:"CONTAINER_BRIDGE"          default:"wayfinder0"`
+	BridgeStateDir   string   `yaml:"bridge_statedir"  env:"CONTAINER_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
+	Subnet           string   `yaml:"subnet"           env:"CONTAINER_SUBNET"          default:"172.88.0.1/16"`
+	Environment      []string `yaml:"environment"`
 }
 
 type Provider struct {
-  Cfg        *config
-  Log         logs.Logger
-  Register    transport.Register
-  service    *Service
-  factory     libcontainer.Factory
+	Cfg      *config
+	Log      logs.Logger
+	Register transport.Register
+	service  *Service
+	factory  libcontainer.Factory
 }
 
 var (
-  factoryType = reflect.TypeOf((libcontainer.Factory)(nil))
+	factoryType = reflect.TypeOf((libcontainer.Factory)(nil))
 )
 
 func (p *Provider) Init(ctx servicehub.Context) error {
-  var err error
+	var err error
 
-  if p.Register != nil {
-    p.service = &Service{P:p}
-    // proto.RegisterBuilderServiceImp(p.Register, p.Service)
-  }
+	if p.Register != nil {
+		p.service = &Service{P: p}
+		// proto.RegisterBuilderServiceImp(p.Register, p.Service)
+	}
 
-  p.factory, err = libcontainer.New(
-    p.Cfg.CacheDir,
-    libcontainer.Cgroupfs,
-    // There's a special "hidden" entry method in wayfinderd
-    // see: cmd/wayfinderd/runc.go
-    libcontainer.InitArgs(os.Args[0], "runc-init"),
-  )
-  if err != nil {
-    return fmt.Errorf("could not initialize container factory: %s", err)
-  }
+	p.factory, err = libcontainer.New(
+		p.Cfg.CacheDir,
+		libcontainer.Cgroupfs,
+		// There's a special "hidden" entry method in wayfinderd
+		// see: cmd/wayfinderd/runc.go
+		libcontainer.InitArgs(os.Args[0], "runc-init"),
+	)
+	if err != nil {
+		return fmt.Errorf("could not initialize container factory: %s", err)
+	}
 
-  return nil
+	return nil
 }
 
 func (p *Provider) Provide(ctx servicehub.DependencyContext, args ...interface{}) interface{} {
-  switch {
-  case ctx.Service() == "container",
-       ctx.Service() == "wayfinder.ContainerService":
-    // ctx.Type() == factoryType:
-    return p.service
-  case ctx.Service() == "container-factory",
-       ctx.Type() == factoryType:
-    return p.factory
-  }
+	switch {
+	case ctx.Service() == "container",
+		ctx.Service() == "wayfinder.ContainerService":
+		// ctx.Type() == factoryType:
+		return p.service
+	case ctx.Service() == "container-factory",
+		ctx.Type() == factoryType:
+		return p.factory
+	}
 
-  return p
+	return p
 }
 
 func init() {
-  servicehub.Register("container", &servicehub.Spec{
-    Services:             []string{
-      "container",
-      "container-factory",
-    },
-    Types:                []reflect.Type{},
-    Dependencies:         []string{},
-    OptionalDependencies: []string{
-      "service-register",
-    },
-    Description:            "",
-    ConfigFunc:             func() interface{} {
-      return &config{}
-    },
-    Creator:                func() servicehub.Provider {
-      return &Provider{}
-    },
-  })
+	servicehub.Register("container", &servicehub.Spec{
+		Services: []string{
+			"container",
+			"container-factory",
+		},
+		Types:        []reflect.Type{},
+		Dependencies: []string{},
+		OptionalDependencies: []string{
+			"service-register",
+		},
+		Description: "",
+		ConfigFunc: func() interface{} {
+			return &config{}
+		},
+		Creator: func() servicehub.Provider {
+			return &Provider{}
+		},
+	})
 }

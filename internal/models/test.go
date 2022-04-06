@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,32 +32,32 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "time"
+	"time"
 
-  "gorm.io/gorm"
-  "github.com/google/uuid"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 
-  "github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/api/proto"
 )
 
 // Test type that extends gorm.Model
 type Test struct {
-  Base
+	Base
 
-  UUID             uuid.UUID        `gorm:"type:char(36)"`
+	UUID uuid.UUID `gorm:"type:char(36)"`
 
-  PermutationId    uint             `gorm:"column:permutation_id;"    json:"permutation_id"`
+	PermutationId uint `gorm:"column:permutation_id;"    json:"permutation_id"`
 
-  Status           proto.TestStatus `gorm:"column:status"             json:"status"`
-  Runtime          time.Duration    `gorm:"column:runtime;default:0"  json:"runtime"`
-  WayfinderVersion string           `gorm:"column:wayfinder_version" json:"wayfinder_version"`
-  Results          []Result         `gorm:"foreignKey:test_id"        json:"results"`
-  VMMCores         string           `gorm:"column:vmm_cores"         json:"vmm_cores"`
-  KernelCores      string           `gorm:"column:kernel_cores"      json:"kernel_cores"`
-  BenchToolCores   string           `gorm:"column:benchtool_cores"   json:"benchtool_cores"`
+	Status           proto.TestStatus `gorm:"column:status"             json:"status"`
+	Runtime          time.Duration    `gorm:"column:runtime;default:0"  json:"runtime"`
+	WayfinderVersion string           `gorm:"column:wayfinder_version" json:"wayfinder_version"`
+	Results          []Result         `gorm:"foreignKey:test_id"        json:"results"`
+	VMMCores         string           `gorm:"column:vmm_cores"         json:"vmm_cores"`
+	KernelCores      string           `gorm:"column:kernel_cores"      json:"kernel_cores"`
+	BenchToolCores   string           `gorm:"column:benchtool_cores"   json:"benchtool_cores"`
 }
 
 func (u *Test) BeforeCreate(tx *gorm.DB) (err error) {
-  u.UUID = uuid.New()
-  return nil
+	u.UUID = uuid.New()
+	return nil
 }

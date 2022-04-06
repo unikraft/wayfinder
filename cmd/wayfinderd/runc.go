@@ -1,4 +1,5 @@
 package main
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <a.jung@lancs.ac.uk>
@@ -32,30 +33,30 @@ package main
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "fmt"
-  "runtime"
+	"fmt"
+	"runtime"
 
-  "github.com/spf13/cobra"
-  "github.com/opencontainers/runc/libcontainer"
-  _ "github.com/opencontainers/runc/libcontainer/nsenter"
+	"github.com/opencontainers/runc/libcontainer"
+	_ "github.com/opencontainers/runc/libcontainer/nsenter"
+	"github.com/spf13/cobra"
 )
 
 var runcInitCmd = &cobra.Command{
-  Use: "runc-init",
-  Short: "This is the entrypoint for runc's libcontainer.  Do not call directly.",
-  Run: doRuncInitCmd,
-  Hidden: true,
+	Use:    "runc-init",
+	Short:  "This is the entrypoint for runc's libcontainer.  Do not call directly.",
+	Run:    doRuncInitCmd,
+	Hidden: true,
 }
 
 // doRuncInitCmd is the entrypoint for libcontainer
 func doRuncInitCmd(cmd *cobra.Command, args []string) {
-  runtime.GOMAXPROCS(1)
-  runtime.LockOSThread()
+	runtime.GOMAXPROCS(1)
+	runtime.LockOSThread()
 
-  factory, _ := libcontainer.New("")
-  if err := factory.StartInitialization(); err != nil {
-    fmt.Printf("could not init: %s", err)
-  }
+	factory, _ := libcontainer.New("")
+	if err := factory.StartInitialization(); err != nil {
+		fmt.Printf("could not init: %s", err)
+	}
 
-  panic("Could not initialise pid 0 for container")
+	panic("Could not initialise pid 0 for container")
 }

@@ -1,4 +1,5 @@
 package gzip
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,38 +32,38 @@ package gzip
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "io"
-  "bytes"
-  "io/ioutil"
-  "compress/gzip"
+	"bytes"
+	"compress/gzip"
+	"io"
+	"io/ioutil"
 )
 
 // Write gzipped data to a Writer
 func Compress(w io.Writer, data []byte) error {
-  // Write gzipped data to the client
-  gw, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
-  if err != nil {
-    return err
-  }
+	// Write gzipped data to the client
+	gw, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
+	if err != nil {
+		return err
+	}
 
-  gw.Write(data)
-  return gw.Close()
+	gw.Write(data)
+	return gw.Close()
 }
 
 // Write gunzipped data to a Writer
 func Decompress(w io.Writer, data []byte) error {
-  // Write gzipped data to the client
-  gr, err := gzip.NewReader(bytes.NewBuffer(data))
+	// Write gzipped data to the client
+	gr, err := gzip.NewReader(bytes.NewBuffer(data))
 
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  defer gr.Close()
-  data, err = ioutil.ReadAll(gr)
-  if err != nil {
-    return err
-  }
-  w.Write(data)
-  return gr.Close()
+	defer gr.Close()
+	data, err = ioutil.ReadAll(gr)
+	if err != nil {
+		return err
+	}
+	w.Write(data)
+	return gr.Close()
 }

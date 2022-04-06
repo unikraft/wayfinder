@@ -1,4 +1,5 @@
 package models
+
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Alexander Jung <alex@unikraft.io>
@@ -31,28 +32,28 @@ package models
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-  "gorm.io/gorm"
-  "github.com/google/uuid"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 
-  "github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/api/proto"
 )
 
 // Permutation type that extends gorm.Model
 type Permutation struct {
-  Base
+	Base
 
-  UUID           uuid.UUID                   `gorm:"type:char(36)"`
+	UUID uuid.UUID `gorm:"type:char(36)"`
 
-  JobId          uint                        `gorm:"column:job_id"`
-  Checksum       string                      `gorm:"column:checksum"`
-  Params        []Param                      `gorm:"many2many:permutation_params" json:"params"`
-  Results       []Result                     `gorm:"foreignKey:permutation_id"    json:"results"`
-  Status          proto.JobPermutationStatus `gorm:"column:status"                json:"status"`
-  Builds        []Build                      `gorm:"foreignKey:permutation_id"    json:"build_times"`
-  Tests         []Test                       `gorm:"foreignKey:permutation_id"    json:"test_times"`
+	JobId    uint                       `gorm:"column:job_id"`
+	Checksum string                     `gorm:"column:checksum"`
+	Params   []Param                    `gorm:"many2many:permutation_params" json:"params"`
+	Results  []Result                   `gorm:"foreignKey:permutation_id"    json:"results"`
+	Status   proto.JobPermutationStatus `gorm:"column:status"                json:"status"`
+	Builds   []Build                    `gorm:"foreignKey:permutation_id"    json:"build_times"`
+	Tests    []Test                     `gorm:"foreignKey:permutation_id"    json:"test_times"`
 }
 
 func (u *Permutation) BeforeCreate(tx *gorm.DB) (err error) {
-  u.UUID = uuid.New()
-  return nil
+	u.UUID = uuid.New()
+	return nil
 }

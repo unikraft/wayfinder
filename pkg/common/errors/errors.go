@@ -1,4 +1,5 @@
 package errors
+
 // Copyright (c) 2021 Terminus, Inc.
 //               2021 Unikraft UG.
 //
@@ -15,7 +16,7 @@ package errors
 // limitations under the License.
 
 type Error interface {
-  error
+	error
 }
 
 // func suffixIfNotEmpty(sep, err string) string {
