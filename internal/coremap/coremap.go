@@ -474,7 +474,7 @@ func (cm *CoreMap) ReleaseNumaNode(numaNodeId uint64, socketId uint64) error {
     return fmt.Errorf("could not find NUMA node with id=%d", numaNodeId)
   }
 
-  for coreId, _ := range cm.sockets[socketId].numaNodes[numaNodeId].cores {
+  for coreId := range cm.sockets[socketId].numaNodes[numaNodeId].cores {
     err := cm.ReleaseCoreOnNumaNode(coreId, numaNodeId, socketId)
     if err != nil {
       return fmt.Errorf("could not release numa node with id=%d: %s", numaNodeId, err)
@@ -490,7 +490,7 @@ func (cm *CoreMap) ReleaseSocket(socketId uint64) error {
     return fmt.Errorf("could not find socket with id=%d", socketId)
   }
 
-  for numaNodeId, _ := range cm.sockets[socketId].numaNodes {
+  for numaNodeId := range cm.sockets[socketId].numaNodes {
     err := cm.ReleaseNumaNode(numaNodeId, socketId)
     if err != nil {
       return fmt.Errorf("could not release socket with id=%d: %s", socketId, err)

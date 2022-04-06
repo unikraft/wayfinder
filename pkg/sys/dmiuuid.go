@@ -42,7 +42,7 @@ import (
 func GetSysDmiUUID() (string, error) {
   var sysDmiUUID string
 
-  path := fmt.Sprint("/sys/devices/virtual/dmi/id/product_uuid")
+  path := "/sys/devices/virtual/dmi/id/product_uuid"
   contents, err := ioutil.ReadFile(path)
   if err != nil {
     return "", fmt.Errorf("could not read product UUID: %s", err)

@@ -86,27 +86,21 @@ func (l Logger) log(level LogLevel, format string, messages ...interface{}) {
   case DEBUG:
     logType = "DEBU"
     logColor = termenv.ANSICyan
-    break
   case WARNING:
     logType = "WARN"
     logColor = termenv.ANSIYellow
-    break
   case ERROR:
     logType = "ERRO"
     logColor = termenv.ANSIRed
-    break
   case FATAL:
     logType = "FATA"
     logColor = termenv.ANSIRed
-    break
   case SUCCESS:
     logType = " :) "
     logColor = termenv.ANSIGreen
-    break
   default:
     logType = "INFO"
     logColor = termenv.ANSIBlue
-    break
   }
 
   if level < l.logLevel {

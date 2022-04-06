@@ -182,7 +182,7 @@ func GetCpuInfo() (*CpuInfo, error) {
       c.Stepping = uint(t)
 
     case "CPU MHz":
-      t, err := strconv.ParseFloat(value, 8)
+      t, err := strconv.ParseFloat(value, 64)
       if err != nil {
         return nil, fmt.Errorf("could not parse CPU MHz: %s", err)
       }
@@ -194,7 +194,7 @@ func GetCpuInfo() (*CpuInfo, error) {
         value = strings.ReplaceAll(value, ",", ".")
       }
 
-      t, err := strconv.ParseFloat(value, 8)
+      t, err := strconv.ParseFloat(value, 64)
       if err != nil {
         return nil, fmt.Errorf("could not parse CPU max MHz: %s", err)
       }
@@ -206,7 +206,7 @@ func GetCpuInfo() (*CpuInfo, error) {
         value = strings.ReplaceAll(value, ",", ".")
       }
 
-      t, err := strconv.ParseFloat(value, 8)
+      t, err := strconv.ParseFloat(value, 64)
       if err != nil {
         return nil, fmt.Errorf("could not parse CPU min MHz: %s", err)
       }
@@ -214,7 +214,7 @@ func GetCpuInfo() (*CpuInfo, error) {
       c.CPUMinMHz = float32(t)
 
     case "BogoMIPS":
-      t, err := strconv.ParseFloat(value, 8)
+      t, err := strconv.ParseFloat(value, 64)
       if err != nil {
         return nil, fmt.Errorf("could not parse bogoMIPS: %s", err)
       }

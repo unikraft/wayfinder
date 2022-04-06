@@ -80,13 +80,13 @@ func (p *Proc) remember(path string, original string, new string) {
 func SetProcfsValue(path string, value string, dryRun bool) error {
   // Check if the path is set
   if len(path) == 0 {
-    return fmt.Errorf("File path cannot be empty")
+    return fmt.Errorf("file path cannot be empty")
   }
 
   // Check if the file exists
   stat, err := os.Stat(path); 
   if os.IsNotExist(err) {
-    return fmt.Errorf("File does not exist: %s", path)
+    return fmt.Errorf("file does not exist: %s", path)
   }
 
   // Check if this file receives input via stdin
@@ -100,7 +100,7 @@ func SetProcfsValue(path string, value string, dryRun bool) error {
       if dryRun {
         logs.Warnf("Could not read file: %s", err)
       } else {
-        return fmt.Errorf("Could not read file: %s", err)
+        return fmt.Errorf("could not read file: %s", err)
       }
     }
 
