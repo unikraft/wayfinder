@@ -41,20 +41,28 @@ import (
 func Compress(w io.Writer, data []byte) error {
   // Write gzipped data to the client
   gw, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
-  defer gw.Close()
+  if err != nil {
+    return err
+  }
+
   gw.Write(data)
-  return err
+  return gw.Close()
 }
 
 // Write gunzipped data to a Writer
 func Decompress(w io.Writer, data []byte) error {
   // Write gzipped data to the client
   gr, err := gzip.NewReader(bytes.NewBuffer(data))
+
+  if err != nil {
+    return err
+  }
+
   defer gr.Close()
   data, err = ioutil.ReadAll(gr)
   if err != nil {
     return err
   }
   w.Write(data)
-  return nil
+  return gr.Close()
 }

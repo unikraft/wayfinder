@@ -18,9 +18,9 @@ type Error interface {
   error
 }
 
-func suffixIfNotEmpty(sep, err string) string {
-  if len(err) > 0 {
-    return sep + " " + err
-  }
-  return ""
-}
+// func suffixIfNotEmpty(sep, err string) string {
+//   if len(err) > 0 {
+//     return sep + " " + err
+//   }
+//   return ""
+// }

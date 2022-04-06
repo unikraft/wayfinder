@@ -77,23 +77,23 @@ func ParseCpuSets(cpuSets string) ([]uint64, error) {
   return cpus, nil
 }
 
-func parseDelim(cpuSets string) ([]uint64, error) {
-  var cpus []uint64
-  if strings.Contains(cpuSets, ",") {
-    c := strings.Split(cpuSets, ",")
+// func parseDelim(cpuSets string) ([]uint64, error) {
+//   var cpus []uint64
+//   if strings.Contains(cpuSets, ",") {
+//     c := strings.Split(cpuSets, ",")
 
-    for i := range c {
-      j, err := strconv.ParseUint(c[i], 10, 64)
-      if err != nil {
-        return nil, fmt.Errorf("invalid syntax for CPU set: %s", c[i])
-      }
+//     for i := range c {
+//       j, err := strconv.ParseUint(c[i], 10, 64)
+//       if err != nil {
+//         return nil, fmt.Errorf("invalid syntax for CPU set: %s", c[i])
+//       }
 
-      cpus = append(cpus, j)
-    }
-  }
+//       cpus = append(cpus, j)
+//     }
+//   }
 
-  return cpus, nil
-}
+//   return cpus, nil
+// }
 
 func parseRange(cpuSets string) ([]uint64, error) {
   var cpus []uint64

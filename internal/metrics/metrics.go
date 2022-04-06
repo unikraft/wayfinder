@@ -133,9 +133,7 @@ func (m *Measurable) GetMetricString(name string, index int) string {
   if metric, ok := m.GetMetric(name); ok {
     if len(metric.Values) > index {
       decoder := valueDecoder(metric.Values[index].Value)
-      var valuetype string
-      decoder.Decode(&valuetype)
-      output = fmt.Sprintf("%s", valuetype)
+      decoder.Decode(&output)
     }
   }
 
