@@ -18,7 +18,6 @@ RUN set -xe; \
       procps \
       bridge-utils \
       net-tools \
-      lld \
       libarchive-tools; \
     echo "" > $KRAFTRC; \
     kraft list add https://github.com/unikraft/unikraft.git; \
