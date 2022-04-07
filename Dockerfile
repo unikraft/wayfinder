@@ -30,7 +30,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 ARG GO_VERSION=1.17
-FROM golang:${GO_VERSION}-bullseye AS base
+FROM golang:${GO_VERSION}-bullseye AS devenv
 
 ARG ORG=unikraft
 ARG REPO=wayfinder
@@ -55,6 +55,7 @@ COPY . /go/src/github.com/${ORG}/${REPO}
 WORKDIR /go/src/github.com/${ORG}/${REPO}
 ENV GOROOT=/usr/local/go
 
+# default port
 EXPOSE 5000
 
 # for live reloading of go container
