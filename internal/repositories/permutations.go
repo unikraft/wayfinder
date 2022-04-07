@@ -33,8 +33,9 @@ package repositories
 
 import (
 	"fmt"
-	"gorm.io/gorm"
 	"strconv"
+
+	"gorm.io/gorm"
 
 	"github.com/unikraft/wayfinder/internal/models"
 	"github.com/unikraft/wayfinder/spec"
@@ -86,10 +87,13 @@ func (r *PermutationsRepository) FindOrCreateFromJobSpec(job *spec.JobSpec) (*mo
 		case "str":
 			p.ValueStr = param.Value
 			if err != nil {
-				return nil, fmt.Errorf("could not parse param integer: %s", err)
+				return nil, fmt.Errorf("could not parse param string: %s", err)
 			}
 		case "int":
 			p.ValueInt, err = strconv.ParseInt(param.Value, 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf("could not parse param integer: %s", err)
+			}
 		default:
 			return nil, fmt.Errorf("unknown parameter type: %s", param.Type)
 		}
@@ -115,7 +119,7 @@ func (r *PermutationsRepository) DeleteFromJobSpec(job *spec.JobSpec) error {
 	// Have we seen this permutation before?
 	result := r.db.Where("job_id = ? and checksum = ?", &job.Id, &job.CurrentPerm.Checksum).First(&permutation)
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("No entry to delete")
+		return fmt.Errorf("no entry to delete")
 	}
 
 	if err := r.db.Delete(permutation).Error; err != nil {

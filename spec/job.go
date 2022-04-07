@@ -276,7 +276,7 @@ func (j *JobSpec) next(
 
 			// Block save until task is processed
 			if j.SeqScheduler {
-				_ = <-canPublish
+				<-canPublish
 			}
 
 			// Save permutation
@@ -375,7 +375,7 @@ func (j *JobSpec) random(
 
 			// Block save until task is processed
 			if j.SeqScheduler {
-				_ = <-canPublish
+				<-canPublish
 			}
 
 			// Send the permutation
@@ -426,7 +426,7 @@ func (j *JobSpec) Permutations(
 	go func() {
 		// If not sequential, ignore first block and notfy the consumer
 		if !j.SeqScheduler {
-			_ = <-canPublish
+			<-canPublish
 		}
 		switch schedulerType {
 		case Grid:

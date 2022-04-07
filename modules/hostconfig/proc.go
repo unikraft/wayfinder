@@ -81,13 +81,13 @@ func (p *ProcFs) remember(path string, original string, new string) {
 func (p *ProcFs) set(path string, value string) error {
 	// Check if the path is set
 	if len(path) == 0 {
-		return fmt.Errorf("File path cannot be empty")
+		return fmt.Errorf("file path cannot be empty")
 	}
 
 	// Check if the file exists
 	stat, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		return fmt.Errorf("File does not exist: %s", path)
+		return fmt.Errorf("file does not exist: %s", path)
 	}
 
 	// Check if this file receives input via stdin
@@ -98,7 +98,7 @@ func (p *ProcFs) set(path string, value string) error {
 	} else {
 		dat, err := ioutil.ReadFile(path)
 		if err != nil {
-			return fmt.Errorf("Could not read file: %s", err)
+			return fmt.Errorf("could not read file: %s", err)
 		}
 
 		// Remove trailing \n if it exists

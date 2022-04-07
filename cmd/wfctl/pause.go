@@ -52,11 +52,11 @@ var (
 		DisableFlagsInUseLine: true,
 	}
 
-	pauseCfg = &pauseConfig{}
+	// pauseCfg = &pauseConfig{}
 )
 
-type pauseConfig struct {
-}
+// type pauseConfig struct {
+// }
 
 func init() {
 }

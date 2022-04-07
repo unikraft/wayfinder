@@ -107,7 +107,7 @@ func (s *Service) CreateBuild(ctx context.Context, req *proto.CreateBuildRequest
 	if _, ok := s.builds[uuid]; ok {
 		return &proto.CreateBuildResponse{
 			Success: false,
-		}, status.Errorf(codes.Internal, "build with uuid=%s already exists: %s", uuid)
+		}, status.Errorf(codes.Internal, "build with uuid=%s already exists", uuid)
 	}
 
 	builder, err := s.p.Container.NewContainer(uuid)
@@ -237,7 +237,7 @@ func (s *Service) GetBuildStatus(ctx context.Context, req *proto.GetBuildStatusR
 	if err := s.p.DB.DB().Where("uuid = ?", req.Uuid).First(&buildModel).Error; err != nil {
 		return &proto.GetBuildStatusResponse{
 			Success: false,
-		}, status.Errorf(codes.NotFound, "build with uuid=%d not found", req.Uuid)
+		}, status.Errorf(codes.NotFound, "build with uuid=%s not found", req.Uuid)
 	}
 
 	// TODO: Look up builds with jobId/permId rather than via container ID (this

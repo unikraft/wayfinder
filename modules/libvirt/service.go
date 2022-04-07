@@ -74,9 +74,9 @@ type Domain struct {
 	pid     int
 	fakePid int
 	args    string
-	uuid    string
-	timer   time.Time
-	runtime *time.Duration
+	// uuid    string
+	timer time.Time
+	// runtime *time.Duration
 	ip      net.IP
 	subnet  string
 	bridge  *bridge.Bridge
@@ -505,15 +505,15 @@ func (d *Domain) InitMeasurements() error {
 	d.measure = true
 
 	if err := d.CpuLookup(); err != nil {
-		return fmt.Errorf("Could not look up CPU cores: %s", err)
+		return fmt.Errorf("could not look up CPU cores: %s", err)
 	}
 
 	if err := d.MemLookup(); err != nil {
-		return fmt.Errorf("Could not look up CPU cores: %s", err)
+		return fmt.Errorf("could not look up CPU cores: %s", err)
 	}
 
 	if err := d.NetLookup(); err != nil {
-		return fmt.Errorf("Could not look up CPU cores: %s", err)
+		return fmt.Errorf("could not look up CPU cores: %s", err)
 	}
 
 	return nil
