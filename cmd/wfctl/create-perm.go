@@ -57,7 +57,7 @@ var (
 )
 
 type createPermutationConfig struct {
-	jobId  int
+	jobId  int64
 	params []string
 }
 
@@ -105,9 +105,10 @@ func doCpCmd(cmd *cobra.Command, args []string) {
 		fmt.Printf("invalid job ID: %d", jobId)
 		os.Exit(1)
 	}
+	cpCfg.jobId = int64(jobId)
 
 	_, err = Wayfinder.JobService.CreatePermutationJob(context.TODO(), &proto.CreatePermutationJobRequest{
-		Id:     int64(jobId),
+		Id:     cpCfg.jobId,
 		Params: parseSet(cpCfg.params),
 	})
 	if err != nil {

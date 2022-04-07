@@ -51,7 +51,7 @@ type config struct {
 }
 
 type provider struct {
-	ctx       servicehub.Context
+	// ctx       servicehub.Context
 	Cfg       *config
 	Log       logs.Logger
 	Register  transport.Register

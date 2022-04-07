@@ -64,7 +64,7 @@ type Client struct {
 	Cfg      *Config
 	conn     *grpc.ClientConn
 	dialopts []grpc.DialOption
-	callopts []grpc.CallOption
+	// callopts []grpc.CallOption
 
 	// All available services exposed as global attributes
 	JobService proto.JobServiceClient

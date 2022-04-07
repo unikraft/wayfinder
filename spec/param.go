@@ -120,7 +120,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
 
 		if max < min {
 			return nil, fmt.Errorf(
-				"Min can't be greater than max for %s: %d < %d", param.Name, min, max,
+				"min can't be greater than max for %s: %d < %d", param.Name, min, max,
 			)
 		}
 
@@ -130,7 +130,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
 			step, err = strconv.Atoi(param.Step)
 			if err != nil || step == 0 {
 				return nil, fmt.Errorf(
-					"Invalid step for %s: %s", param.Name, param.Step,
+					"invalid step for %s: %s", param.Name, param.Step,
 				)
 			}
 		}
@@ -163,7 +163,7 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
 			// Unknown step mode
 		} else {
 			return nil, fmt.Errorf(
-				"Unknown step mode for param %s: %s", param.Name, param.StepMode,
+				"unknown step mode for param %s: %s", param.Name, param.StepMode,
 			)
 		}
 
@@ -175,9 +175,6 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
 			Cond:  param.If,
 			When:  param.When,
 		})
-
-	} else {
-		// log.Warnf("Parameter not parsed: %s", param.Name)
 	}
 
 	return params, nil
@@ -197,6 +194,6 @@ func paramPermutations(param *ParamSpec) ([]ParamPermutation, error) {
 		return parseParamInt(param)
 	}
 	return nil, fmt.Errorf(
-		"Unknown parameter type: \"%s\" for %s", param.Type, param.Name,
+		"unknown parameter type: \"%s\" for %s", param.Type, param.Name,
 	)
 }

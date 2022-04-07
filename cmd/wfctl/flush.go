@@ -51,11 +51,11 @@ var (
 		DisableFlagsInUseLine: true,
 	}
 
-	flushCfg = &flushConfig{}
+	// flushCfg = &flushConfig{}
 )
 
-type flushConfig struct {
-}
+// type flushConfig struct {
+// }
 
 func init() {
 }

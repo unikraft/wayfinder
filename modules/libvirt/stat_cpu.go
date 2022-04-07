@@ -34,7 +34,7 @@ func (d *Domain) CpuLookup() error {
 	if err != nil {
 		return fmt.Errorf("could not get core thread ids: %s", err)
 	}
-	regThreadId := regexp.MustCompile("thread_id=([0-9]*)\\s")
+	regThreadId := regexp.MustCompile(`thread_id=([0-9]*)\s`)
 	threadIdsRaw := regThreadId.FindAllStringSubmatch(vCpuThreads, -1)
 	coreThreadIds := make([]int, len(threadIdsRaw))
 

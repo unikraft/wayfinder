@@ -356,9 +356,7 @@ func (c *Container) CreateDefaultBridge() {
 }
 
 func (c *Container) AddEnvVars(envvars []string) {
-	for _, envvar := range envvars {
-		c.env = append(c.env, envvar)
-	}
+	c.env = append(c.env, envvars...)
 }
 
 func getFreeLoopID() (int, error) {
@@ -425,9 +423,7 @@ func (c *Container) SetDevices(devices []string) error {
 
 func (c *Container) SetCapabilities(capabilities []string) {
 	allCapabilities := defaultCapabilities
-	for _, capability := range capabilities {
-		allCapabilities = append(allCapabilities, capability)
-	}
+	allCapabilities = append(allCapabilities, capabilities...)
 
 	c.config.Capabilities = &configs.Capabilities{
 		Bounding:    allCapabilities,

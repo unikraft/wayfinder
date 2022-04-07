@@ -134,6 +134,7 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 			c.Log.Infof("calculated number of permutations: %d", totalPermutations)
 			if generatedTree != nil {
 				// TODO export generated tree
+				c.Log.Infof("Exporting generated (not implemented)")
 			}
 			return nil
 

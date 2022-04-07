@@ -81,8 +81,7 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
 	taskBytes := delivery.Payload()
 	task := spec.JobSpec{}
 
-	var compressed bytes.Buffer
-	compressed = *bytes.NewBuffer([]byte(taskBytes))
+	compressed := *bytes.NewBuffer([]byte(taskBytes))
 	var decompressed bytes.Buffer
 	r, _ := zlib.NewReader(&compressed)
 	io.Copy(&decompressed, r)

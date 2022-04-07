@@ -329,7 +329,7 @@ func (s *service) DeleteJob(ctx context.Context, req *proto.DeleteJobRequest) (*
 	if err := s.p.DB.Repos().Jobs().DeleteJob(req.Id, req.Purge); err != nil {
 		return &proto.DeleteJobResponse{
 			Success: false,
-		}, status.Errorf(codes.Internal, "could not delete job with id=%d: %s", err)
+		}, status.Errorf(codes.Internal, "could not delete job with id=%d: %s", req.Id, err)
 	}
 
 	return &proto.DeleteJobResponse{
