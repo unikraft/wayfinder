@@ -37,6 +37,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/unikraft/wayfinder/api/proto"
 	"github.com/unikraft/wayfinder/internal/models"
 	"github.com/unikraft/wayfinder/spec"
 )
@@ -135,4 +136,66 @@ func (s *PermutationsRepository) UpdatePermutation(permutation *models.Permutati
 		return nil, err
 	}
 	return permutation, nil
+}
+
+// SetStatusById sets the status of the permutation to the desired status by
+// the Permutation's ID.
+func (repo *PermutationsRepository) SetStatusByPermutationId(id int64, status proto.JobPermutationStatus) error {
+	permutation := &models.Permutation{}
+
+	if err := repo.db.Where("id = ?", id).First(&permutation).Error; err != nil {
+		return err
+	}
+
+	permutation.Status = status
+
+	if err := repo.db.Save(permutation).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *PermutationsRepository) SetStatusBuildInitByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_BUILD_INIT)
+}
+
+func (repo *PermutationsRepository) SetStatusBuildRunningByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_BUILD_RUNNING)
+}
+
+func (repo *PermutationsRepository) SetStatusBuildPausedByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_BUILD_PAUSED)
+}
+
+func (repo *PermutationsRepository) SetStatusBuildFailedByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_BUILD_FAILED)
+}
+
+func (repo *PermutationsRepository) SetStatusBuildKilledByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_BUILD_KILLED)
+}
+
+func (repo *PermutationsRepository) SetStatusTestInitByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_INIT)
+}
+
+func (repo *PermutationsRepository) SetStatusTestRunningByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_RUNNING)
+}
+
+func (repo *PermutationsRepository) SetStatusTestPausedByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_PAUSED)
+}
+
+func (repo *PermutationsRepository) SetStatusTestFailedByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_FAILED)
+}
+
+func (repo *PermutationsRepository) SetStatusTestKilledByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_KILLED)
+}
+
+func (repo *PermutationsRepository) SetStatusSuccessByPermutationId(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_SUCCESS)
 }
