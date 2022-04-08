@@ -79,6 +79,9 @@ func parseSet(args []string) []*proto.Param {
 		param := proto.Param{}
 
 		param.Name = elems[0]
+		if elems[1] == "" {
+			elems[1] = "0"
+		}
 		value, err := strconv.ParseInt(elems[1], 10, 64)
 		if err == nil {
 			param.Type = "int"

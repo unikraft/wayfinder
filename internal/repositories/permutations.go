@@ -91,6 +91,9 @@ func (r *PermutationsRepository) FindOrCreateFromJobSpec(job *spec.JobSpec) (*mo
 				return nil, fmt.Errorf("could not parse param string: %s", err)
 			}
 		case "int":
+			if param.Value == "" {
+				param.Value = "0"
+			}
 			p.ValueInt, err = strconv.ParseInt(param.Value, 10, 64)
 			if err != nil {
 				return nil, fmt.Errorf("could not parse param integer: %s", err)
