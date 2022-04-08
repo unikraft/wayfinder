@@ -377,6 +377,14 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 				proto.BuildStatus_BUILD_KILLED,
 				proto.BuildStatus_BUILD_FAILED:
 
+				if statusBuildResp.Status == proto.BuildStatus_BUILD_KILLED {
+					c.p.DB.Repos().Permutations().SetStatusBuildKilledByPermutationId(int64(permutation.Id))
+				}
+
+				if statusBuildResp.Status == proto.BuildStatus_BUILD_FAILED {
+					c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(permutation.Id))
+				}
+
 				_, err = time.ParseDuration(statusBuildResp.Runtime)
 				if err != nil {
 					c.releaseCoresById(buildCoreIds)
@@ -420,6 +428,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			},
 		})
 		if err != nil {
+			c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(permutation.Id))
 			c.releaseCoresById(buildCoreIds)
 			return fmt.Errorf("could not save build outputs: %s", err)
 		}
@@ -559,6 +568,22 @@ teststatus:
 			proto.TestStatus_TEST_KILLED,
 			proto.TestStatus_TEST_KERNEL_FAILED,
 			proto.TestStatus_TEST_BENCHTOOL_FAILED:
+
+			if statusTestResp.Status == proto.TestStatus_TEST_KILLED {
+				c.p.DB.Repos().Permutations().SetStatusTestKilledByPermutationId(int64(permutation.Id))
+			}
+
+			if statusTestResp.Status == proto.TestStatus_TEST_KERNEL_FAILED {
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+			}
+
+			if statusTestResp.Status == proto.TestStatus_TEST_BENCHTOOL_FAILED {
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+			}
+
+			if statusTestResp.Status == proto.TestStatus_TEST_SUCCESS {
+				c.p.DB.Repos().Permutations().SetStatusSuccessByPermutationId(int64(permutation.Id))
+			}
 
 			_, err = time.ParseDuration(statusTestResp.Runtime)
 			if err != nil {
