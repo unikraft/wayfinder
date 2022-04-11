@@ -121,11 +121,11 @@ build:
 
     # Configure Image for Nginx
     kraft -v configure -F \
-      -u unikraft@staging \
-      -u nginx@staging \
-      -u newlib@staging \
-      -u pthread-embedded@staging \
-      -u lwip@staging \
+      -u unikraft@0.7.0 \
+      -u nginx@0.7.0 \
+      -u newlib@0.7.0 \
+      -u pthread-embedded@0.7.0 \
+      -u lwip@0.7.0 \
       --arch x86_64 \
       --plat kvm \
       --set LWIP_NUM_TCPCON=$LWIP_NUM_TCPCON \

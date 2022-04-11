@@ -290,7 +290,7 @@ build:
       KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
       KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_DISABLE_SPLIT=${LIBTINYALLOC_DISABLE_SPLIT}")
-      KRAFT_CONFIGURE_COND_LIBS+=("-u tinyalloc@staging")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u tinyalloc@0.7.0")
     fi
     if [[ ${ALLOCATOR} == "mimalloc" ]]; then
       KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBMIMALLOC")
@@ -301,7 +301,7 @@ build:
       KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBMIMALLOC_ASSERT=${LIBMIMALLOC_ASSERT}")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBMIMALLOC_MIMALLOC_DEBUG=${LIBMIMALLOC_MIMALLOC_DEBUG}")
-      KRAFT_CONFIGURE_COND_LIBS+=("-u mimalloc@staging")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u mimalloc@0.7.0")
     fi
     if [[ ${ALLOCATOR} == "tlsf" ]]; then
       KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBTLSF")
@@ -311,16 +311,16 @@ build:
       KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
       KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
       KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTLSF_TLSF_LOG2_SLI=${LIBTLSF_TLSF_LOG2_SLI}")
-      KRAFT_CONFIGURE_COND_LIBS+=("-u tlsf@staging")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u tlsf@0.7.0")
     fi
 
     # Configure Image for Nginx
     kraft -v configure -F \
-      -u unikraft@staging \
-      -u nginx@staging \
-      -u newlib@staging \
-      -u pthread-embedded@staging \
-      -u lwip@staging \
+      -u unikraft@0.7.0 \
+      -u nginx@0.7.0 \
+      -u newlib@0.7.0 \
+      -u pthread-embedded@0.7.0 \
+      -u lwip@0.7.0 \
       ${KRAFT_CONFIGURE_COND_LIBS[@]} \
       --arch x86_64 \
       --plat kvm \

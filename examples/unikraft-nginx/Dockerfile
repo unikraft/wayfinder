@@ -21,7 +21,7 @@ RUN set -xe; \
       libarchive-tools; \
     echo "" > $KRAFTRC; \
     kraft list add https://github.com/unikraft/unikraft.git; \
-    kraft list add https://github.com/lancs-net/lib-lwip.git; \
+    kraft list add https://github.com/unikraft/lib-lwip.git; \
     kraft list add https://github.com/unikraft/lib-pthread-embedded.git; \
     kraft list add https://github.com/unikraft/lib-newlib.git; \
     kraft list add https://github.com/unikraft/lib-nginx.git; \
@@ -30,21 +30,21 @@ RUN set -xe; \
     kraft list add https://github.com/unikraft/lib-tlsf.git; \
     kraft list add https://github.com/unikraft/app-nginx.git; \
     kraft list update; \
-    kraft list pull unikraft@staging; \
-    kraft list pull lib/pthread-embedded@staging; \
-    kraft list pull lib/newlib@staging; \
-    kraft list pull lib/lwip@staging; \
-    kraft list pull lib/tinyalloc@staging; \
-    kraft list pull lib/mimalloc@staging; \
-    kraft list pull lib/tlsf@staging; \
-    kraft list pull lib/nginx@staging; \
+    kraft list pull unikraft@0.7.0; \
+    kraft list pull lib/pthread-embedded@0.7.0; \
+    kraft list pull lib/newlib@0.7.0; \
+    kraft list pull lib/lwip@0.7.0; \
+    kraft list pull lib/tinyalloc@0.7.0; \
+    kraft list pull lib/mimalloc@0.7.0; \
+    kraft list pull lib/tlsf@0.7.0; \
+    kraft list pull lib/nginx@0.7.0; \
     kraft list pull --no-deps app/nginx; \
     cd /usr/src/unikraft/apps/nginx; \
     kraft configure \
-      -u unikraft@staging \
-      -u pthread-embedded@staging \
-      -u newlib@staging \
-      -u lwip@staging \
-      -u nginx@staging; \
+      -u unikraft@0.7.0 \
+      -u pthread-embedded@0.7.0 \
+      -u newlib@0.7.0 \
+      -u lwip@0.7.0 \
+      -u nginx@0.7.0; \
     kraft build --no-progress --fast; \
     unset UK_KRAFT_GITHUB_TOKEN
