@@ -33,6 +33,7 @@ package repositories
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 
 	"github.com/unikraft/wayfinder/api/proto"
@@ -126,11 +127,16 @@ func (repo *JobsRepository) DeleteJob(id int64, purge bool) error {
 // List all jobs
 func (repo *JobsRepository) ListJobs(offset, limit int) ([]*models.Job, error) {
 	var jobs []*models.Job
-	repo.db.Offset(offset).Limit(limit).
-		Preload("Permutations.Params").
-		Preload("Permutations.Builds").
-		Preload("Permutations.Tests").
-		Preload("Permutations.Results").
+	repo.db.
+		Preload("Permutations", func(db *gorm.DB) *gorm.DB {
+			return repo.db.
+				Offset(offset).
+				Limit(limit).
+				Preload("Params").
+				Preload("Builds").
+				Preload("Tests").
+				Preload("Results")
+		}).
 		Find(&jobs)
 
 	for i := range jobs {
@@ -144,6 +150,19 @@ func (repo *JobsRepository) ListJobs(offset, limit int) ([]*models.Job, error) {
 	}
 
 	return jobs, nil
+}
+
+func (repo *JobsRepository) ListPermutationsForJob(id, offset, limit int, permutations *[]models.Permutation) error {
+	extractedPermutations := []models.Permutation{}
+	job := models.Job{}
+
+	repo.FindJob(int64(id), offset, limit, &job)
+
+	extractedPermutations = append(extractedPermutations, job.Permutations...)
+
+	*permutations = extractedPermutations
+
+	return nil
 }
 
 // SetStatusJobById sets the state of the job to the desired state by the Job's
