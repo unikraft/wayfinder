@@ -128,6 +128,7 @@ func NewRootCommand() *cobra.Command {
 	rootCmd.AddCommand(cpCmd)
 	rootCmd.AddCommand(flushCmd)
 	rootCmd.AddCommand(pauseCmd)
+	rootCmd.AddCommand(listPerCmd)
 
 	return rootCmd
 }
