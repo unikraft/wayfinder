@@ -94,6 +94,12 @@ service JobService {
       get: "/api/pause",
     };
   }
+
+  rpc ListPermutations (ListPermutationsRequest) returns (ListPermutationsResponse)  {
+    option (google.api.http) = {
+      get: "/api/list-permutations",
+    };
+  }
 }
 
 enum JobScheduler {
@@ -300,4 +306,16 @@ message DeleteJobRequest {
 
 message DeleteJobResponse {
   bool success = 1 [json_name = "success"];
+}
+
+message ListPermutationsRequest {
+  int64 id     = 1;
+  int64 offset = 2;
+  int64 limit  = 3;
+}
+
+message ListPermutationsResponse {
+  bool                 success = 1      [json_name = "success"];
+  int64                total   = 2      [json_name = "total"];
+  repeated Permutation permutations = 3 [json_name = "permutations"];
 }
