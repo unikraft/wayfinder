@@ -292,6 +292,72 @@ func (s *service) createPermutation(job *models.Job) []*proto.Permutation {
 	return permutations
 }
 
+func (s *service) listPermutations(permutations []models.Permutation) []*proto.Permutation {
+	var permutationsResult []*proto.Permutation
+
+	for _, permutation := range permutations {
+		var params []*proto.Param
+		var status proto.JobPermutationStatus
+		var builds []*proto.Build
+		var tests []*proto.Test
+
+		for _, param := range permutation.Params {
+			params = append(params, &proto.Param{
+				Name:     param.Name,
+				ValueInt: param.ValueInt,
+				ValueStr: param.ValueStr,
+			})
+		}
+
+		status = permutation.Status
+
+		for _, build := range permutation.Builds {
+			builds = append(builds, &proto.Build{
+				PermutationId: uint64(build.PermutationId),
+				Status:        int32(build.Status),
+				KernelPath:    build.KernelPath,
+				InitRdPath:    build.InitRdPath,
+				LogPath:       build.LogPath,
+				Cores:         build.Cores,
+			})
+		}
+
+		for _, test := range permutation.Tests {
+			var results []*proto.Result
+
+			for _, result := range test.Results {
+				results = append(results, &proto.Result{
+					Name:       result.Name,
+					Type:       int32(result.Type),
+					ValueStr:   result.ValueStr,
+					ValueInt:   result.ValueInt,
+					ValueFloat: result.ValueFloat,
+				})
+			}
+
+			tests = append(tests, &proto.Test{
+				PermutationId:  uint64(test.PermutationId),
+				Status:         int32(test.Status),
+				Results:        results,
+				KernelCores:    test.KernelCores,
+				BenchToolCores: test.BenchToolCores,
+			})
+		}
+
+		permutationsResult = append(permutationsResult, &proto.Permutation{
+			Uuid:     permutation.UUID[:],
+			JobId:    int64(permutation.JobId),
+			Checksum: permutation.Checksum,
+			Params:   params,
+			Status:   int64(status),
+			Builds:   builds,
+			Tests:    tests,
+		})
+	}
+
+	return permutationsResult
+}
+
 func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.GetJobResponse, error) {
 	s.p.Log.Infof("requested to get job %d...", req.Id)
 
@@ -473,5 +539,29 @@ func (s *service) ListJobs(ctx context.Context, req *proto.ListJobsRequest) (*pr
 		Success: true,
 		Total:   int64(len(jobs)),
 		Jobs:    jobsResponse,
+	}, nil
+}
+
+func (s *service) ListPermutations(ctx context.Context, req *proto.ListPermutationsRequest) (*proto.ListPermutationsResponse, error) {
+	s.p.Log.Infof("requested to list permutations for a job...")
+
+	offset := int(req.Offset)
+	limit := int(req.Limit)
+	id := int(req.Id)
+	var permutations []models.Permutation
+
+	err := s.p.DB.Repos().Jobs().ListPermutationsForJob(id, offset, limit, &permutations)
+	if err != nil {
+		return &proto.ListPermutationsResponse{
+			Success:      false,
+			Total:        0,
+			Permutations: nil,
+		}, status.Errorf(codes.Internal, "could not list permutations: %s", err)
+	}
+
+	return &proto.ListPermutationsResponse{
+		Success:      true,
+		Total:        int64(len(permutations)),
+		Permutations: s.listPermutations(permutations),
 	}, nil
 }
