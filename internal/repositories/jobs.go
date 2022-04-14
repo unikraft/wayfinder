@@ -109,6 +109,22 @@ func (repo *JobsRepository) FindJob(id int64, offset, limit int, job *models.Job
 	return nil
 }
 
+// CheckJobExists finds jobs with the same checksum
+func (repo *JobsRepository) CheckJobExists(checksum string, exists *bool) error {
+	var count int64 = 0
+
+	if err := repo.db.
+		Model(&models.Job{}).
+		Where("checksum = ?", checksum).
+		Count(&count).Error; err != nil {
+		return err
+	}
+
+	*exists = (count > 0)
+
+	return nil
+}
+
 // Deletes a specific job
 func (repo *JobsRepository) DeleteJob(id int64, purge bool) error {
 	job := &models.Job{}
