@@ -32,6 +32,7 @@ package main
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"crypto/md5"
@@ -83,21 +84,21 @@ func init() {
 }
 
 func askForConfirmation() bool {
-	var response string
+	var ans byte
 
-	_, err := fmt.Scanln(&response)
+	ans, err := bufio.NewReader(os.Stdin).ReadByte()
 	if err != nil {
 		fmt.Printf("problem retrieving response, %s", err.Error())
 		os.Exit(1)
 	}
 
-	switch strings.ToLower(response) {
-	case "y", "yes":
+	switch strings.ToLower(string(ans)) {
+	case "y":
 		return true
-	case "n", "no":
+	case "\n", "n":
 		return false
 	default:
-		fmt.Println("Please choose between (y)es/(n)o")
+		fmt.Println("Please choose between (y)es/(N)o")
 		return askForConfirmation()
 	}
 }
@@ -146,7 +147,7 @@ func doCreateCmd(cmd *cobra.Command, args []string) {
 	}
 
 	if resp.Exists {
-		fmt.Printf("WARNING: created job already exists. Do you want to add it anyway? [y/N]")
+		fmt.Printf("WARNING: created job already exists. Do you want to add it anyway? [y/N]\n")
 
 		if !askForConfirmation() {
 			fmt.Printf("Skipped adding the job\n")
