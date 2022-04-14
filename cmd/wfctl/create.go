@@ -34,9 +34,12 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -70,6 +73,26 @@ func init() {
 	)
 }
 
+func askForConfirmation() bool {
+	var response string
+
+	_, err := fmt.Scanln(&response)
+	if err != nil {
+		fmt.Printf("problem retrieving response, %s", err.Error())
+		os.Exit(1)
+	}
+
+	switch strings.ToLower(response) {
+	case "y", "yes":
+		return true
+	case "n", "no":
+		return false
+	default:
+		fmt.Println("Please choose between (y)es/(n)o")
+		return askForConfirmation()
+	}
+}
+
 // doCreateCmd
 func doCreateCmd(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
@@ -101,9 +124,31 @@ func doCreateCmd(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	resp, err := Wayfinder.JobService.CreateJob(context.TODO(), &proto.CreateJobRequest{
+	checksum := md5.New()
+	io.WriteString(checksum, buf.String())
+	checksumStr := fmt.Sprintf("%x", checksum.Sum(nil))
+
+	resp, err := Wayfinder.JobService.CheckJobExists(context.TODO(), &proto.CheckJobExistsRequest{
+		Checksum: checksumStr,
+	})
+	if err != nil {
+		fmt.Printf("could not check jobs: %s\n", err)
+		os.Exit(1)
+	}
+
+	if resp.Exists {
+		fmt.Printf("WARNING: created job already exists. Do you want to add it anyway? [y/N]")
+
+		if !askForConfirmation() {
+			fmt.Printf("Skipped adding the job\n")
+			return
+		}
+	}
+
+	respC, err := Wayfinder.JobService.CreateJob(context.TODO(), &proto.CreateJobRequest{
 		Name:       *jobCreateCfg.Name,
 		Data:       buf.Bytes(),
+		Checksum:   checksumStr,
 		Compressed: true,
 	})
 	if err != nil {
@@ -111,5 +156,5 @@ func doCreateCmd(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Successfully created new job with ID=%d\n", resp.Id)
+	fmt.Printf("Successfully created new job with ID=%d\n", respC.Id)
 }
