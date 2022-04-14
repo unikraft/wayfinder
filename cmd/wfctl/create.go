@@ -183,7 +183,7 @@ func doCreateCmd(cmd *cobra.Command, args []string) {
 			fmt.Printf("could not start job: %s\n", err)
 			os.Exit(1)
 		}
-	}
 
-	fmt.Printf("Successfully started default job with ID=%d\n", respC.Id)
+		fmt.Printf("Successfully started default job with ID=%d\n", respC.Id)
+	}
 }
