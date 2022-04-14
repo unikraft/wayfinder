@@ -48,7 +48,8 @@ import (
 )
 
 type CreateJobConfig struct {
-	Name *string
+	Name  *string
+	Start bool
 }
 
 var (
@@ -70,6 +71,14 @@ func init() {
 		"n",
 		"",
 		"The name of the job to be created.",
+	)
+
+	createCmd.PersistentFlags().BoolVarP(
+		&jobCreateCfg.Start,
+		"start",
+		"s",
+		false,
+		"Start the job right away with default options.",
 	)
 }
 
@@ -157,4 +166,23 @@ func doCreateCmd(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Printf("Successfully created new job with ID=%d\n", respC.Id)
+
+	if jobCreateCfg.Start {
+		_, err = Wayfinder.JobService.StartJob(context.TODO(), &proto.StartJobRequest{
+			Id:               int64(respC.Id),
+			Scheduler:        0,
+			SeqScheduler:     false,
+			IsolLevel:        0,
+			IsolSplit:        0,
+			PermutationLimit: 0,
+			Repeats:          0,
+			DryRun:           false,
+		})
+		if err != nil {
+			fmt.Printf("could not start job: %s\n", err)
+			os.Exit(1)
+		}
+	}
+
+	fmt.Printf("Successfully started default job with ID=%d\n", respC.Id)
 }
