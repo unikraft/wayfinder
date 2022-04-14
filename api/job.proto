@@ -83,6 +83,12 @@ service JobService {
     };
   }
 
+  rpc CheckJobExists (CheckJobExistsRequest) returns (CheckJobExistsResponse)  {
+    option (google.api.http) = {
+      get: "/api/job/exists",
+    };
+  }
+
   rpc FlushRedisQueue (FlushRedisQueueRequest) returns (FlushRedisQueueResponse)  {
     option (google.api.http) = {
       get: "/api/flush",
@@ -217,6 +223,7 @@ message CreateJobRequest {
   bytes  data       = 1;
   bool   compressed = 2;
   string name       = 3;
+  string checksum   = 4;
 }
 
 message CreateJobResponse {
@@ -318,4 +325,13 @@ message ListPermutationsResponse {
   bool                 success = 1      [json_name = "success"];
   int64                total   = 2      [json_name = "total"];
   repeated Permutation permutations = 3 [json_name = "permutations"];
+}
+
+message CheckJobExistsRequest {
+  string checksum = 1;
+}
+
+message CheckJobExistsResponse {
+  bool success = 1 [json_name = "success"];
+  bool exists  = 2 [json_name = "exists"];    
 }
