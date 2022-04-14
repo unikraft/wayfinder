@@ -44,6 +44,7 @@ type Job struct {
 	Name              string          `gorm:"column:name"               json:"name"`
 	HostId            uint            `gorm:"column:host_id"            json:"host_id"`
 	Config            string          `gorm:"column:config"             json:"config"`
+	Checksum          string          `gorm:"column:checksum"           json:"checksum"`
 	CompletedAt       time.Time       `gorm:"column:updated_at"         json:"updated_at"`
 	TotalPermutations uint64          `gorm:"column:total_permutations" json:"total_permutations"`
 	Status            proto.JobStatus `gorm:"column:status"             json:"status"`
