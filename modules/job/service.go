@@ -55,6 +55,22 @@ type service struct {
 	p *provider
 }
 
+func (s *service) CheckJobExists(ctx context.Context, req *proto.CheckJobExistsRequest) (*proto.CheckJobExistsResponse, error) {
+	s.p.Log.Infof("checking if job already exists")
+	exists := false
+
+	if err := s.p.DB.Repos().Jobs().CheckJobExists(req.Checksum, &exists); err != nil {
+		return &proto.CheckJobExistsResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "could not check for existing jobs")
+	}
+
+	return &proto.CheckJobExistsResponse{
+		Success: true,
+		Exists:  exists,
+	}, nil
+}
+
 func (s *service) CreateJob(ctx context.Context, req *proto.CreateJobRequest) (*proto.CreateJobResponse, error) {
 	var err error
 	var data string
@@ -93,6 +109,7 @@ func (s *service) CreateJob(ctx context.Context, req *proto.CreateJobRequest) (*
 		Name:              name,
 		Config:            data,
 		TotalPermutations: totalPermutations,
+		Checksum:          req.Checksum,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not save job: %s", err)
