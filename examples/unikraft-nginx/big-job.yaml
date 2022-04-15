@@ -2,24 +2,32 @@ name: unikraft-nginx-big
 params:
   # Unikraft-specific:
   - name:    LWIP_NUM_TCPCON
+    description: |
+      The number of simultaneous TCP connections.
     type:    int
     default: 64
     only:    [8, 16, 32, 64]
     when:    build
 
   - name:    LWIP_NUM_TCPLISTENERS
+    description: |
+      The number of simultaneous TCP listeners.
     type:    int
     default: 64
     only:    [8, 16, 32, 64]
     when:    build
   
   - name:    LWIP_UKNETDEV_POLLONLY
+    description: |
+      If enabled, the network interface will continuosly poll for new packets.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    build
   
   - name:    LWIP_POOLS
+    description: |
+      If enabled, the memory will be allocated in pools and used like that.
     type:    string
     default: "n"
     only:    ["y", "n"]
@@ -28,6 +36,8 @@ params:
   # Platform options:
   # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
   - name:    HZ
+    description: |
+      The timer frequency.
     type:    int
     default: 100
     only:    [100, 250, 300, 1000]
@@ -35,12 +45,16 @@ params:
 
   # Allocator options:
   - name:    ALLOCATOR
+    description: |
+      The allocator type to use inside the image.
     type:    string
     default: "bbuddy"
     only:    ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"]
     when:    build
 
   - name:    LIBTINYALLOC_DISABLE_SPLIT
+    description: |
+      Disable the splitting of memory.
     type:    string
     default: "n"
     only:    ["n", "y"]
@@ -48,6 +62,8 @@ params:
     when:    build
 
   - name:    LIBTINYALLOC_SPLIT_THRESH
+    description: |
+      The threshold at which to split the memory
     type:    int
     default: 16
     only:    [8, 16, 24, 32]
@@ -55,6 +71,8 @@ params:
     when:    build
 
   - name:    LIBTINYALLOC_DISABLE_COMPACT
+    description: |
+      If enabled, it disables the compacting of memory.
     type:    string
     default: "n"
     only:    ["n", "y"]
@@ -62,6 +80,8 @@ params:
     when:    build
 
   - name:    LIBTINYALLOC_ALIGNMENT
+    description: |
+      The number to align the memory to.
     type:    int
     default: 8
     only:    [8, 16, 32, 64, 128]
@@ -70,6 +90,8 @@ params:
   
   # Mimalloc options:
   - name:    LIBMIMALLOC_MIMALLOC_DEBUG
+    description: |
+      The debug level of the allocator.
     type:    int
     default: 0
     only:    [0, 1, 2]
@@ -77,6 +99,8 @@ params:
     when:    build
 
   - name:    LIBMIMALLOC_ASSERT
+    description: |
+      If assertions are to be evaluated.
     type:    string
     default: "n"
     only:    ["n", "y"]
@@ -85,6 +109,8 @@ params:
 
   # TLSF specific options:
   - name:    LIBTLSF_TLSF_LOG2_SLI
+    description: |
+      Option to allocate memory based upon.
     type:    int
     default: 5
     only:    [4, 5, 6, 7]
@@ -93,60 +119,80 @@ params:
 
   # LWIP options:
   - name:    LWIP_TCP_QUEUE_OOSEQ
+    description: |
+      TCP will queue segments that arrive out of order.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    build
 
   - name:    LWIP_TCPIP_THREAD_STACKSIZE
+    description: |
+      The size of the stack for each TCP thread.
     type:    int
     default: 0
     only:    [0, 256, 512, 1024, 2048, 4096, 8192, 16384]
     when:    build
 
   - name:    LWIP_TCP_SND_BUF
+    description: |
+      The send buffer size.
     type:    int
     default: 1048576 
     only:    [1048576, 256000, 524288, 1048576, 1572864, 2097152]
     when:    build
   
   - name:    LWIP_DNS_MAX_SERVERS
+    description: |
+      Number of DNS servers to have space for.
     type:    int
     default: 2
     only:    [1, 2, 5, 10]
     when:    build
 
   - name:    LWIP_DNS_LOCAL_HOST_LIST
+    description: |
+      Use localhost list for DNS.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    build
 
   - name:    LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC
+    description: |
+      If the list on localhost is dynamic.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    build
 
   - name:    LIBUKDEBUG_TRACEPOINTS
+    description: |
+      If enabled, tracepoints are activated.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    build
 
   - name:    LIBUKDEBUG_ALL_TRACEPOINTS
+    description: |
+      If enabled, no tracepoints are missed.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    build
 
   - name:    LWIP_POOLS_TRY_BIGGER_POOL
+    description: |
+      If enabled, lwip will try to increase the size of the pools.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    build
 
   - name:    MEMP_USE_CUSTOM_POOLS
+    description: |
+      If enabled, lwip will not use standard pools.
     type:    string
     default: "n"
     only:    ["y", "n"]
@@ -154,42 +200,57 @@ params:
 
   # Nginx-specific
   - name:    ACCESS_LOG
+    description: |
+      If enabled, logs will be kept for nginx.
     type:    string
     default: "n"
     only:    ["y", "n"]
     when:    both
 
   - name:    KEEPALIVE_TIMEOUT
+    description: |
+      The time to wait for a connection until dropping it.
     type:    int
     default: 60
     only:    [0, 30, 60, 300]
     when:    test
 
   - name:    OPEN_FILE_CACHE
+    description: |
+      If enabled, nginx will cache the file content.
     type:    string
     default: "nocaching"
     only:    ["caching", "nocaching"]
     when:    test
 
   - name:    WORKER_RLIMIT_NOFILE
+    description: |
+      Changes the limit on the maximum number of open files.
     type:    string
     only:    [63, 126] # Should be double than WORKER_CONNECTIONS
     default: 63
     when:    test
 
   - name:    SERVER_TOKENS
+    description: |
+      If enabled, it will send te server token together with the response.
     type:    string
     only:    ["on", "off"]
     default: "off"
     when:    test
 
   - name:    SENDFILE
+    description: |
+      If enabled, it will use the sendfile function family from the kernel.
+      Currently disabled for Unikraft, as it does not have support.
     type:    string
     only:    ["off"]
     default: "off"
     when:    test
 
   - name:    TCP_NOPUSH
+    description: |
+      If on, blocks the data until the packet reaches the MSS.
     type:    string
     default: "off"
     only:    ["on", "off"]
@@ -197,18 +258,24 @@ params:
 
   # Client-specific
   - name:    WORKER_CONNECTIONS
+    description: |
+      The number of wrk connections.
     type:    int
     default: 63
     only:    [63]
     when:    test
 
   - name:    PAYLOAD_SIZE
+    description: |
+      The size of the payload in bytes.
     type:    int
     default: 612
     only:    [612] # bytes
     when:    test
   
   - name:    NUM_PARALLEL_CONNS
+    description: |
+      The number of simultaneous TCP connections.
     type:    int
     default: 30
     only:    [5, 10, 30, 64]
