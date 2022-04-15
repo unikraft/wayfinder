@@ -40,14 +40,15 @@ import (
 )
 
 type ParamSpec struct {
-	Name     string   `json:"Name,omitempty"      yaml:"name,omitempty"`
-	Type     string   `json:"Type,omitempty"      yaml:"type,omitempty"`
-	Default  string   `json:"Default,omitempty"   yaml:"default,omitempty"`
-	Only     []string `json:"Only,omitempty"      yaml:"only,omitempty"`
-	Min      string   `json:"Min,omitempty"       yaml:"min,omitempty"`
-	Max      string   `json:"Max,omitempty"       yaml:"max,omitempty"`
-	Step     string   `json:"Step,omitempty"      yaml:"step,omitempty"`
-	StepMode string   `json:"Step_mode,omitempty" yaml:"step_mode,omitempty"`
+	Name        string   `json:"Name,omitempty"      yaml:"name,omitempty"`
+	Description string   `json:"Description,omitempty" yaml:"description,omitempty"`
+	Type        string   `json:"Type,omitempty"      yaml:"type,omitempty"`
+	Default     string   `json:"Default,omitempty"   yaml:"default,omitempty"`
+	Only        []string `json:"Only,omitempty"      yaml:"only,omitempty"`
+	Min         string   `json:"Min,omitempty"       yaml:"min,omitempty"`
+	Max         string   `json:"Max,omitempty"       yaml:"max,omitempty"`
+	Step        string   `json:"Step,omitempty"      yaml:"step,omitempty"`
+	StepMode    string   `json:"Step_mode,omitempty" yaml:"step_mode,omitempty"`
 
 	// Child parameters
 	Params *ParamSpec `yaml:"params"`
@@ -56,11 +57,12 @@ type ParamSpec struct {
 }
 
 type ParamPermutation struct {
-	Name  string `yaml:"name"`
-	Type  string `yaml:"type"`
-	Value string `yaml:"value"`
-	Cond  string `json:"Cond,omitempty" yaml:"cond,omitempty"`
-	When  string `json:"when"`
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+	Type        string `yaml:"type"`
+	Value       string `yaml:"value"`
+	Cond        string `json:"Cond,omitempty" yaml:"cond,omitempty"`
+	When        string `json:"when"`
 }
 
 // parseParamInt attends to string parameters and its possible permutations
@@ -70,20 +72,22 @@ func parseParamStr(param *ParamSpec) ([]ParamPermutation, error) {
 	if len(param.Only) > 0 {
 		for _, val := range param.Only {
 			params = append(params, ParamPermutation{
-				Name:  param.Name,
-				Type:  param.Type,
-				Value: val,
-				Cond:  param.If,
-				When:  param.When,
+				Name:        param.Name,
+				Description: param.Description,
+				Type:        param.Type,
+				Value:       val,
+				Cond:        param.If,
+				When:        param.When,
 			})
 		}
 	} else if len(param.Default) > 0 {
 		params = append(params, ParamPermutation{
-			Name:  param.Name,
-			Type:  param.Type,
-			Value: param.Default,
-			Cond:  param.If,
-			When:  param.When,
+			Name:        param.Name,
+			Description: param.Description,
+			Type:        param.Type,
+			Value:       param.Default,
+			Cond:        param.If,
+			When:        param.When,
 		})
 	}
 
@@ -98,11 +102,12 @@ func parseParamInt(param *ParamSpec) ([]ParamPermutation, error) {
 	if len(param.Only) > 0 {
 		for _, val := range param.Only {
 			params = append(params, ParamPermutation{
-				Name:  param.Name,
-				Type:  param.Type,
-				Value: val,
-				Cond:  param.If,
-				When:  param.When,
+				Name:        param.Name,
+				Description: param.Description,
+				Type:        param.Type,
+				Value:       val,
+				Cond:        param.If,
+				When:        param.When,
 			})
 		}
 
