@@ -127,6 +127,17 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
+  registry:
+    image: registry:2
+    container_name: wayfinder-registry
+    hostname: registry
+    restart: on-failure
+    env_file: ./.env
+    ports:
+      - 5000:5000
+    networks:
+      - wayfinder
+
   wayfinder:
     image: ghcr.io/unikraft/wayfinder:latest
     container_name: wayfinder
