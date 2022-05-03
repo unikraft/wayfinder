@@ -44,19 +44,20 @@ import (
 )
 
 type config struct {
-	ContainerRootDir string   `file:"rootdir"          env:"CONTAINER_ROOTDIR"         default:"/var/lib/wayfinder/containers"`
-	CacheDir         string   `file:"cachedir"         env:"CONTAINER_CACHEDIR"        default:"/var/lib/wayfinder/cache"`
-	SavedDir         string   `file:"saveddir"         env:"CONTAINER_SAVEDDIR"        default:"/var/lib/wayfinder/saved"`
-	LogDir           string   `file:"logdir"           env:"CONTAINER_LOGDIR"          default:"/var/lib/wayfinder/logs"`
-	RegistryAddr     string   `yaml:"registry"         env:"CONTAINER_REGISTRY"        default:"localhost:5000"`
-	HostIface        string   `yaml:"host_iface"       env:"CONTAINER_HOST_IFACE"      default:"eth0"`
-	Bridge           string   `yaml:"bridge"           env:"CONTAINER_BRIDGE"          default:"wayfinder0"`
-	BridgeStateDir   string   `yaml:"bridge_statedir"  env:"CONTAINER_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
-	Subnet           string   `yaml:"subnet"           env:"CONTAINER_SUBNET"          default:"172.88.0.1/16"`
-	AuthType         string   `yaml:"auth_type"        env:"CONTAINER_AUTH_TYPE"       default:"anonymous"`
-	AuthUsername     string   `yaml:"auth_username"    env:"CONTAINER_AUTH_USERNAME"   default:"wayfinder"`
-	AuthPassword     string   `yaml:"auth_password"    env:"CONTAINER_AUTH_PASSWORD"   default:"wayfinder"`
-	AuthToken        string   `yaml:"auth_token"       env:"CONTAINER_AUTH_TOKEN"      default:""`
+	ContainerRootDir string   `file:"rootdir"          env:"CONTAINER_ROOTDIR"          default:"/var/lib/wayfinder/containers"`
+	CacheDir         string   `file:"cachedir"         env:"CONTAINER_CACHEDIR"         default:"/var/lib/wayfinder/cache"`
+	SavedDir         string   `file:"saveddir"         env:"CONTAINER_SAVEDDIR"         default:"/var/lib/wayfinder/saved"`
+	LogDir           string   `file:"logdir"           env:"CONTAINER_LOGDIR"           default:"/var/lib/wayfinder/logs"`
+	RegistryAddress  string   `yaml:"registry_address" env:"CONTAINER_REGISTRY_ADDRESS" default:"localhost:5000"`
+	RegistrySecure   bool     `yaml:"registry_secure"  env:"CONTAINER_REGISTRY_SECURE"  default:"false"`
+	HostIface        string   `yaml:"host_iface"       env:"CONTAINER_HOST_IFACE"       default:"eth0"`
+	Bridge           string   `yaml:"bridge"           env:"CONTAINER_BRIDGE"           default:"wayfinder0"`
+	BridgeStateDir   string   `yaml:"bridge_statedir"  env:"CONTAINER_BRIDGE_STATEDIR"  default:"/var/lib/wayfinder/bridges"`
+	Subnet           string   `yaml:"subnet"           env:"CONTAINER_SUBNET"           default:"172.88.0.1/16"`
+	AuthType         string   `yaml:"auth_type"        env:"CONTAINER_AUTH_TYPE"        default:"anonymous"`
+	AuthUsername     string   `yaml:"auth_username"    env:"CONTAINER_AUTH_USERNAME"    default:"wayfinder"`
+	AuthPassword     string   `yaml:"auth_password"    env:"CONTAINER_AUTH_PASSWORD"    default:"wayfinder"`
+	AuthToken        string   `yaml:"auth_token"       env:"CONTAINER_AUTH_TOKEN"       default:""`
 	Environment      []string `yaml:"environment"`
 }
 

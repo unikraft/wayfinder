@@ -99,7 +99,9 @@ type Image struct {
 func (i *Image) PullImage(image, cacheDir, savedDir string) (v1.Image, string, error) {
 	var options []crane.Option
 
-	// options = append(options, crane.Insecure)
+	if !i.P.Cfg.RegistrySecure {
+		options = append(options, crane.Insecure)
+	}
 
 	// Add authentication to the options
 	var auth authn.Authenticator
@@ -173,7 +175,7 @@ func (i *Image) PullImage(image, cacheDir, savedDir string) (v1.Image, string, e
 		splitPath := strings.Split(image, "/")
 		name := splitPath[len(splitPath)-1]
 
-		err = crane.Push(img, i.P.Cfg.RegistryAddr+"/"+name, options...)
+		err = crane.Push(img, i.P.Cfg.RegistryAddress+"/"+name, options...)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to push image: %s", err)
 		}

@@ -220,8 +220,10 @@ container:
   # Path to save logs to from container runtimes
   logdir: ${CONTAINER_LOGDIR:/var/lib/wayfinder/logs}
 
-  # The address of the registry where to back up images
-  registry: ${CONTAINER_REGISTRY:localhost:5000}
+  # The address of the registry where to back up images and if it's secure
+  registry:
+  - address: ${CONTAINER_REGISTRY:localhost:5000}
+    secure:  ${CONTAINER_SECURE:false}
 
   # The networking bridge cache dir used for saving the state of networking
   bridge_statedir: ${CONTAINER_BRIDGE_STATEDIR:/tmp/lib/wayfinder/bridges}
