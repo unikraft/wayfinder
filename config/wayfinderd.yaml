@@ -49,7 +49,7 @@ health:
 # This option allows for exposing a gRPC server on the daemon which can be used
 # by a client to make well-defined RPC requests using the provided SDK.
 grpc-server:
-  addr: ":7000"
+  addr: ":5000"
 
 # Server Register
 # ===============
@@ -66,7 +66,7 @@ service-register:
 #
 postgres:
   host: "${POSTGRES_HOST:postgres}"
-  port: ${POSTGRES_PORT:5432}
+  port: ${POSTGRES_PORT:3306}
   user: "${POSTGRES_USER:wayfinder}"
   log_queries: "${POSTGRES_LOG_QUERIES:false}"
   password: "${POSTGRES_PASSWORD:wayfinder}"
@@ -83,27 +83,27 @@ postgres:
 # isolated and controlled experiments on job permutations.
 #
 hostconfig:
-  cpu_sets: 2-7
+  cpu_sets: 20-30
   scaling_governor: performance
   procfs:
     # Filesystem
-    # - /proc/sys/fs/file-max:20000
+    - /proc/sys/fs/file-max:20000
     # - /proc/sys/vm/drop_caches:3
 
     # Networking
-    # - /proc/sys/net/core/somaxconn:1024
+    - /proc/sys/net/core/somaxconn:1024
     - /proc/sys/net/ipv4/ip_forward:1
-    # - /proc/sys/net/ipv4/ip_local_port_range:1024   60999
-    # - /proc/sys/net/ipv4/tcp_keepalive_time:60
-    # - /proc/sys/net/ipv4/tcp_keepalive_intvl:60
+    - /proc/sys/net/ipv4/ip_local_port_range:1024   60999
+    - /proc/sys/net/ipv4/tcp_keepalive_time:60
+    - /proc/sys/net/ipv4/tcp_keepalive_intvl:60
     # - /proc/sys/net/ipv4/tcp_tw_reusee:1
 
     # Processor
-    # - /sys/devices/system/cpu/intel_pstate/no_turbo:1
+    - /sys/devices/system/cpu/intel_pstate/no_turbo:1
 
     # Memory
-    # - /proc/sys/kernel/randomize_va_space:0
-    # - /proc/sys/kernel/unprivileged_userns_clone:1
+    - /proc/sys/kernel/randomize_va_space:0
+    - /proc/sys/kernel/unprivileged_userns_clone:1
 
 # Redis Client
 # ============
@@ -134,7 +134,7 @@ libvirt:
   sockdir: /run/libvirt/qemu/
 
   # Timeout for when making connections to libvirt
-  timeout: 60s
+  timeout: 30s
 
   # Name of the shared bridge for virtual machines.
   bridge: wayfinder0
@@ -221,7 +221,7 @@ container:
   logdir: ${CONTAINER_LOGDIR:/var/lib/wayfinder/logs}
 
   # The address of the registry where to back up images
-  registry: ${REGISTRY_ADDR:localhost:5000}
+  registry: ${CONTAINER_REGISTRY:localhost:5000}
 
   # The networking bridge cache dir used for saving the state of networking
   bridge_statedir: ${CONTAINER_BRIDGE_STATEDIR:/tmp/lib/wayfinder/bridges}
@@ -285,4 +285,4 @@ tester:
   metrics_receiver_type: tcp
 
   # Location of the remote metrics receiver.
-  metrics_receiver: 127.0.0.1:8086
+  metrics_receiver: 127.0.0.1:12345
