@@ -147,11 +147,10 @@ func (i *Image) PullImage(image, cacheDir, savedDir string) (v1.Image, string, e
 		defer f.Close()
 
 		// Save the image permanently in the registry
-		serverAddress := os.Getenv("REGISTRY_ADDR")
 		splitPath := strings.Split(image, "/")
 		name := splitPath[len(splitPath)-1]
 
-		err = crane.Push(img, serverAddress+"/"+name, options...)
+		err = crane.Push(img, i.P.Cfg.RegistryAddr+"/"+name, options...)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed to push image: %s", err)
 		}

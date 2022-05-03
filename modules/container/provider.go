@@ -48,6 +48,7 @@ type config struct {
 	CacheDir         string   `file:"cachedir"         env:"CONTAINER_CACHEDIR"        default:"/var/lib/wayfinder/cache"`
 	SavedDir         string   `file:"saveddir"         env:"CONTAINER_SAVEDDIR"        default:"/var/lib/wayfinder/saved"`
 	LogDir           string   `file:"logdir"           env:"CONTAINER_LOGDIR"          default:"/var/lib/wayfinder/logs"`
+	RegistryAddr     string   `yaml:"registry"         env:"CONTAINER_REGISTRY"        default:"localhost:5000"`
 	HostIface        string   `yaml:"host_iface"       env:"CONTAINER_HOST_IFACE"      default:"eth0"`
 	Bridge           string   `yaml:"bridge"           env:"CONTAINER_BRIDGE"          default:"wayfinder0"`
 	BridgeStateDir   string   `yaml:"bridge_statedir"  env:"CONTAINER_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
