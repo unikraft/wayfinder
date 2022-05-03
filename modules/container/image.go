@@ -23,7 +23,7 @@ package container
 
 import (
 	"encoding/json"
-	"errors"
+	// "errors"
 	"fmt"
 	"os"
 	"runtime"
@@ -36,61 +36,66 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const (
-	// DefaultRuntime is the runtime to use when not specified.
-	DefaultRuntime = "runc"
-	// NameTotalLengthMax is the maximum total number of characters in a
-	// repository name.
-	NameTotalLengthMax = 255
-	// DefaultTag defines the default tag used when performing images related
-	// actions and no tag or digest is specified.
-	DefaultTag = "latest"
-	// DefaultHostname is the default built-in hostname
-	DefaultHostname = "docker.io"
-	// LegacyDefaultHostname is automatically converted to DefaultHostname
-	LegacyDefaultHostname = "index.docker.io"
-	// DefaultRepoPrefix is the prefix used for default repositories in default
-	// host.
-	DefaultRepoPrefix = "library/"
-)
+// const (
+// 	// DefaultRuntime is the runtime to use when not specified.
+// 	DefaultRuntime = "runc"
+// 	// NameTotalLengthMax is the maximum total number of characters in a
+// 	// repository name.
+// 	NameTotalLengthMax = 255
+// 	// DefaultTag defines the default tag used when performing images related
+// 	// actions and no tag or digest is specified.
+// 	DefaultTag = "latest"
+// 	// DefaultHostname is the default built-in hostname
+// 	DefaultHostname = "docker.io"
+// 	// LegacyDefaultHostname is automatically converted to DefaultHostname
+// 	LegacyDefaultHostname = "index.docker.io"
+// 	// DefaultRepoPrefix is the prefix used for default repositories in default
+// 	// host.
+// 	DefaultRepoPrefix = "library/"
+// )
 
-var (
-	// ErrReferenceInvalidFormat represents an error while trying to parse a
-	// string as a reference.
-	ErrReferenceInvalidFormat = errors.New("invalid reference format")
-	// ErrTagInvalidFormat represents an error while trying to parse a string as a
-	// tag.
-	ErrTagInvalidFormat = errors.New("invalid tag format")
-	// ErrDigestInvalidFormat represents an error while trying to parse a string
-	// as a tag.
-	ErrDigestInvalidFormat = errors.New("invalid digest format")
-	// ErrNameEmpty is returned for empty, invalid repository names.
-	ErrNameEmpty = errors.New("repository name must have at least one component")
-	// ErrNameTooLong is returned when a repository name is longer than
-	// NameTotalLengthMax.
-	ErrNameTooLong = fmt.Errorf("repository name must not be more than %v characters", NameTotalLengthMax)
-)
+// var (
+// 	// ErrReferenceInvalidFormat represents an error while trying to parse a
+// 	// string as a reference.
+// 	ErrReferenceInvalidFormat = errors.New("invalid reference format")
+// 	// ErrTagInvalidFormat represents an error while trying to parse a string as a
+// 	// tag.
+// 	ErrTagInvalidFormat = errors.New("invalid tag format")
+// 	// ErrDigestInvalidFormat represents an error while trying to parse a string
+// 	// as a tag.
+// 	ErrDigestInvalidFormat = errors.New("invalid digest format")
+// 	// ErrNameEmpty is returned for empty, invalid repository names.
+// 	ErrNameEmpty = errors.New("repository name must have at least one component")
+// 	// ErrNameTooLong is returned when a repository name is longer than
+// 	// NameTotalLengthMax.
+// 	ErrNameTooLong = fmt.Errorf("repository name must not be more than %v characters", NameTotalLengthMax)
+// )
 
-// Image is an object with a full name
+// // Image is an object with a full name
+// type Image struct {
+// 	// Runtime is the normalized name of the runtime service, e.g. "docker"
+// 	Runtime string
+// 	// Name is the normalized repository name, like "ubuntu".
+// 	Name string
+// 	// String is the full reference, like "ubuntu@sha256:abcdef..."
+// 	String string
+// 	// FullName is the full repository name with hostname, like "docker.io/library/ubuntu"
+// 	FullName string
+// 	// Hostname is the hostname for the reference, like "docker.io"
+// 	Hostname string
+// 	// RemoteName is the the repository component of the full name, like "library/ubuntu"
+// 	RemoteName string
+// 	// Tag is the tag of the image, e.g. "latest"
+// 	Tag string
+// }
+
+// Image type to save the provider
 type Image struct {
-	// Runtime is the normalized name of the runtime service, e.g. "docker"
-	Runtime string
-	// Name is the normalized repository name, like "ubuntu".
-	Name string
-	// String is the full reference, like "ubuntu@sha256:abcdef..."
-	String string
-	// FullName is the full repository name with hostname, like "docker.io/library/ubuntu"
-	FullName string
-	// Hostname is the hostname for the reference, like "docker.io"
-	Hostname string
-	// RemoteName is the the repository component of the full name, like "library/ubuntu"
-	RemoteName string
-	// Tag is the tag of the image, e.g. "latest"
-	Tag string
+	P *Provider
 }
 
 // PullImage downloads an image
-func PullImage(image, cacheDir, savedDir string) (v1.Image, string, error) {
+func (i *Image) PullImage(image, cacheDir, savedDir string) (v1.Image, string, error) {
 	var options []crane.Option
 
 	// options = append(options, crane.Insecure)
@@ -170,7 +175,7 @@ func PullImage(image, cacheDir, savedDir string) (v1.Image, string, error) {
 }
 
 // Return the configuration for an image
-func ImageConfig(image string) (*v1.ConfigFile, error) {
+func (i *Image) ImageConfig(image string) (*v1.ConfigFile, error) {
 	var options []crane.Option
 
 	// Use current built OS and architecture
@@ -194,7 +199,7 @@ func ImageConfig(image string) (*v1.ConfigFile, error) {
 }
 
 // UnpackImage takes a container image and writes its filesystem to outDir
-func UnpackImage(image v1.Image, manifestHex string, cacheDir, savedDir, outDir string, allowOverride bool) error {
+func (i *Image) UnpackImage(image v1.Image, manifestHex string, cacheDir, savedDir, outDir string, allowOverride bool) error {
 	imageDir := fmt.Sprintf("%s/%s", savedDir, manifestHex)
 
 	// Check if the tarball exists in the cache

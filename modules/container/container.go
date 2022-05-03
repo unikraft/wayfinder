@@ -444,7 +444,7 @@ func (c *Container) PullImage() error {
 	}
 
 	var err error = nil
-	c.image, c.imageManifestHex, err = PullImage(c.spec.Image, c.p.Cfg.CacheDir, c.p.Cfg.SavedDir)
+	c.image, c.imageManifestHex, err = c.p.image.PullImage(c.spec.Image, c.p.Cfg.CacheDir, c.p.Cfg.SavedDir)
 	if err != nil {
 		return fmt.Errorf("could not pull image: %s", err)
 	}
@@ -463,7 +463,7 @@ func (c *Container) PullImage() error {
 }
 
 func (c *Container) AttachImage() error {
-	err := UnpackImage(c.image, c.imageManifestHex, c.p.Cfg.CacheDir, c.p.Cfg.SavedDir, c.config.Rootfs, true) // r.Config.AllowOverride
+	err := c.p.image.UnpackImage(c.image, c.imageManifestHex, c.p.Cfg.CacheDir, c.p.Cfg.SavedDir, c.config.Rootfs, true) // r.Config.AllowOverride
 	if err != nil {
 		return fmt.Errorf("could not attach image: %s", err)
 	}
@@ -515,7 +515,7 @@ func (c *Container) Start() error {
 
 	// Set the working directory for the container
 	cwd := "/"
-	config, err := ImageConfig(c.spec.Image)
+	config, err := c.p.image.ImageConfig(c.spec.Image)
 
 	if len(c.workdir) > 0 {
 		cwd = c.workdir

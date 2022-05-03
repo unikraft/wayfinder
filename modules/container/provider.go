@@ -60,6 +60,7 @@ type Provider struct {
 	Log      logs.Logger
 	Register transport.Register
 	service  *Service
+	image    *Image
 	factory  libcontainer.Factory
 }
 
@@ -72,6 +73,7 @@ func (p *Provider) Init(ctx servicehub.Context) error {
 
 	if p.Register != nil {
 		p.service = &Service{P: p}
+		p.image = &Image{P: p}
 		// proto.RegisterBuilderServiceImp(p.Register, p.Service)
 	}
 
