@@ -236,6 +236,14 @@ container:
   # The subnet for containers to use
   subnet: ${CONTAINER_SUBNET:172.88.0.1/24}
 
+  # The authentication parameters to be used when downloading images.
+  # Type can be: anonymous/bearer/basic
+  auth:
+  - type:     ${CONTAINER_AUTH_TYPE:-anonymous}
+    username: ${CONTAINER_AUTH_USERNAME:-wayfinder}
+    password: ${CONTAINER_AUTH_PASSWORD:-}
+    token:    ${CONTAINER_AUTH_TOKEN:-}
+
   # Default environmental variables to add to each container
   environment:
     - TERM=xterm

@@ -53,6 +53,10 @@ type config struct {
 	Bridge           string   `yaml:"bridge"           env:"CONTAINER_BRIDGE"          default:"wayfinder0"`
 	BridgeStateDir   string   `yaml:"bridge_statedir"  env:"CONTAINER_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
 	Subnet           string   `yaml:"subnet"           env:"CONTAINER_SUBNET"          default:"172.88.0.1/16"`
+	AuthType         string   `yaml:"auth_type"        env:"CONTAINER_AUTH_TYPE"       default:"anonymous"`
+	AuthUsername     string   `yaml:"auth_username"    env:"CONTAINER_AUTH_USERNAME"   default:"wayfinder"`
+	AuthPassword     string   `yaml:"auth_password"    env:"CONTAINER_AUTH_PASSWORD"   default:"wayfinder"`
+	AuthToken        string   `yaml:"auth_token"       env:"CONTAINER_AUTH_TOKEN"      default:""`
 	Environment      []string `yaml:"environment"`
 }
 
