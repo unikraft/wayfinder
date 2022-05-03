@@ -30,6 +30,7 @@ import (
 	"strings"
 
 	"github.com/docker/docker/daemon/graphdriver/copy"
+	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/moby/moby/pkg/archive"
@@ -99,6 +100,28 @@ func (i *Image) PullImage(image, cacheDir, savedDir string) (v1.Image, string, e
 	var options []crane.Option
 
 	// options = append(options, crane.Insecure)
+
+	// Add authentication to the options
+	var auth authn.Authenticator
+	switch i.P.Cfg.AuthType {
+	case "basic":
+		basic := authn.Basic{
+			Username: i.P.Cfg.AuthUsername,
+			Password: i.P.Cfg.AuthPassword,
+		}
+		auth = &basic
+	case "bearer":
+		bearer := authn.Bearer{
+			Token: i.P.Cfg.AuthToken,
+		}
+		auth = &bearer
+	case "anonymous":
+		auth = authn.Anonymous
+	default:
+		auth = authn.Anonymous
+	}
+
+	options = append(options, crane.WithAuth(auth))
 
 	// Use current built OS and architecture
 	options = append(options, crane.WithPlatform(&v1.Platform{
