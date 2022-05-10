@@ -2614,72 +2614,73 @@ build:
     echo "Build Done!"
 
 test:
-  kernel:
-    memory: 100M
-    args:
-      >
-      root=/dev/vda
-      rw
-      console=ttyS0
-      init=/guest_start.sh
-      acpi=${ACPI}
-      acpi_apic_instance=${ACPI_APIC_INSTANCE}
-      acpi_irq_balance=${ACPI_IRQ_BALANCE}
-      align_va_addr=${ALIGN_VA_ADDR}
-      apic_extnmi=${APIC_EXTNMI}
-      clocksource=${CLOCKSOURCE}
-      cpuidle.off=${CPUIDLE_OFF}
-      nompx=${NOMPX}
-      nopku=${NOPKU}
-      hashdist=${HASHDIST}
-      idle=${IDLE}
-      intel_idle.max_cstate=${INTEL_IDLE_MAX_CSTATE}
-      intel_iommu=${INTEL_IOMMU}
-      intel_pstate=${INTEL_PSTATE}
-      io_delay=${IO_DELAY}
-      nokaslr=${NOKASLR}
-      nosmap=${NOSMAP}
-      nosmep=${NOSMEP}
-      noxsaveopt=${NOXSAVEOPT}
-      noxsaves=${NOXSAVES}
-      nohz=${NOHZ}
-      no_timer_check=${NO_TIMER_CHECK}
-      norandmaps=${NORANDMAPS}
-      nordrand=${NORDRAND}
-      nosmp=${NOSMP}
-      nowatchdog=${NOWATCHDOG}
-      numa_balancing=${NUMA_BALANCING}
-      percpu_alloc=${PERCPU_ALLOC}
-      processor.max_cstate=${PROCESSOR_MAX_CSTATE}
-      processor.nocst=${PROCESSOR_NOCST}
-      quiet=${QUIET}
-      skew_tick=${SKEW_TICK}
-      slab_nomerge=${SLAB_NOMERGE}
-      slab_max_order=${SLAB_MAX_ORDER}
-      slub_max_order=${SLUB_MAX_ORDER}
-      slub_min_objects=${SLUB_MIN_OBJECTS}
-      slub_min_order=${SLUB_MIN_ORDER}
-      thash_entries=${THASH_ENTRIES}
-      tsc=${TSC}
-      uhash_entries=${UHASH_ENTRIES}
-      vdso=${VDSO}
-      vsyscall=${VSYSCALL}
-      workqueue.power_efficient=${WORKQUEUE_POWER_EFFICIENT}
-      -- $WAYFINDER_DOMAIN_IP_ADDR $WAYFINDER_DOMAIN_IP_GW_ADDR
-    cores: 1
-  benchtool:
-    image: ghcr.io/unikraft/wayfinder/wrk:latest
-    devices:
-      - /dev/urandom
-      - /dev/kvm
-      - /dev/net/tun
-    capabilities:
-      - CAP_NET_ADMIN
-    commands: /test.sh index.html
-    cores: 1
-    start_delay: 5
-    duration: 30
-  results:
-    - name: throughput
-      path: /results/throughput.txt
-      type: float
+  - name: throughput
+    kernel:
+      memory: 100M
+      args:
+        >
+        root=/dev/vda
+        rw
+        console=ttyS0
+        init=/guest_start.sh
+        acpi=${ACPI}
+        acpi_apic_instance=${ACPI_APIC_INSTANCE}
+        acpi_irq_balance=${ACPI_IRQ_BALANCE}
+        align_va_addr=${ALIGN_VA_ADDR}
+        apic_extnmi=${APIC_EXTNMI}
+        clocksource=${CLOCKSOURCE}
+        cpuidle.off=${CPUIDLE_OFF}
+        nompx=${NOMPX}
+        nopku=${NOPKU}
+        hashdist=${HASHDIST}
+        idle=${IDLE}
+        intel_idle.max_cstate=${INTEL_IDLE_MAX_CSTATE}
+        intel_iommu=${INTEL_IOMMU}
+        intel_pstate=${INTEL_PSTATE}
+        io_delay=${IO_DELAY}
+        nokaslr=${NOKASLR}
+        nosmap=${NOSMAP}
+        nosmep=${NOSMEP}
+        noxsaveopt=${NOXSAVEOPT}
+        noxsaves=${NOXSAVES}
+        nohz=${NOHZ}
+        no_timer_check=${NO_TIMER_CHECK}
+        norandmaps=${NORANDMAPS}
+        nordrand=${NORDRAND}
+        nosmp=${NOSMP}
+        nowatchdog=${NOWATCHDOG}
+        numa_balancing=${NUMA_BALANCING}
+        percpu_alloc=${PERCPU_ALLOC}
+        processor.max_cstate=${PROCESSOR_MAX_CSTATE}
+        processor.nocst=${PROCESSOR_NOCST}
+        quiet=${QUIET}
+        skew_tick=${SKEW_TICK}
+        slab_nomerge=${SLAB_NOMERGE}
+        slab_max_order=${SLAB_MAX_ORDER}
+        slub_max_order=${SLUB_MAX_ORDER}
+        slub_min_objects=${SLUB_MIN_OBJECTS}
+        slub_min_order=${SLUB_MIN_ORDER}
+        thash_entries=${THASH_ENTRIES}
+        tsc=${TSC}
+        uhash_entries=${UHASH_ENTRIES}
+        vdso=${VDSO}
+        vsyscall=${VSYSCALL}
+        workqueue.power_efficient=${WORKQUEUE_POWER_EFFICIENT}
+        -- $WAYFINDER_DOMAIN_IP_ADDR $WAYFINDER_DOMAIN_IP_GW_ADDR
+      cores: 1
+    benchtool:
+      image: ghcr.io/unikraft/wayfinder/wrk:latest
+      devices:
+        - /dev/urandom
+        - /dev/kvm
+        - /dev/net/tun
+      capabilities:
+        - CAP_NET_ADMIN
+      commands: /test.sh index.html
+      cores: 1
+      start_delay: 5
+      duration: 30
+    results:
+      - name: throughput
+        path: /results/throughput.txt
+        type: float
