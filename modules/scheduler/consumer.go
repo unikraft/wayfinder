@@ -203,14 +203,14 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 
 // Formats the environment variables for the test
 // The duration is added to the environment variables
-func (c *TaskConsumer) packEnvVars(task *spec.JobSpec) []*proto.TestEnvVar {
+func (c *TaskConsumer) packEnvVars(test *spec.TestSpec) []*proto.TestEnvVar {
 	var envVars []*proto.TestEnvVar
 
 	var duration string
-	if task.Test.BenchTool.Duration == 0 {
+	if test.BenchTool.Duration == 0 {
 		duration = "30"
 	} else {
-		duration = fmt.Sprint(task.Test.BenchTool.Duration)
+		duration = fmt.Sprint(test.BenchTool.Duration)
 	}
 
 	envVars = append(envVars, &proto.TestEnvVar{
@@ -218,7 +218,7 @@ func (c *TaskConsumer) packEnvVars(task *spec.JobSpec) []*proto.TestEnvVar {
 		Value: duration,
 	})
 
-	for name, value := range task.Test.BenchTool.Environment {
+	for name, value := range test.BenchTool.Environment {
 		envVars = append(envVars, &proto.TestEnvVar{
 			Name:  name,
 			Value: value,
@@ -228,14 +228,14 @@ func (c *TaskConsumer) packEnvVars(task *spec.JobSpec) []*proto.TestEnvVar {
 	return envVars
 }
 
-func (c *TaskConsumer) replaceArgs(task *spec.JobSpec) string {
-	argsString := task.Test.Kernel.Args
+func (c *TaskConsumer) replaceArgs(test *spec.TestSpec, params []spec.ParamPermutation) string {
+	argsString := test.Kernel.Args
 
-	for _, param := range task.CurrentPerm.Params {
+	for _, param := range params {
 		argsString = strings.Replace(argsString, "${"+param.Name+"}", param.Value, -1)
 	}
 
-	task.Test.Kernel.Args = argsString
+	test.Kernel.Args = argsString
 
 	return argsString
 }
@@ -467,167 +467,169 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 	//
 	// Test
 	//
-	test := test{}
+	for _, currentTest := range task.Test {
+		test := test{}
 
-	vmmCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
-	benchToolCoreIds := c.busyWaitForCores(int(task.Test.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
-	kernelCoreIds := c.busyWaitForCores(int(task.Test.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
-	testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
-	testCoreIds = append(testCoreIds, kernelCoreIds...)
+		vmmCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
+		benchToolCoreIds := c.busyWaitForCores(int(currentTest.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
+		kernelCoreIds := c.busyWaitForCores(int(currentTest.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
+		testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
+		testCoreIds = append(testCoreIds, kernelCoreIds...)
 
-	// Create the test
-	// The environment variables are currently the same as in the build environment
-	c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
-	createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
-		PermutationId: int64(permutation.Id),
-		VmmCores:      vmmCoreIds,
-		Kernel: &proto.TestKernel{
-			Image:  buildOutput.Outputs.Kernel,
-			InitRd: buildOutput.Outputs.InitRd,
-			Disks:  buildOutput.Outputs.Disks,
-			Cores:  kernelCoreIds,
-			Args:   c.replaceArgs(task),
-			Memory: task.Test.Kernel.Memory,
-		},
-		BenchTool: &proto.TestBenchTool{
-			Image:        task.Test.BenchTool.Image,
-			Devices:      task.Test.BenchTool.Devices,
-			Capabilities: task.Test.BenchTool.Capabilities,
-			Commands:     task.Test.BenchTool.Commands,
-			Cores:        benchToolCoreIds,
-			StartDelay:   task.Test.BenchTool.StartDelay,
-			EnvVars:      c.packEnvVars(task),
-		},
-	})
-	if err != nil {
-		c.releaseCoresById(testCoreIds)
-		return fmt.Errorf("could not create test: %s", err)
-	}
-
-	test.uuid = createTestResp.Uuid
-
-	var results []*proto.TestResult
-	var resultType proto.TestResultType
-	for _, result := range task.Test.Results {
-
-		// TODO: This switch should be abstract in case we need it elsewhere.
-		// The proto definitions should probably have it and the spec should be
-		// merged with the proto.
-		switch result.Type {
-		case "int",
-			"integer":
-			resultType = proto.TestResultType_TEST_RESULT_INT
-		case "str",
-			"string":
-			resultType = proto.TestResultType_TEST_RESULT_STR
-		case "bool":
-			resultType = proto.TestResultType_TEST_RESULT_BOOL
-		case "float":
-			resultType = proto.TestResultType_TEST_RESULT_FLOAT
+		// Create the test
+		// The environment variables are currently the same as in the build environment
+		c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
+		createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
+			PermutationId: int64(permutation.Id),
+			VmmCores:      vmmCoreIds,
+			Kernel: &proto.TestKernel{
+				Image:  buildOutput.Outputs.Kernel,
+				InitRd: buildOutput.Outputs.InitRd,
+				Disks:  buildOutput.Outputs.Disks,
+				Cores:  kernelCoreIds,
+				Args:   c.replaceArgs(&currentTest, task.CurrentPerm.Params),
+				Memory: currentTest.Kernel.Memory,
+			},
+			BenchTool: &proto.TestBenchTool{
+				Image:        currentTest.BenchTool.Image,
+				Devices:      currentTest.BenchTool.Devices,
+				Capabilities: currentTest.BenchTool.Capabilities,
+				Commands:     currentTest.BenchTool.Commands,
+				Cores:        benchToolCoreIds,
+				StartDelay:   currentTest.BenchTool.StartDelay,
+				EnvVars:      c.packEnvVars(&currentTest),
+			},
+		})
+		if err != nil {
+			c.releaseCoresById(testCoreIds)
+			return fmt.Errorf("could not create test: %s", err)
 		}
 
-		results = append(results, &proto.TestResult{
-			Name: result.Name,
-			Path: result.Path,
-			Type: resultType,
+		test.uuid = createTestResp.Uuid
+
+		var results []*proto.TestResult
+		var resultType proto.TestResultType
+		for _, result := range currentTest.Results {
+
+			// TODO: This switch should be abstract in case we need it elsewhere.
+			// The proto definitions should probably have it and the spec should be
+			// merged with the proto.
+			switch result.Type {
+			case "int",
+				"integer":
+				resultType = proto.TestResultType_TEST_RESULT_INT
+			case "str",
+				"string":
+				resultType = proto.TestResultType_TEST_RESULT_STR
+			case "bool":
+				resultType = proto.TestResultType_TEST_RESULT_BOOL
+			case "float":
+				resultType = proto.TestResultType_TEST_RESULT_FLOAT
+			}
+
+			results = append(results, &proto.TestResult{
+				Name: result.Name,
+				Path: result.Path,
+				Type: resultType,
+			})
+		}
+
+		// Start the test
+		c.Log.Infof("starting test for permutation_id=%d", permutation.Id)
+		_, err = c.p.Tester.StartTest(context.TODO(), &proto.StartTestRequest{
+			Uuid:    test.uuid,
+			Results: results,
 		})
-	}
+		if err != nil {
+			c.releaseCoresById(testCoreIds)
+			return fmt.Errorf("could not start test: %s", err)
+		}
 
-	// Start the test
-	c.Log.Infof("starting test for permutation_id=%d", permutation.Id)
-	_, err = c.p.Tester.StartTest(context.TODO(), &proto.StartTestRequest{
-		Uuid:    test.uuid,
-		Results: results,
-	})
-	if err != nil {
-		c.releaseCoresById(testCoreIds)
-		return fmt.Errorf("could not start test: %s", err)
-	}
+		// Wait for the test to complete
+		numRetries := 0
+		c.Log.Infof("waiting for test for permutation_id=%d to complete...", permutation.Id)
+	teststatus:
+		for {
+			statusTestResp, err := c.p.Tester.GetTestStatus(context.TODO(), &proto.GetTestStatusRequest{
+				Uuid: test.uuid,
+			})
+			// Retry 5 times waiting a second each, fail if no response
+			if err != nil {
+				numRetries++
+				if numRetries >= 5 {
+					c.releaseCoresById(testCoreIds)
+					return fmt.Errorf("could not get test status: %s", err)
+				}
+				time.Sleep(time.Second)
+				continue
+			}
 
-	// Wait for the test to complete
-	numRetries := 0
-	c.Log.Infof("waiting for test for permutation_id=%d to complete...", permutation.Id)
-teststatus:
-	for {
-		statusTestResp, err := c.p.Tester.GetTestStatus(context.TODO(), &proto.GetTestStatusRequest{
+			switch statusTestResp.Status {
+			case proto.TestStatus_TEST_SUCCESS,
+				proto.TestStatus_TEST_KILLED,
+				proto.TestStatus_TEST_KERNEL_FAILED,
+				proto.TestStatus_TEST_BENCHTOOL_FAILED:
+
+				if statusTestResp.Status == proto.TestStatus_TEST_KILLED {
+					c.p.DB.Repos().Permutations().SetStatusTestKilledByPermutationId(int64(permutation.Id))
+				}
+
+				if statusTestResp.Status == proto.TestStatus_TEST_KERNEL_FAILED {
+					c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				}
+
+				if statusTestResp.Status == proto.TestStatus_TEST_BENCHTOOL_FAILED {
+					c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				}
+
+				if statusTestResp.Status == proto.TestStatus_TEST_SUCCESS {
+					c.p.DB.Repos().Permutations().SetStatusSuccessByPermutationId(int64(permutation.Id))
+				}
+
+				_, err = time.ParseDuration(statusTestResp.Runtime)
+				if err != nil {
+					c.releaseCoresById(testCoreIds)
+					return fmt.Errorf("could not convert test runtime into duration: %s", err)
+				}
+
+				break teststatus
+			}
+
+			time.Sleep(c.p.Cfg.GraceTime)
+		}
+
+		c.Log.Infof("test for permutation_id=%d to complete!", permutation.Id)
+
+		// Destroy the test
+		c.Log.Infof("destroying test permutation_id=%d", permutation.Id)
+		_, err = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
 			Uuid: test.uuid,
 		})
-		// Retry 5 times waiting a second each, fail if no response
 		if err != nil {
-			numRetries++
-			if numRetries >= 5 {
-				c.releaseCoresById(testCoreIds)
-				return fmt.Errorf("could not get test status: %s", err)
-			}
-			time.Sleep(time.Second)
-			continue
+			c.releaseCoresById(testCoreIds)
+			return fmt.Errorf("could not destroy test: %s", err)
 		}
 
-		switch statusTestResp.Status {
-		case proto.TestStatus_TEST_SUCCESS,
-			proto.TestStatus_TEST_KILLED,
-			proto.TestStatus_TEST_KERNEL_FAILED,
-			proto.TestStatus_TEST_BENCHTOOL_FAILED:
+		err = c.releaseCoresById(testCoreIds)
+		if err != nil {
+			return fmt.Errorf("could not release cores: %s", err)
+		}
 
-			if statusTestResp.Status == proto.TestStatus_TEST_KILLED {
-				c.p.DB.Repos().Permutations().SetStatusTestKilledByPermutationId(int64(permutation.Id))
-			}
-
-			if statusTestResp.Status == proto.TestStatus_TEST_KERNEL_FAILED {
-				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
-			}
-
-			if statusTestResp.Status == proto.TestStatus_TEST_BENCHTOOL_FAILED {
-				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
-			}
-
-			if statusTestResp.Status == proto.TestStatus_TEST_SUCCESS {
-				c.p.DB.Repos().Permutations().SetStatusSuccessByPermutationId(int64(permutation.Id))
-			}
-
-			_, err = time.ParseDuration(statusTestResp.Runtime)
+		// Delete all created entries related to the task
+		if task.DryRun {
+			err = c.p.DB.Repos().Results().DeleteResultByTestUuid(test.uuid, true)
 			if err != nil {
-				c.releaseCoresById(testCoreIds)
-				return fmt.Errorf("could not convert test runtime into duration: %s", err)
+				return fmt.Errorf("could not delete test: %s", err)
 			}
-
-			break teststatus
-		}
-
-		time.Sleep(c.p.Cfg.GraceTime)
-	}
-
-	c.Log.Infof("test for permutation_id=%d to complete!", permutation.Id)
-
-	// Destroy the test
-	c.Log.Infof("destroying test permutation_id=%d", permutation.Id)
-	_, err = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
-		Uuid: test.uuid,
-	})
-	if err != nil {
-		c.releaseCoresById(testCoreIds)
-		return fmt.Errorf("could not destroy test: %s", err)
-	}
-
-	err = c.releaseCoresById(testCoreIds)
-	if err != nil {
-		return fmt.Errorf("could not release cores: %s", err)
-	}
-
-	// Delete all created entries related to the task
-	if task.DryRun {
-		err = c.p.DB.Repos().Results().DeleteResultByTestUuid(test.uuid, true)
-		if err != nil {
-			return fmt.Errorf("could not delete test: %s", err)
-		}
-		err = c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid, true)
-		if err != nil {
-			return fmt.Errorf("could not delete test: %s", err)
-		}
-		if build.uuid != "" {
-			err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
+			err = c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid, true)
 			if err != nil {
-				return fmt.Errorf("could not delete build: %s", err)
+				return fmt.Errorf("could not delete test: %s", err)
+			}
+			if build.uuid != "" {
+				err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
+				if err != nil {
+					return fmt.Errorf("could not delete build: %s", err)
+				}
 			}
 		}
 	}
