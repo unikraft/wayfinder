@@ -33,6 +33,7 @@ package repositories
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 
 	"github.com/unikraft/wayfinder/api/proto"
@@ -67,6 +68,22 @@ func (r *ResultsRepository) DeleteResultByTestUuid(uuid string, purge bool) erro
 	}
 
 	if err := deleteType.Delete(&models.Result{}, "test_id = ?", test.Id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *ResultsRepository) DeleteResultsByPermutationId(permutationId int64, purge bool) error {
+	var deleteType *gorm.DB
+
+	if purge {
+		deleteType = r.db.Unscoped()
+	} else {
+		deleteType = r.db
+	}
+
+	if err := deleteType.Delete(&models.Result{}, "permutation_id = ?", permutationId).Error; err != nil {
 		return err
 	}
 

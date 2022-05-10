@@ -133,6 +133,22 @@ func (r *PermutationsRepository) DeleteFromJobSpec(job *spec.JobSpec) error {
 	return nil
 }
 
+func (r *PermutationsRepository) DeleteById(permutationId int64, purge bool) error {
+	var deleteType *gorm.DB
+
+	if purge {
+		deleteType = r.db.Unscoped()
+	} else {
+		deleteType = r.db
+	}
+
+	if err := deleteType.Delete(&models.Permutation{}, "id = ?", permutationId).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // UpdatePermutation updates only the Data field using Key as selector.
 func (s *PermutationsRepository) UpdatePermutation(permutation *models.Permutation) (*models.Permutation, error) {
 	if err := s.db.Model(permutation).Where("id = ?", permutation.Id).Updates(permutation).Error; err != nil {
