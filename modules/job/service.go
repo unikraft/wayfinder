@@ -415,6 +415,38 @@ func (s *service) DeleteJob(ctx context.Context, req *proto.DeleteJobRequest) (*
 		}, status.Errorf(codes.Internal, "could not delete job with id=%d: %s", req.Id, err)
 	}
 
+	if req.Cascade {
+		for _, permutation := range job.Permutations {
+			// Delete results
+			if err := s.p.DB.Repos().Results().DeleteResultsByPermutationId(int64(permutation.Id), req.Purge); err != nil {
+				return &proto.DeleteJobResponse{
+					Success: false,
+				}, status.Errorf(codes.Internal, "could not delete results for permutation with id=%d: %s", err)
+			}
+
+			// Delete Builds
+			if err := s.p.DB.Repos().Builds().DeleteBuildsByPermutationId(int64(permutation.Id), req.Purge); err != nil {
+				return &proto.DeleteJobResponse{
+					Success: false,
+				}, status.Errorf(codes.Internal, "could not delete builds for permutation with id=%d: %s", err)
+			}
+
+			// Delete Tests
+			if err := s.p.DB.Repos().Tests().DeleteTestsByPermutationId(int64(permutation.Id), req.Purge); err != nil {
+				return &proto.DeleteJobResponse{
+					Success: false,
+				}, status.Errorf(codes.Internal, "could not delete tests for permutation with id=%d: %s", err)
+			}
+
+			// Delete Permutations
+			if err := s.p.DB.Repos().Permutations().DeleteById(int64(permutation.Id), req.Purge); err != nil {
+				return &proto.DeleteJobResponse{
+					Success: false,
+				}, status.Errorf(codes.Internal, "could not delete permutation with id=%d: %s", err)
+			}
+		}
+	}
+
 	return &proto.DeleteJobResponse{
 		Success: true,
 	}, nil
