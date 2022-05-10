@@ -66,7 +66,7 @@ func init() {
 		"purge",
 		"p",
 		false,
-		"Permanently delete entries, instead of marking them as deleted.",
+		"Permanently delete entries, instead of marking them as deleted. (WIP)",
 	)
 
 	deleteCmd.PersistentFlags().BoolVarP(
