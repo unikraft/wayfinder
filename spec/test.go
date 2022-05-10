@@ -55,6 +55,7 @@ type TestResultSpec struct {
 }
 
 type TestSpec struct {
+	Name      string            `yaml:"name"`
 	Kernel    TestKernelSpec    `yaml:"kernel"`
 	BenchTool TestBenchToolSpec `yaml:"benchtool"`
 	Results   []TestResultSpec  `yaml:"results"`

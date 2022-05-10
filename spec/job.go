@@ -49,9 +49,9 @@ import (
 
 type JobSpec struct {
 	// Parsable in the configuration file
-	Params     []ParamSpec `json:"params"  yaml:"params"`
-	Build      BuildSpec   `json:"build"   yaml:"build"`
-	Test       TestSpec    `json:"test"    yaml:"test"`
+	Params     []ParamSpec `json:"params" yaml:"params"`
+	Build      BuildSpec   `json:"build"  yaml:"build"`
+	Test       []TestSpec  `json:"test"   yaml:"test"`
 	tree       *tree.Tree
 	validPerms int
 
