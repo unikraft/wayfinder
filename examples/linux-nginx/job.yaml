@@ -730,15 +730,15 @@ params:
     when:    test
 
   - name:    SHMALL
-    type:    int
-    default: 18446744073692774399
-    only:    [18446744073692774399]
+    type:    string
+    default: "18446744073692774399"
+    only:    ["18446744073692774399"]
     when:    test
 
   - name:    SHMMAX
-    type:    int
-    default: 18446744073692774399
-    only:    [18446744073692774399]
+    type:    string
+    default: "18446744073692774399"
+    only:    ["18446744073692774399"]
     when:    test
 
   - name:    SHMMNI
