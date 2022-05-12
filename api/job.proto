@@ -112,6 +112,12 @@ service JobService {
       get: "/api/list-permutations",
     };
   }
+
+  rpc RedirectDebug (RedirectDebugRequest) returns (RedirectDebugResponse)  {
+    option (google.api.http) = {
+      get: "/api/redirect-debug",
+    };
+  }
 }
 
 enum JobScheduler {
@@ -161,6 +167,16 @@ enum RedisQueueType {
   REDIS_QUEUE_TYPE_JOB = 0;
   REDIS_QUEUE_TYPE_PERMUTATION = 1;
   REDIS_QUEUE_TYPE_ALL = 2;
+}
+
+enum DebugLevel {
+  DEBUG_LEVEL_NONE    = 0;
+	DEBUG_LEVEL_SUCCESS = 1;
+	DEBUG_LEVEL_DEBUG   = 2;
+	DEBUG_LEVEL_INFO    = 3;
+	DEBUG_LEVEL_WARNING = 4; 
+	DEBUG_LEVEL_ERROR   = 5;
+	DEBUG_LEVEL_FATAL   = 6;
 }
 
 message Job {
@@ -341,4 +357,16 @@ message CheckJobExistsRequest {
 message CheckJobExistsResponse {
   bool success = 1 [json_name = "success"];
   bool exists  = 2 [json_name = "exists"];    
+}
+
+message RedirectDebugRequest {
+  DebugLevel debugLevel    = 1;
+  string     jobId         = 2;
+  string     permutationId = 3;
+  int64      lastNrOfLines = 4;
+}
+
+message RedirectDebugResponse {
+  bool success  = 1 [json_name = "success"];
+  string output = 2 [json_name = "output"];
 }
