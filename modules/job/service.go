@@ -39,12 +39,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gopkg.in/yaml.v2"
 
+	"github.com/acarl005/stripansi"
 	"github.com/unikraft/wayfinder/api/proto"
 	"github.com/unikraft/wayfinder/internal/gzip"
 	"github.com/unikraft/wayfinder/internal/models"
@@ -612,5 +615,103 @@ func (s *service) ListPermutations(ctx context.Context, req *proto.ListPermutati
 		Success:      true,
 		Total:        int64(len(permutations)),
 		Permutations: s.listPermutations(permutations),
+	}, nil
+}
+
+func (s *service) RedirectDebug(ctx context.Context, req *proto.RedirectDebugRequest) (*proto.RedirectDebugResponse, error) {
+	s.p.Log.Infof("requested to redirect debug...")
+	output := ""
+
+	// Skip if incorrect request
+	if req.LastNrOfLines <= 0 && req.LastNrOfLines > 100000 {
+		return nil, status.Errorf(codes.InvalidArgument, "lastNrOfLines must be >= 0 and <= 100000")
+	}
+
+	// Retrieve last X lines from log file
+	// TODO make this configurable
+	fName := "/var/lib/wayfinder/logs/wayfinder.log"
+	// TODO Don't hardcode the size of the lines (but the correct solution si too complex for this)
+	lastBytes := req.LastNrOfLines * 100
+
+	// Open log file
+	logFile, err := os.OpenFile(fName, os.O_RDONLY, 0666)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not open log file: %s", err)
+	}
+	defer logFile.Close()
+
+	// Seek to almost the end of the log
+	stat, err := os.Stat(fName)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not stat log file: %s", err)
+	}
+	fileSize := stat.Size()
+	start := fileSize - lastBytes
+	if start < 0 {
+		start = 0
+		lastBytes = fileSize
+	}
+
+	// Read last lastBytes bytes
+	buf := make([]byte, lastBytes)
+	_, err = logFile.ReadAt(buf, start)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not read log file: %s", err)
+	}
+
+	// Filter output content based on log level/jobId/permutationId
+	// Skip first incomplete line
+	firstToSkip := strings.Index(string(buf), "\n[")
+	if firstToSkip == -1 {
+		firstToSkip = 0
+	}
+
+	// The list of possible prefixes
+	logLinePrefixes := make([]string, 7)
+	logLinePrefixes[0] = ""
+	logLinePrefixes[1] = "[:)]"
+	logLinePrefixes[2] = "[DEBU]"
+	logLinePrefixes[3] = "[INFO]"
+	logLinePrefixes[4] = "WARN"
+	logLinePrefixes[5] = "[ERRO]"
+	logLinePrefixes[6] = "[FATA]"
+
+	req.JobId = fmt.Sprintf("[%s]", req.JobId)
+	req.PermutationId = fmt.Sprintf("[%s]", req.PermutationId)
+	lines := strings.SplitAfterN(string(buf), "\n", firstToSkip)
+	for i, line := range lines {
+		// Strip
+		line = stripansi.Strip(line)
+		lines[i] = line
+		// Check if the line contains the jobId
+		if req.JobId != "[]" && !strings.Contains(line, req.JobId) {
+			lines[i] = ""
+			continue
+		}
+		// Check if the line contains the permutationId
+		if req.PermutationId != "[]" && !strings.Contains(line, req.PermutationId) {
+			lines[i] = ""
+			continue
+		}
+		// Check if the line contains any prefix (including the ones more restrictive)
+		shouldRemoveLine := true
+		for i := req.DebugLevel; i <= proto.DebugLevel_DEBUG_LEVEL_FATAL; i++ {
+			if strings.Contains(line, logLinePrefixes[i]) {
+				shouldRemoveLine = false
+				break
+			}
+		}
+
+		if shouldRemoveLine {
+			lines[i] = ""
+		}
+	}
+
+	// Return the output content
+	output = strings.Join(lines, "")
+
+	return &proto.RedirectDebugResponse{
+		Success: true,
+		Output:  output,
 	}, nil
 }
