@@ -34,6 +34,7 @@ package logs
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/muesli/termenv"
@@ -62,12 +63,26 @@ type Logger struct {
 
 var (
 	globalLogger *Logger
+	logFile      *os.File
 )
 
 func init() {
 	globalLogger = &Logger{
 		logLevel: INFO,
 	}
+
+	// TODO - make this configurable - Who owns the logs?
+	err := os.MkdirAll("/var/lib/wayfinder/logs", os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := os.OpenFile("/var/lib/wayfinder/logs/wayfinder.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+
+	logFile = f
 }
 
 func New() Logger {
@@ -114,8 +129,10 @@ func (l Logger) log(level LogLevel, format string, messages ...interface{}) {
 
 	if len(l.Prefix) > 0 {
 		fmt.Printf("[%s][%s] %s\n", out, l.Prefix, fmt.Sprintf(format, messages...))
+		fmt.Fprintf(logFile, "[%s][%s] %s\n", out, l.Prefix, fmt.Sprintf(format, messages...))
 	} else {
 		fmt.Printf("[%s] %s\n", out, fmt.Sprintf(format, messages...))
+		fmt.Fprintf(logFile, "[%s] %s\n", out, fmt.Sprintf(format, messages...))
 	}
 }
 
