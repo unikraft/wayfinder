@@ -48,8 +48,9 @@ import (
 )
 
 type config struct {
-	PrefetchLimit int64         `file:"prefetch_limit" env:"JOB_PREFETCH_LIMIT" default:"1000"`
-	PollDuration  time.Duration `file:"poll_duration"  env:"JOB_POLL_DURATION"  default:"100ms"`
+	PrefetchLimit  int64         `file:"prefetch_limit" env:"JOB_PREFETCH_LIMIT" default:"1000"`
+	PollDuration   time.Duration `file:"poll_duration"  env:"JOB_POLL_DURATION"  default:"100ms"`
+	GeneralLogPath string        `file:"general_log_path" env:"JOB_GENERAL_LOG_PATH" default:"/var/lib/wayfinder/logs/wayfinder.log"`
 }
 
 type provider struct {

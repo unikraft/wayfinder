@@ -628,9 +628,8 @@ func (s *service) RedirectDebug(ctx context.Context, req *proto.RedirectDebugReq
 	}
 
 	// Retrieve last X lines from log file
-	// TODO make this configurable
-	fName := "/var/lib/wayfinder/logs/wayfinder.log"
-	// TODO Don't hardcode the size of the lines (but the correct solution si too complex for this)
+	fName := s.p.Cfg.GeneralLogPath
+	// Read an approximate number of lines from the end of the file
 	lastBytes := req.LastNrOfLines * 100
 
 	// Open log file
@@ -679,6 +678,7 @@ func (s *service) RedirectDebug(ctx context.Context, req *proto.RedirectDebugReq
 	req.JobId = fmt.Sprintf("[%s]", req.JobId)
 	req.PermutationId = fmt.Sprintf("[%s]", req.PermutationId)
 	lines := strings.SplitAfterN(string(buf), "\n", firstToSkip)
+	nrLinesOmitted := 0
 	for i, line := range lines {
 		// Strip
 		line = stripansi.Strip(line)
@@ -686,11 +686,13 @@ func (s *service) RedirectDebug(ctx context.Context, req *proto.RedirectDebugReq
 		// Check if the line contains the jobId
 		if req.JobId != "[]" && !strings.Contains(line, req.JobId) {
 			lines[i] = ""
+			nrLinesOmitted++
 			continue
 		}
 		// Check if the line contains the permutationId
 		if req.PermutationId != "[]" && !strings.Contains(line, req.PermutationId) {
 			lines[i] = ""
+			nrLinesOmitted++
 			continue
 		}
 		// Check if the line contains any prefix (including the ones more restrictive)
@@ -704,6 +706,21 @@ func (s *service) RedirectDebug(ctx context.Context, req *proto.RedirectDebugReq
 
 		if shouldRemoveLine {
 			lines[i] = ""
+			nrLinesOmitted++
+		}
+	}
+
+	// If there are more lines than asked, remove from the first ones
+	if int64(len(lines)-nrLinesOmitted) >= req.LastNrOfLines {
+		linesToRemove := int64(len(lines)-nrLinesOmitted) - req.LastNrOfLines - 1
+		for i, line := range lines {
+			if line != "" {
+				lines[i] = ""
+				linesToRemove--
+				if linesToRemove == 0 {
+					break
+				}
+			}
 		}
 	}
 
