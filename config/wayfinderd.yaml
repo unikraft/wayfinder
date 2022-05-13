@@ -179,6 +179,9 @@ job:
   # The amount of time to timeout from the Redis queue
   poll_duration: ${JOB_POLL_DURATION:100ms}
 
+  # General logging output file path
+  general_log_path: ${JOB_GENERAL_LOG_PATH:/var/lib/wayfinder/logs/wayfinder.log}
+
 # Scheduler Service
 # =================
 #
