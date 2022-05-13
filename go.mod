@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
+	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
 	github.com/adjust/rmq/v4 v4.0.1
 	github.com/erda-project/erda-infra v0.0.0-20211025111229-a1e623f59b33
 	github.com/evolbioinfo/gotree v0.4.2
