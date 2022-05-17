@@ -111,7 +111,7 @@ func (s *service) CreateJob(ctx context.Context, req *proto.CreateJobRequest) (*
 	job, err := s.p.DB.Repos().Jobs().CreateJob(&models.Job{
 		Name:              name,
 		Config:            data,
-		TotalPermutations: totalPermutations,
+		TotalPermutations: totalPermutations.String(),
 		Checksum:          req.Checksum,
 	})
 	if err != nil {
@@ -140,7 +140,7 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
 
 	// Format permutation
 	newPermutationInJob.Id = uint(req.Id)
-	newPermutationInJob.PermutationLimit = 1
+	newPermutationInJob.PermutationLimit = "1"
 
 	// Calculate checksum for given permutation
 	if len(newPermutationInJob.CurrentPerm.Checksum) == 0 {
@@ -222,10 +222,10 @@ func (s *service) StartJob(ctx context.Context, req *proto.StartJobRequest) (*pr
 	parsed.SeqScheduler = req.SeqScheduler
 
 	// Set the permutation limit to the maximum if set to 0
-	if req.PermutationLimit == 0 {
-		parsed.PermutationLimit = uint64(job.TotalPermutations)
+	if req.PermutationLimit == "0" {
+		parsed.PermutationLimit = job.TotalPermutations
 	} else {
-		parsed.PermutationLimit = uint64(req.PermutationLimit)
+		parsed.PermutationLimit = fmt.Sprint(req.PermutationLimit)
 	}
 
 	specBytes, err := json.Marshal(parsed)

@@ -36,6 +36,7 @@ import (
 	"compress/zlib"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/adjust/rmq/v4"
@@ -105,8 +106,9 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 
 	c.Log.Info("calculating all permutation values...")
 
+	limit, _ := strconv.ParseUint(jobSpec.PermutationLimit, 10, 64)
 	permutations, errors, done, remaining, canPublish, err := jobSpec.Permutations(
-		uint(jobSpec.Scheduler), jobSpec.PermutationLimit, maxPerm)
+		uint(jobSpec.Scheduler), limit, maxPerm)
 	if err != nil {
 		return fmt.Errorf("could not calculate permutations: %s", err)
 	}
@@ -127,8 +129,8 @@ func (c *JobConsumer) StartJob(jobSpec *spec.JobSpec) error {
 
 		// All permutations calculated
 		case generatedTree := <-done:
-			if totalPermutations < jobSpec.PermutationLimit {
-				remaining <- jobSpec.PermutationLimit - totalPermutations
+			if totalPermutations < limit {
+				remaining <- limit - totalPermutations
 				continue
 			}
 			c.Log.Infof("calculated number of permutations: %d", totalPermutations)

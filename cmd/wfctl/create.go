@@ -175,7 +175,7 @@ func doCreateCmd(cmd *cobra.Command, args []string) {
 			SeqScheduler:     false,
 			IsolLevel:        0,
 			IsolSplit:        0,
-			PermutationLimit: 0,
+			PermutationLimit: "0",
 			Repeats:          0,
 			DryRun:           false,
 		})

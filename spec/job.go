@@ -37,6 +37,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
+	"math/big"
 	"math/rand"
 	"strings"
 
@@ -61,7 +62,7 @@ type JobSpec struct {
 	SeqScheduler     bool               `json:"seq_scheduler"`
 	IsolLevel        proto.JobIsolLevel `json:"isol_level"`
 	IsolSplit        proto.JobIsolSplit `json:"isol_split"`
-	PermutationLimit uint64             `json:"permutation_limit"`
+	PermutationLimit string             `json:"permutation_limit"`
 	Repeats          uint64             `json:"repeats"`
 	CurrentPerm      JobPermutation     `json:"current"`
 	DryRun           bool               `json:"dry_run"`
@@ -400,7 +401,8 @@ func (j *JobSpec) random(
 // Permutations returns a list of all possible tasks based on parameterisation
 func (j *JobSpec) Permutations(
 	schedulerType uint,
-	limit, maxPerm uint64,
+	limit uint64,
+	maxPerm big.Int,
 ) (
 	permutationsChan chan *JobPermutation,
 	errChan chan error,
@@ -418,7 +420,7 @@ func (j *JobSpec) Permutations(
 	var allNr uint64
 
 	// Reject generation if random and the job wants more than 0.75 of permutations generated
-	if schedulerType == Random && limit > 0 && maxPerm > 0 && (float64(limit)/float64(maxPerm) > 0.75) {
+	if schedulerType == Random && limit > 0 && maxPerm.Cmp(big.NewInt(0)) == 1 && maxPerm.Div(&maxPerm, big.NewInt(4)).Mul(&maxPerm, big.NewInt(3)).Cmp(big.NewInt(int64(limit))) != 1 {
 		return nil, nil, nil, nil, nil, fmt.Errorf("too many permutations requested")
 	}
 
@@ -451,23 +453,22 @@ func (j *JobSpec) Permutations(
 }
 
 // TotalPermutations calculates the total number of permutations for the job
-func (j *JobSpec) TotalPermutations() (uint64, error) {
+func (j *JobSpec) TotalPermutations() (big.Int, error) {
 
 	if len(j.Params) == 0 {
-		return 0, fmt.Errorf("no parameters")
+		return *big.NewInt(0), fmt.Errorf("no parameters")
 	}
 
-	var total uint64 = 1
+	var total big.Int = *big.NewInt(1)
 
 	for _, param := range j.Params {
 		params, err := paramPermutations(&param)
 		if err != nil {
-			return 0, fmt.Errorf("could not parse parameter: %s", err)
+			return *big.NewInt(0), fmt.Errorf("could not parse parameter: %s", err)
 		}
 
-		total *= uint64(len(params))
+		total.Mul(&total, big.NewInt(int64(len(params))))
 	}
-
 	return total, nil
 }
 

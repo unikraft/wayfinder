@@ -226,7 +226,7 @@ func doStartCmd(cmd *cobra.Command, args []string) {
 		SeqScheduler:     jobCfg.SeqScheduler,
 		IsolLevel:        jobCfg.IsolLevel,
 		IsolSplit:        jobCfg.IsolSplit,
-		PermutationLimit: int64(jobCfg.PermutationLimit),
+		PermutationLimit: fmt.Sprint(jobCfg.PermutationLimit),
 		Repeats:          uint64(jobCfg.Repeats),
 		DryRun:           jobCfg.DryRun,
 	})
