@@ -2622,7 +2622,6 @@ test:
         root=/dev/vda
         rw
         console=ttyS0
-        init=/guest_start.sh
         acpi=${ACPI}
         acpi_apic_instance=${ACPI_APIC_INSTANCE}
         acpi_irq_balance=${ACPI_IRQ_BALANCE}
@@ -2666,6 +2665,7 @@ test:
         vdso=${VDSO}
         vsyscall=${VSYSCALL}
         workqueue.power_efficient=${WORKQUEUE_POWER_EFFICIENT}
+        init=/guest_start.sh
         -- $WAYFINDER_DOMAIN_IP_ADDR $WAYFINDER_DOMAIN_IP_GW_ADDR
       cores: 1
     benchtool:
