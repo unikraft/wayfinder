@@ -232,7 +232,23 @@ func (c *TaskConsumer) replaceArgs(test *spec.TestSpec, params []spec.ParamPermu
 	argsString := test.Kernel.Args
 
 	for _, param := range params {
-		argsString = strings.Replace(argsString, "${"+param.Name+"}", param.Value, -1)
+		if param.Value != "" {
+			argsString = strings.Replace(argsString, "${"+param.Name+"}", param.Value, -1)
+		} else {
+			// Remove everything between the two newlines
+			idx := strings.Index(argsString, "${"+param.Name+"}")
+			argsString = strings.Replace(argsString, "${"+param.Name+"}", param.Value, -1)
+			if idx != -1 {
+				array := []byte(argsString)
+				// Remove everything on the left side of idx
+
+				for ; idx > 0 && array[idx-1] != ' '; idx-- {
+					array[idx] = ' '
+				}
+				array[idx] = ' '
+				argsString = string(array)
+			}
+		}
 	}
 
 	test.Kernel.Args = argsString
