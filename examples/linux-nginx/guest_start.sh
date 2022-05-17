@@ -1322,9 +1322,9 @@ if [ -n "$TX_QUEUE_LEN" ]; then
         echo $TX_QUEUE_LEN > /sys/class/net/eth0/tx_queue_len;
 fi
 
-echo "Wait 5 seconds for all values to be applied";
+echo "Wait 1 second for all values to be applied";
 
-sleep 5;
+sleep 1;
 
 echo "Starting nginx";
 
