@@ -13,7 +13,7 @@ FS="${2:-ext2}"
 MOUNTDIR=${MOUNTDIR:-$(mktemp -d)}
 
 # Generate the filesystem
-dd if=/dev/zero of=${APP}.${FS} bs=1 count=0 seek=20G
+dd if=/dev/zero of=${APP}.${FS} bs=1 count=0 seek=256M
 yes | mkfs."${FS}" "${APP}.${FS}"
 mount "${APP}.${FS}" ${MOUNTDIR}
 tar -xvf ${1} -C ${MOUNTDIR}
