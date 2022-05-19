@@ -81,23 +81,24 @@ params:
   #   only:    ["y", "n"]
   #   when:    build
 
-  - name:    CONFIG_NUMA
-    type:    string
-    default: "y"
-    only:    ["y", "n"]
-    when:    build
+  # # NUMA options are disabled because of dependency problems
+  # - name:    CONFIG_NUMA
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
 
-  - name:    CONFIG_NUMA_BALANCING
-    type:    string
-    default: "y"
-    only:    ["y", "n"]
-    when:    build
+  # - name:    CONFIG_NUMA_BALANCING
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
 
-  - name:    CONFIG_NUMA_BALANCING_DEFAULT_ENABLED
-    type:    string
-    default: "y"
-    only:    ["y", "n"]
-    when:    build
+  # - name:    CONFIG_NUMA_BALANCING_DEFAULT_ENABLED
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
 
   - name:    CONFIG_SCHED_AUTOGROUP
     type:    string
@@ -219,11 +220,11 @@ params:
     only:    ["y", "n"]
     when:    build
 
-  - name:    CONFIG_PM_AUTOSLEEP
-    type:    string
-    default: "y"
-    only:    ["y"]
-    when:    build
+  # - name:    CONFIG_PM_AUTOSLEEP
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y"] # Gives redefinition errors
+  #   when:    build
 
   - name:    CONFIG_DEBUG_TLBFLUSH
     type:    string
@@ -2618,30 +2619,30 @@ build:
     if [ -n "${CONFIG_HIGH_RES_TIMERS}" ]; then
       kconfig-set.sh ${MICROVM_CFG} CONFIG_HIGH_RES_TIMERS ${CONFIG_HIGH_RES_TIMERS}
     fi
-    # if [ -n "${CONFIG_TASKS_RCU}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_TASKS_RCU ${CONFIG_TASKS_RCU}
-    # fi
-    # if [ -n "${CONFIG_RCU_USER_QS}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_USER_QS ${CONFIG_RCU_USER_QS}
-    # fi
-    # if [ -n "${CONFIG_RCU_FANOUT}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FANOUT ${CONFIG_RCU_FANOUT}
-    # fi
-    # if [ -n "${CONFIG_RCU_FANOUT_LEAF}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FANOUT_LEAF ${CONFIG_RCU_FANOUT_LEAF}
-    # fi
-    # if [ -n "${CONFIG_RCU_FANOUT_EXACT}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FANOUT_EXACT ${CONFIG_RCU_FANOUT_EXACT}
-    # fi
-    # if [ -n "${CONFIG_RCU_FAST_NO_HZ}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FAST_NO_HZ ${CONFIG_RCU_FAST_NO_HZ}
-    # fi
-    # if [ -n "${CONFIG_RCU_KTHREAD_PRIO}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_KTHREAD_PRIO ${CONFIG_RCU_KTHREAD_PRIO}
-    # fi
-    # if [ -n "${CONFIG_RCU_NOCB_CPU}" ]; then
-    #   kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_NOCB_CPU ${CONFIG_RCU_NOCB_CPU}
-    # fi
+    if [ -n "${CONFIG_TASKS_RCU}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_TASKS_RCU ${CONFIG_TASKS_RCU}
+    fi
+    if [ -n "${CONFIG_RCU_USER_QS}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_USER_QS ${CONFIG_RCU_USER_QS}
+    fi
+    if [ -n "${CONFIG_RCU_FANOUT}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FANOUT ${CONFIG_RCU_FANOUT}
+    fi
+    if [ -n "${CONFIG_RCU_FANOUT_LEAF}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FANOUT_LEAF ${CONFIG_RCU_FANOUT_LEAF}
+    fi
+    if [ -n "${CONFIG_RCU_FANOUT_EXACT}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FANOUT_EXACT ${CONFIG_RCU_FANOUT_EXACT}
+    fi
+    if [ -n "${CONFIG_RCU_FAST_NO_HZ}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_FAST_NO_HZ ${CONFIG_RCU_FAST_NO_HZ}
+    fi
+    if [ -n "${CONFIG_RCU_KTHREAD_PRIO}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_KTHREAD_PRIO ${CONFIG_RCU_KTHREAD_PRIO}
+    fi
+    if [ -n "${CONFIG_RCU_NOCB_CPU}" ]; then
+      kconfig-set.sh ${MICROVM_CFG} CONFIG_RCU_NOCB_CPU ${CONFIG_RCU_NOCB_CPU}
+    fi
     if [ -n "${CONFIG_NUMA_BALANCING}" ]; then
       kconfig-set.sh ${MICROVM_CFG} CONFIG_NUMA_BALANCING ${CONFIG_NUMA_BALANCING}
     fi
