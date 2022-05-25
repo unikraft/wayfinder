@@ -2303,266 +2303,222 @@ params:
   # Boot-time parameters
   - name: ACPI
     type: string
-    default: ""
-    only: ["", "on", "off", "noirq", "strict", "rsdt", "copy_dsdt"]
+    only: ["on", "off", "noirq", "strict", "rsdt", "copy_dsdt"]
     when: test
 
   - name: ACPI_APIC_INSTANCE
     type: string
-    default: ""
-    only: ["", "0", "1", "2"]
+    only: ["0", "1", "2"]
     when: test
 
   - name: ACPI_IRQ_BALANCE
     type: string
-    default: ""
-    only: ["", "acpi_irq_balance", "acpi_irq_nobalance"]
+    only: ["acpi_irq_balance", "acpi_irq_nobalance"]
     when: test
 
   - name: ALIGN_VA_ADDR
     type: string
-    default: ""
-    only: ["", "on", "off"]
+    only: ["on", "off"]
     when: test
 
   - name: APIC_EXTNMI
     type: string
-    default: ""
-    only: ["", "bsp", "all", "none"]
+    only: ["bsp", "all", "none"]
     when: test
 
   - name: CLOCKSOURCE
     type: string
-    default: ""
-    only: ["", "hpet", "tsc"]
+    only: ["hpet", "tsc"]
     when: test
 
   - name: CPUIDLE_OFF
     type: string
-    default: ""
-    only: ["", "0", "1"]
+    only: ["0", "1"]
     when: test
 
   - name: NOMPX
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOPKU
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: HASHDIST
     type: string
-    default: ""
-    only: ["", "0", "1"]
+    only: ["0", "1"]
     when: test
 
   - name: IDLE
     type: string
-    default: ""
-    only: ["", "poll", "halt", "nomwait"]
+    only: ["poll", "halt", "nomwait"]
     when: test
 
   - name: IHASH_ENTRIES
     type: string
-    default: ""
-    only: ["", "131072", "262144", "524288", "1048576"]
+    only: ["131072", "262144", "524288", "1048576"]
     when: test
 
   - name: INTEL_IOMMU
     type: string
-    default: ""
-    only: ["", "on", "off"]
+    only: ["on", "off"]
     when: test
 
   - name: INTEL_IDLE_MAX_CSTATE
     type: string
-    default: ""
-    only: ["", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     when: test
 
   - name: INTEL_PSTATE
     type: string
-    default: ""
-    only: ["", "disable", "passive", "force", "no_hwp"]
+    only: ["disable", "passive", "force", "no_hwp"]
     when: test
 
   - name: IO_DELAY
     type: string
-    default: ""
-    only: ["", "0x80", "0xed", "udelay", "none"]
+    only: ["0x80", "0xed", "udelay", "none"]
     when: test
 
   - name: NOKASLR
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOSMAP
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOSMEP
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOXSAVEOPT
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOXSAVES
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOHZ
     type: string
-    default: ""
-    only: ["", "on", "off"]
+    only: ["on", "off"]
     when: test
 
   - name: NO_TIMER_CHECK
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NORANDMAPS
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NORDRAND
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOSMP
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NOWATCHDOG
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: NUMA_BALANCING
     type: string
-    default: ""
-    only: ["", "enabled", "disable"]
+    only: ["enabled", "disable"]
     when: test
 
   - name: PERCPU_ALLOC
     type: string
-    default: ""
-    only: ["", "embed", "page"]
+    only: ["embed", "page"]
     when: test
 
   - name: PROCESSOR_MAX_CSTATE
     type: string
-    default: ""
-    only: ["", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     when: test
 
   - name: PROCESSOR_NOCST
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: QUIET
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: SKEW_TICK
     type: string
-    default: ""
-    only: ["", "0", "1"]
+    only: ["0", "1"]
     when: test
 
   - name: SLAB_NOMERGE
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   - name: SLAB_MAX_ORDER
     type: string
-    default: ""
-    only: ["", "0", "1"]
+    only: ["0", "1"]
     when: test
 
   - name: SLUB_MAX_ORDER
     type: string
-    default: ""
-    only: ["", "0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
     when: test
 
   - name: SLUB_MIN_OBJECTS
     type: string
-    default: ""
-    only: ["", "0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
     when: test
 
   - name: SLUB_MIN_ORDER
     type: string
-    default: ""
-    only: ["", "0", "1", "2", "3", "4"]
+    only: ["0", "1", "2", "3", "4"]
     when: test
 
   - name: THASH_ENTRIES
     type: string
-    default: ""
-    only: ["", "32768", "2097152"]
+    only: ["32768", "2097152"]
     when: test
 
   - name: TSC
     type: string
-    default: ""
-    only: ["", "reliable", "noirqtime"]
+    only: ["reliable", "noirqtime"]
     when: test
 
   - name: UHASH_ENTRIES
     type: string
-    default: ""
-    only: ["", "2048", "8192", "32768", "131072"]
+    only: ["2048", "8192", "32768", "131072"]
     when: test
 
   - name: VDSO
     type: string
-    default: ""
-    only: ["", "0", "1"]
+    only: ["0", "1"]
     when: test
 
   - name: VSYSCALL
     type: string
-    default: ""
-    only: ["", "native", "emulate", "none"]
+    only: ["native", "emulate", "none"]
     when: test
 
   - name: WORKQUEUE_POWER_EFFICIENT
     type: string
-    default: ""
-    only: ["", "y", "n"]
+    only: ["y", "n"]
     when: test
 
   # NGINX-specific
