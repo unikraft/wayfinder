@@ -40,7 +40,7 @@ params:
     type:    string
     default: "n"
     only:    ["n"]
-    when:    test
+    when:    build
 
   - name:    KEEPALIVE_TIMEOUT
     description: |
@@ -48,7 +48,7 @@ params:
     type:    int
     default: 60
     only:    [0, 60]
-    when:    test
+    when:    build
 
   - name:    OPEN_FILE_CACHE
     description: |
@@ -56,7 +56,7 @@ params:
     type:    string
     default: "nocaching"
     only:    ["nocaching"]
-    when:    test
+    when:    build
 
   - name:    WORKER_RLIMIT_NOFILE
     description: |
@@ -64,7 +64,7 @@ params:
     type:    string
     only:    [63, 126] # Should be double than WORKER_CONNECTIONS
     default: 63
-    when:    test
+    when:    build
 
   - name:    SERVER_TOKENS
     description: |
@@ -72,7 +72,7 @@ params:
     type:    string
     only:    ["on", "off"]
     default: "off"
-    when:    test
+    when:    build
 
   - name:    SENDFILE
     description: |
@@ -81,7 +81,7 @@ params:
     type:    string
     only:    ["off"]
     default: "off"
-    when:    test
+    when:    build
 
   - name:    TCP_NOPUSH
     description: |
@@ -89,7 +89,7 @@ params:
     type:    string
     default: "off"
     only:    ["on", "off"]
-    when:    test
+    when:    build
 
   # Client-specific
   - name:    WORKER_CONNECTIONS
@@ -98,7 +98,7 @@ params:
     type:    int
     default: 63
     only:    [63]
-    when:    test
+    when:    build
 
   - name:    PAYLOAD_SIZE
     description: |
@@ -106,7 +106,7 @@ params:
     type:    int
     default: 612
     only:    [612] # bytes
-    when:    test
+    when:    build
   
   - name:    NUM_PARALLEL_CONNS
     description: |
