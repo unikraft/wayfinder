@@ -151,7 +151,7 @@ build:
     # Configure Image for Nginx
     kraft -v configure -F \
       -u unikraft@0.7.0 \
-      -u nginx@0.7.0 \
+      -u nginx@0.6 \
       -u newlib@0.7.0 \
       -u pthread-embedded@0.7.0 \
       -u lwip@0.7.0 \

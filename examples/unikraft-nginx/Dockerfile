@@ -1,6 +1,6 @@
 FROM unikraft/kraft:staging AS kraft
 
-ARG UK_KRAFT_GITHUB_TOKEN=
+ARG UK_KRAFT_GITHUB_TOKEN=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
 ENV UK_KRAFTRC=/usr/src/unikraft/.kraftrc
 ENV UK_CACHEDIR=/usr/src/unikraft/.kraftcache
 ENV UK_WORKDIR=/usr/src/unikraft 
@@ -37,7 +37,7 @@ RUN set -xe; \
     kraft list pull lib/tinyalloc@0.7.0; \
     kraft list pull lib/mimalloc@0.7.0; \
     kraft list pull lib/tlsf@0.7.0; \
-    kraft list pull lib/nginx@0.7.0; \
+    kraft list pull lib/nginx@0.6; \
     kraft list pull --no-deps app/nginx; \
     cd /usr/src/unikraft/apps/nginx; \
     kraft configure \
@@ -45,6 +45,6 @@ RUN set -xe; \
       -u pthread-embedded@0.7.0 \
       -u newlib@0.7.0 \
       -u lwip@0.7.0 \
-      -u nginx@0.7.0; \
+      -u nginx@0.6; \
     kraft build --no-progress --fast; \
     unset UK_KRAFT_GITHUB_TOKEN
