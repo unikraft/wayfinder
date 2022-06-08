@@ -9,7 +9,7 @@ _die() {
 
 WORKDIR=$(pwd)
 APP="${1%.*}"
-FS="${2:-ext2}"
+FS="${2:-ext3}"
 MOUNTDIR=${MOUNTDIR:-$(mktemp -d)}
 
 # Generate the filesystem
