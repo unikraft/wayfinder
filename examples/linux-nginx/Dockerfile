@@ -1,6 +1,6 @@
 FROM debian:jessie-slim AS nginx-filesystem
 
-ARG NGINX_VERSION=1.15.6-alpine
+ARG NGINX_VERSION=1.15.6
 
 RUN set -xe; \
     apt-get update; \
@@ -42,6 +42,9 @@ ENV MICROVM_CFG="${WORKDIR}/configs/microvm.config"
 ENV NGINX_CFG="${WORKDIR}/configs/apps/nginx.config"
 ENV NGINX_CONF="/root/resources/nginx.conf"
 
+COPY ./patches/0001-init-Increase-env-var-limit.patch /0001-init-Increase-env-var-limit.patch
+COPY ./patches/0001-arch-x86-Increase-cmdline-size.patch /0001-arch-x86-Increase-cmdline-size.patch
+
 RUN set -xe; \
     mkdir ${WORKDIR}; \
     cd ${WORKDIR}; \
@@ -73,7 +76,9 @@ RUN set -xe; \
     echo "CONFIG_VGA_ARB_MAX_GPUS=16" >> ${MICROVM_CFG}; \
     sed -i -e "s/docker run -it -v \"\$(PWD)\/linux\":\/linux-volume --rm linuxbuild:latest//" Makefile; \
     sed -i -e "s/linux-volume/root\/workspace\/linux/" Makefile; \
-    ./scripts/build-with-configs.sh nopatch ${MICROVM_CFG} ${NGINX_CFG}
+    sed -i -e 's/make patch-linux || true/echo "Keep everything as it is"/g' ${WORKDIR}/scripts/build-with-configs.sh; \
+    sed -i -e 's/CONFIGS=$@/CONFIGS=${@:2}/g' ${WORKDIR}/scripts/build-with-configs.sh; \
+    ./scripts/build-with-configs.sh patch ${MICROVM_CFG} ${NGINX_CFG}
 
 #
 # Local tooling and filesystem
