@@ -3180,7 +3180,7 @@ test:
         - CAP_NET_ADMIN
       commands: /test.sh index.html
       cores: 1
-      start_delay: 10
+      start_delay: 15
       duration: 30
     results:
       - name: throughput
