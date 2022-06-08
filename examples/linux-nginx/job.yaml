@@ -2524,10 +2524,66 @@ params:
     when: test
 
   # NGINX-specific
-  - name: PAYLOAD_SIZE
-    type: int
-    only: [612] # bytes
-    when: test
+  - name:    KEEPALIVE_TIMEOUT
+    description: |
+      The time to wait for a connection until dropping it.
+    type:    int
+    default: 60
+    only:    [0, 30, 60, 300]
+    when:    test
+
+  - name:    OPEN_FILE_CACHE
+    description: |
+      If enabled, nginx will cache the file content.
+    type:    string
+    default: "nocaching"
+    only:    ["nocaching", "caching"]
+    when:    test
+
+  - name:    WORKER_RLIMIT_NOFILE
+    description: |
+      Changes the limit on the maximum number of open files.
+    type:    string
+    only:    [63, 126] # Should be double than WORKER_CONNECTIONS
+    default: 63
+    when:    test
+
+  - name:    SERVER_TOKENS
+    description: |
+      If enabled, it will send te server token together with the response.
+    type:    string
+    only:    ["off", "on"]
+    default: "off"
+    when:    test
+
+  - name:    SENDFILE
+    description: |
+      If enabled, it will use the sendfile function family from the kernel.
+    type:    string
+    only:    ["off", "on"]
+    default: "off"
+    when:    test
+
+  - name:    TCP_NOPUSH
+    description: |
+      If on, blocks the data until the packet reaches the MSS.
+    type:    string
+    default: "off"
+    only:    ["off", "on"]
+    when:    test
+
+  - name:    WORKER_CONNECTIONS
+    description: |
+      The number of wrk connections.
+    type:    int
+    default: 63
+    only:    [63]
+    when:    test
+
+  - name:    PAYLOAD_SIZE
+    type:    int
+    only:    [612] # bytes
+    when:    test
 
 build:
   image: ghcr.io/unikraft/wayfinder/linux-nginx:latest
@@ -3166,6 +3222,13 @@ test:
         FLAGS=${FLAGS}
         GRO_FLUSH_TIMEOUT=${GRO_FLUSH_TIMEOUT}
         TX_QUEUE_LEN=${TX_QUEUE_LEN}
+        KEEPALIVE_TIMEOUT=${KEEPALIVE_TIMEOUT}
+        OPEN_FILE_CACHE=${OPEN_FILE_CACHE}
+        WORKER_RLIMIT_NOFILE=${WORKER_RLIMIT_NOFILE}
+        SERVER_TOKENS=${SERVER_TOKENS}
+        SENDFILE=${SENDFILE}
+        TCP_NOPUSH=${TCP_NOPUSH}
+        WORKER_CONNECTIONS=${WORKER_CONNECTIONS}
         init=/guest_start.sh
       cores: 1
     benchtool:
