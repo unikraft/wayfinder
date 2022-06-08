@@ -529,11 +529,12 @@ params:
     only:    [1024]
     when:    test
 
-  - name:    MODULES_DISABLED
-    type:    string
-    default: "0"
-    only:    ["0", "1"]
-    when:    test
+  # Crashes run
+  # - name:    MODULES_DISABLED
+  #   type:    string
+  #   default: "0"
+  #   only:    ["0", "1"]
+  #   when:    test
 
   - name:    MSGMAX
     type:    int
@@ -2034,23 +2035,24 @@ params:
     only:    [67584]
     when:    test
 
-  - name:    MIN_SLAB_RATIO
-    type:    int
-    default: 5
-    only:    [5]
-    when:    test
+  # # Crashes runs
+  # - name:    MIN_SLAB_RATIO
+  #   type:    int
+  #   default: 5
+  #   only:    [5]
+  #   when:    test
 
-  - name:    MIN_UNMAPPED_RATIO
-    type:    string
-    default: "0"
-    only:    ["1", "0"]
-    when:    test
+  # - name:    MIN_UNMAPPED_RATIO
+  #   type:    string
+  #   default: "0"
+  #   only:    ["1", "0"]
+  #   when:    test
 
-  - name:    MMAP_MIN_ADDR
-    type:    int
-    default: 65536
-    only:    [65536]
-    when:    test
+  # - name:    MMAP_MIN_ADDR
+  #   type:    int
+  #   default: 65536
+  #   only:    [65536]
+  #   when:    test
 
   - name:    NUMA_ZONELIST_ORDER
     type:    string
@@ -2804,6 +2806,8 @@ test:
         >
         root=/dev/vda
         rw
+        WAYFINDER_DOMAIN_IP_ADDR=$WAYFINDER_DOMAIN_IP_ADDR
+        WAYFINDER_DOMAIN_IP_GW_ADDR=$WAYFINDER_DOMAIN_IP_GW_ADDR
         console=ttyS0
         acpi=${ACPI}
         acpi_apic_instance=${ACPI_APIC_INSTANCE}
@@ -2880,7 +2884,6 @@ test:
         KSTACK_DEPTH_TO_PRINT=${KSTACK_DEPTH_TO_PRINT}
         LATENCYTOP=${LATENCYTOP}
         MAX_LOCK_DEPTH=${MAX_LOCK_DEPTH}
-        MODULES_DISABLED=${MODULES_DISABLED}
         MSGMAX=${MSGMAX}
         MSGMNB=${MSGMNB}
         MSGMNI=${MSGMNI}
@@ -2921,7 +2924,7 @@ test:
         SCHED_TIME_AVG_MS=${SCHED_TIME_AVG_MS}
         SCHED_TUNABLE_SCALING=${SCHED_TUNABLE_SCALING}
         SCHED_WAKEUP_GRANULARITY_NS=${SCHED_WAKEUP_GRANULARITY_NS}
-        SEM=${SEM}
+        SEM="${SEM}"
         SHM_RMID_FORCED=${SHM_RMID_FORCED}
         SHMALL=${SHMALL}
         SHMMAX=${SHMMAX}
@@ -3013,7 +3016,7 @@ test:
         TCP_MAX_REORDERING=${TCP_MAX_REORDERING}
         TCP_MAX_SYN_BACKLOG=${TCP_MAX_SYN_BACKLOG}
         TCP_MAX_TW_BUCKETS=${TCP_MAX_TW_BUCKETS}
-        TCP_MEM=${TCP_MEM}
+        TCP_MEM="${TCP_MEM}"
         TCP_MIN_TSO_SEGS=${TCP_MIN_TSO_SEGS}
         TCP_MODERATE_RCVBUF=${TCP_MODERATE_RCVBUF}
         TCP_MTU_PROBING=${TCP_MTU_PROBING}
@@ -3041,10 +3044,10 @@ test:
         TCP_WINDOW_SCALING=${TCP_WINDOW_SCALING}
         TCP_WMEM=${TCP_WMEM}
         TCP_WORKAROUND_SIGNED_WINDOWS=${TCP_WORKAROUND_SIGNED_WINDOWS}
-        UDP_MEM=${UDP_MEM}
+        UDP_MEM="${UDP_MEM}"
         UDP_RMEM_MIN=${UDP_RMEM_MIN}
         UDP_WMEM_MIN=${UDP_WMEM_MIN}
-        XFRM=${XFRM}
+        XFRM4_GC_THRESH=${XFRM4_GC_THRESH}
         ERROR_BURST=${ERROR_BURST}
         ERROR_COST=${ERROR_COST}
         GC_ELASTICITY=${GC_ELASTICITY}
@@ -3073,8 +3076,8 @@ test:
         DISABLE_XFRM=${DISABLE_XFRM}
         FORCE_IGMP_VERSION=${FORCE_IGMP_VERSION}
         FORWARDING=${FORWARDING}
-        IGMPV=${IGMPV}
-        IGMPV=${IGMPV}
+        IGMPV2_UNSOLICITED_REPORT_INTERVAL=${IGMPV2_UNSOLICITED_REPORT_INTERVAL}
+        IGMPV3_UNSOLICITED_REPORT_INTERVAL=${IGMPV3_UNSOLICITED_REPORT_INTERVAL}
         LOG_MARTIANS=${LOG_MARTIANS}
         MEDIUM_ID=${MEDIUM_ID}
         PROMOTE_SECONDARIES=${PROMOTE_SECONDARIES}
@@ -3122,10 +3125,6 @@ test:
         MAX_MAP_COUNT=${MAX_MAP_COUNT}
         MEMORY_FAILURE_EARLY_KILL=${MEMORY_FAILURE_EARLY_KILL}
         MEMORY_FAILURE_RECOVERY=${MEMORY_FAILURE_RECOVERY}
-        MIN_FREE_KBYTES=${MIN_FREE_KBYTES}
-        MIN_SLAB_RATIO=${MIN_SLAB_RATIO}
-        MIN_UNMAPPED_RATIO=${MIN_UNMAPPED_RATIO}
-        MMAP_MIN_ADDR=${MMAP_MIN_ADDR}
         NUMA_ZONELIST_ORDER=${NUMA_ZONELIST_ORDER}
         OOM_DUMP_TASKS=${OOM_DUMP_TASKS}
         OOM_KILL_ALLOCATING_TASK=${OOM_KILL_ALLOCATING_TASK}
@@ -3154,7 +3153,7 @@ test:
         ERR_RATELIMIT_INTERVAL_MS=${ERR_RATELIMIT_INTERVAL_MS}
         WARNING_RATELIMIT_BURST=${WARNING_RATELIMIT_BURST}
         WARNING_RATELIMIT_INTERVAL_MS=${WARNING_RATELIMIT_INTERVAL_MS}
-        MB_ORDER=${MB_ORDER}
+        MB_ORDER2_REQ=${MB_ORDER2_REQ}
         MSG_RATELIMIT_INTERVAL_MS=${MSG_RATELIMIT_INTERVAL_MS}
         NR_OVERCOMMIT_HUGEPAGES=${NR_OVERCOMMIT_HUGEPAGES}
         NR_HUGEPAGES=${NR_HUGEPAGES}
@@ -3168,7 +3167,6 @@ test:
         GRO_FLUSH_TIMEOUT=${GRO_FLUSH_TIMEOUT}
         TX_QUEUE_LEN=${TX_QUEUE_LEN}
         init=/guest_start.sh
-        -- $WAYFINDER_DOMAIN_IP_ADDR $WAYFINDER_DOMAIN_IP_GW_ADDR
       cores: 1
     benchtool:
       image: ghcr.io/unikraft/wayfinder/wrk:latest
