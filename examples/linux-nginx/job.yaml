@@ -2536,7 +2536,7 @@ build:
     disks:
       - name: vda
         type: raw
-        path: /root/workspace/nginx.ext2
+        path: /root/workspace/nginx.ext3
   devices:
     - /dev/urandom
     - /dev/loop-control
@@ -2741,21 +2741,21 @@ build:
     # 2. Generate filesystem image
     #
     image2rootfs.sh nginx.tar
-    mkdir -p /tmp/nginx-ext2
-    mount -o loop ./nginx.ext2 /tmp/nginx-ext2
+    mkdir -p /tmp/nginx-ext3
+    mount -o loop ./nginx.ext3 /tmp/nginx-ext3
 
     # Install network setup script here as we cannot run `u`/`mount` during the
     # container's build.
-    cp -v ./scripts/busybox-x86_64 /tmp/nginx-ext2
-    cp -v ./scripts/guest* /tmp/nginx-ext2
-    cp -v ./load_entropy/load_entropy /tmp/nginx-ext2
+    cp -v ./scripts/busybox-x86_64 /tmp/nginx-ext3
+    cp -v ./scripts/guest* /tmp/nginx-ext3
+    cp -v ./load_entropy/load_entropy /tmp/nginx-ext3
 
     # Install musl libc
-    mkdir -p /tmp/nginx-ext2/trusted
-    cp -v ./scripts/libc.so /tmp/nginx-ext2/trusted/libc.so
+    mkdir -p /tmp/nginx-ext3/trusted
+    cp -v ./scripts/libc.so /tmp/nginx-ext3/trusted/libc.so
 
     # Modify values inside the configuration (for NGINX)
-    cat <<EOF >/tmp/nginx-ext2/etc/nginx/nginx.conf
+    cat <<EOF >/tmp/nginx-ext3/etc/nginx/nginx.conf
     worker_processes 1;
     error_log stderr;
     pid /tmp/nginx.pid;
@@ -2790,11 +2790,11 @@ build:
     EOF
 
     # Generate a variable-size payload
-    mkdir -p /tmp/nginx-ext2/data/www/
-    tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /tmp/nginx-ext2/data/www/index.html
+    mkdir -p /tmp/nginx-ext3/data/www/
+    tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /tmp/nginx-ext3/data/www/index.html
 
     # Unmounting seals the filesystem archive
-    umount /tmp/nginx-ext2
+    umount /tmp/nginx-ext3
 
     echo "Build Done!"
 
