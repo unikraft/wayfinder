@@ -2723,9 +2723,16 @@ build:
       kconfig-set.sh ${MICROVM_CFG} CONFIG_NO_HZ_FULL ${CONFIG_NO_HZ_FULL}
     fi
 
+    # Hardcode big limit
+    PATH_BEFORE=$(pwd)
+    cd ${WORKDIR}/linux
+    git apply /0001-init-Increase-env-var-limit.patch
+    git apply /0001-arch-x86-Increase-cmdline-size.patch
+    cd $PATH_BEFORE
+
     echo "Building the image"
     # Build the image
-    ./scripts/build-with-configs.sh nopatch ${MICROVM_CFG} ${NGINX_CFG}
+    ./scripts/build-with-configs.sh patch ${MICROVM_CFG} ${NGINX_CFG}
 
     echo "Generating filesystem image"
     #
