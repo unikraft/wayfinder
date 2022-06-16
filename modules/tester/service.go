@@ -225,9 +225,15 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 
 	envVars = append(envVars, fmt.Sprintf("WAYFINDER_TOTAL_CORES=%d", len(req.BenchTool.Cores)))
 
+	benchCores := ""
 	for i, core := range req.BenchTool.Cores {
-		envVars = append(envVars, fmt.Sprintf("WAYFINDER_CORE_ID%d=%d", i, core))
+		if i == 0 {
+			benchCores = fmt.Sprintf("%d", core)
+		} else {
+			benchCores = fmt.Sprintf("%s,%d", benchCores, core)
+		}
 	}
+	envVars = append(envVars, fmt.Sprintf("WAYFINDER_CORE_ID0=%s", benchCores))
 
 	container.AddEnvVars(envVars)
 	container.SetCores(req.BenchTool.Cores)
