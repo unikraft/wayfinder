@@ -659,7 +659,7 @@ params:
   - name:    PRINTK
     type:    int
     default: 4
-    only:    [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    only:    [1, 2, 3, 4, 5, 6, 7, 8]
     when:    test
 
   - name:    PRINTK_DELAY
@@ -1027,8 +1027,8 @@ params:
   # /sys/class/net/<dev>/queues/rx-<n>/rps_cpus
   - name:    RPS_FLOW_CNT
     type:    int
-    default: 0
-    only:    [0]
+    default: "0"
+    only:    ["0"]
     when:    test
 
   - name:    RPS_CPUS
@@ -1045,10 +1045,11 @@ params:
 
   # Control how the host reacts to icmp messages. These probabvly are irrelevant
   # for our workload.
+  # "1" breaks the run
   - name:    ICMP_ECHO_IGNORE_ALL
     type:    string
     default: "0"
-    only:    ["0", "1"]
+    only:    ["0"]
     when:    test
 
   - name:    ICMP_ECHO_IGNORE_BROADCASTS
@@ -1814,6 +1815,7 @@ params:
   - name:    TAG
     type:    string
     default: "0"
+    only:    ["0"]
     when:    test
 
   # /proc/sys/net/ipv4/neigh/eth0
@@ -2135,6 +2137,7 @@ params:
   - name:    ZONE_RECLAIM_MODE
     type:    string
     default: "0"
+    only:    ["0"]
     when:    test
 
   # /sys/fs/ext2/vda
@@ -2171,6 +2174,7 @@ params:
   - name:    MB_STATS
     type:    string
     default: "0"
+    only:    ["0"]
     when:    test
 
   #- trigger_fs_error:
@@ -2250,6 +2254,7 @@ params:
   - name:    NR_HUGEPAGES_MEMPOLICY
     type:    string
     default: "0"
+    only:    ["0"]
     when:    test
 
   # /sys/kernel/mm/transparent_hugepage
@@ -2529,7 +2534,7 @@ params:
       The time to wait for a connection until dropping it.
     type:    int
     default: 60
-    only:    [0, 30, 60, 300]
+    only:    [30, 60, 300]
     when:    test
 
   - name:    OPEN_FILE_CACHE
@@ -2968,7 +2973,7 @@ test:
         BUSY_READ=${BUSY_READ}
         DEFAULT_QDISC=${DEFAULT_QDISC}
         DEV_WEIGHT=${DEV_WEIGHT}
-        FLOW_LIMIT_CPU_BITMAP=${FLOW_LIMIT_CPU_BITMAP}
+        FLOW_LIMIT_CPU_BITMAP="${FLOW_LIMIT_CPU_BITMAP}"
         FLOW_LIMIT_TABLE_LEN=${FLOW_LIMIT_TABLE_LEN}
         MESSAGE_BURST=${MESSAGE_BURST}
         MESSAGE_COST=${MESSAGE_COST}
@@ -2984,7 +2989,7 @@ test:
         WMEM_DEFAULT=${WMEM_DEFAULT}
         WMEM_MAX=${WMEM_MAX}
         RPS_FLOW_CNT=${RPS_FLOW_CNT}
-        RPS_CPUS=${RPS_CPUS}
+        RPS_CPUS="${RPS_CPUS}"
         FWMARK_REFLECT=${FWMARK_REFLECT}
         ICMP_ECHO_IGNORE_ALL=${ICMP_ECHO_IGNORE_ALL}
         ICMP_ECHO_IGNORE_BROADCASTS=${ICMP_ECHO_IGNORE_BROADCASTS}
