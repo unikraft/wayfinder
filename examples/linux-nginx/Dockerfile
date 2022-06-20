@@ -78,6 +78,7 @@ RUN set -xe; \
     sed -i -e "s/linux-volume/root\/workspace\/linux/" Makefile; \
     sed -i -e 's/make patch-linux || true/echo "Keep everything as it is"/g' ${WORKDIR}/scripts/build-with-configs.sh; \
     sed -i -e 's/CONFIGS=$@/CONFIGS=${@:2}/g' ${WORKDIR}/scripts/build-with-configs.sh; \
+    sed -i -e 's/-j8/-j $(( $(nproc) + 1 ))/g' ${WORKDIR}/Makefile; \
     ./scripts/build-with-configs.sh patch ${MICROVM_CFG} ${NGINX_CFG}
 
 #
