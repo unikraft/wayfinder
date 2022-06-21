@@ -34,6 +34,8 @@ package tester
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"strconv"
 	"sync"
 	"time"
 
@@ -153,6 +155,25 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 
 	pidUuidMap[pid] = uuid
 
+	// Regex Match all values in order for memory
+	r, _ := regexp.Compile("^[1-9]+[0-9]*")
+	memoryValue := r.FindStringSubmatch(req.Kernel.Memory)[0]
+	memoryUnit := "MiB"
+
+	// Regex to match unit type, we ignore difference between 'b' and 'B'
+	r, _ = regexp.Compile("(MiB|M|MB|Mib|Mb)$")
+	if r.MatchString(req.Kernel.Memory) {
+		memoryUnit = "MiB"
+	}
+
+	r, _ = regexp.Compile("(GiB|G|GB|Gib|Gb)$")
+	if r.MatchString(req.Kernel.Memory) {
+		memoryUnit = "GiB"
+	}
+
+	// Convert memoryValue to uint
+	memoryValueUint, _ := strconv.ParseUint(memoryValue, 10, 32)
+
 	domain, err := s.p.Libvirt.NewDomain(
 		pid,
 		uuid,
@@ -161,6 +182,8 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 		req.Kernel.Args,
 		req.Kernel.Disks,
 		req.Kernel.Cores,
+		uint(memoryValueUint),
+		memoryUnit,
 	)
 	if err != nil {
 		s.p.DB.Repos().Tests().SetStatusKernelFailedByTestUuid(uuid)

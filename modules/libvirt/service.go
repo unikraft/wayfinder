@@ -52,9 +52,6 @@ import (
 const (
 	x86_64   = "x86_64"
 	pci440fx = "pc-i440fx-3.1"
-
-	defaultMemoryValue = 64
-	defaultMemoryUnit  = "MiB"
 )
 
 var (
@@ -85,7 +82,7 @@ type Domain struct {
 	measure bool
 }
 
-func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage, cores []uint64) (*Domain, error) {
+func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage, cores []uint64, memoryValue uint, memoryUnit string) (*Domain, error) {
 	// This maintains an open door for debug purpose
 	console := libvirtxml.DomainConsole{
 		TTY: "/dev/pts/4",
@@ -174,8 +171,8 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 			Value:     uint(len(cores)),
 		},
 		Memory: &libvirtxml.DomainMemory{
-			Value: defaultMemoryValue,
-			Unit:  defaultMemoryUnit,
+			Value: memoryValue,
+			Unit:  memoryUnit,
 		},
 		OnCrash:    "destroy",
 		OnPoweroff: "destroy",
