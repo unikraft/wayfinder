@@ -203,7 +203,7 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 
 // Formats the environment variables for the test
 // The duration is added to the environment variables
-func (c *TaskConsumer) packEnvVars(test *spec.TestSpec) []*proto.TestEnvVar {
+func (c *TaskConsumer) packEnvVars(test *spec.TestSpec, currentPerm *[]spec.ParamPermutation) []*proto.TestEnvVar {
 	var envVars []*proto.TestEnvVar
 
 	var duration string
@@ -223,6 +223,15 @@ func (c *TaskConsumer) packEnvVars(test *spec.TestSpec) []*proto.TestEnvVar {
 			Name:  name,
 			Value: value,
 		})
+	}
+
+	for _, param := range *currentPerm {
+		if param.When == "test" {
+			envVars = append(envVars, &proto.TestEnvVar{
+				Name:  param.Name,
+				Value: param.Value,
+			})
+		}
 	}
 
 	return envVars
@@ -513,7 +522,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 				Commands:     currentTest.BenchTool.Commands,
 				Cores:        benchToolCoreIds,
 				StartDelay:   currentTest.BenchTool.StartDelay,
-				EnvVars:      c.packEnvVars(&currentTest),
+				EnvVars:      c.packEnvVars(&currentTest, &task.CurrentPerm.Params),
 			},
 		})
 		if err != nil {
