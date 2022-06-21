@@ -2585,6 +2585,14 @@ params:
     only:    [63]
     when:    test
 
+  - name:    NUM_PARALLEL_CONNS
+    description: |
+      The number of simultaneous TCP connections.
+    type:    int
+    default: 30
+    only:    [30]
+    when:    test
+
   - name:    PAYLOAD_SIZE
     type:    int
     only:    [612] # bytes
