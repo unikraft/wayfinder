@@ -2433,9 +2433,10 @@ params:
     only: ["y", "n"]
     when: test
 
+  # 100 means yes, 1 means no
   - name: NOSMP
     type: string
-    only: ["y", "n"]
+    only: ["100", "1"]
     when: test
 
   - name: NOWATCHDOG
@@ -2835,7 +2836,7 @@ build:
 test:
   - name: throughput
     kernel:
-      memory: 100M
+      memory: 512M
       args:
         >
         root=/dev/vda
@@ -2867,7 +2868,7 @@ test:
         no_timer_check=${NO_TIMER_CHECK}
         norandmaps=${NORANDMAPS}
         nordrand=${NORDRAND}
-        nosmp=${NOSMP}
+        maxcpus=${NOSMP}
         nowatchdog=${NOWATCHDOG}
         numa_balancing=${NUMA_BALANCING}
         percpu_alloc=${PERCPU_ALLOC}
