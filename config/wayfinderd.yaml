@@ -87,7 +87,7 @@ hostconfig:
   scaling_governor: performance
   procfs:
     # Filesystem
-    - /proc/sys/fs/file-max:20000
+    - /proc/sys/fs/file-max:200000
     # - /proc/sys/vm/drop_caches:3
 
     # Networking
