@@ -1305,7 +1305,7 @@ fi
 # Modify values inside the configuration (for NGINX)
 if [ "$OPEN_FILE_CACHE" = "nocaching" ]; then
 cat <<EOF >/etc/nginx/nginx.conf
-worker_processes 1;
+worker_processes auto;
 error_log stderr;
 pid /tmp/nginx.pid;
 user daemon daemon;
@@ -1345,7 +1345,7 @@ http {
 EOF
 else
 cat <<EOF >/etc/nginx/nginx.conf
-worker_processes 1;
+worker_processes auto;
 error_log stderr;
 pid /tmp/nginx.pid;
 user daemon daemon;
