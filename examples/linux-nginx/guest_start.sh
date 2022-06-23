@@ -1302,6 +1302,9 @@ if [ -n "$TX_QUEUE_LEN" ] && [ -w /sys/class/net/eth0/tx_queue_len ]; then
   echo $TX_QUEUE_LEN > /sys/class/net/eth0/tx_queue_len &
 fi
 
+tr -dc A-Za-z0-9 < /dev/urandom | head -c $PAYLOAD_SIZE > /data/www/index.html
+tr -dc A-Za-z0-9 < /dev/urandom | head -c $PAYLOAD_SIZE > /usr/share/nginx/html/index.html
+
 # Modify values inside the configuration (for NGINX)
 if [ "$OPEN_FILE_CACHE" = "nocaching" ]; then
 cat <<EOF >/etc/nginx/nginx.conf

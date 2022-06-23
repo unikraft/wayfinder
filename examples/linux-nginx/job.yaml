@@ -3208,6 +3208,7 @@ test:
         SENDFILE=${SENDFILE}
         TCP_NOPUSH=${TCP_NOPUSH}
         WORKER_CONNECTIONS=${WORKER_CONNECTIONS}
+        PAYLOAD_SIZE=${PAYLOAD_SIZE}
         init=/guest_start.sh
       cores: 1
     benchtool:
