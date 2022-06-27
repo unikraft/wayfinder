@@ -457,7 +457,7 @@ test:
       commands: /test.sh
       monitors:
         - name: power
-          commands: ./examples/linux-nginx/power-monitor.sh http://192.168.0.225/meter/0
+          commands: ./examples/unikraft-nginx/power-monitor.sh http://192.168.0.225/meter/0
       cores: 1
       start_delay: 5
       duration: 30
