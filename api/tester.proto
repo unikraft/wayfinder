@@ -75,6 +75,11 @@ message TestEnvVar {
   string value = 2 [json_name = "value"];
 }
 
+message TestMonitor {
+  string name     = 1 [json_name = "name"];
+  string commands = 2 [json_name = "commands"];
+}
+
 enum TestStatus {
   TEST_CREATED          = 0;
   TEST_RUNNING          = 1;
@@ -104,13 +109,14 @@ message TestKernel {
 }
 
 message TestBenchTool {
-  string              image         = 1 [json_name = "image"];
-  repeated TestEnvVar envVars       = 2 [json_name = "envvar"];
-  repeated string     devices       = 3 [json_name = "devices"];
-  repeated string     capabilities  = 4 [json_name = "capabilities"];
-  repeated uint64     cores         = 5 [json_name = "cores"];
-  string              commands      = 6 [json_name = "commands"];
-  uint64              startDelay    = 7 [json_name = "start_delay"];
+  string               image         = 1 [json_name = "image"];
+  repeated TestEnvVar  envVars       = 2 [json_name = "envvar"];
+  repeated string      devices       = 3 [json_name = "devices"];
+  repeated string      capabilities  = 4 [json_name = "capabilities"];
+  repeated TestMonitor monitors      = 5 [json_name = "monitors"];
+  repeated uint64      cores         = 6 [json_name = "cores"];
+  string               commands      = 7 [json_name = "commands"];
+  uint64               startDelay    = 8 [json_name = "start_delay"];
 }
 
 message TestResult {
