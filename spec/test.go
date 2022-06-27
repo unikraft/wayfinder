@@ -31,6 +31,11 @@ package spec
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+type TestMonitorSpec struct {
+	Name     string `yaml:"name"`
+	Commands string `yaml:"commands"`
+}
+
 type TestKernelSpec struct {
 	Memory string `yaml:"memory"`
 	Args   string `yaml:"args"`
@@ -42,6 +47,7 @@ type TestBenchToolSpec struct {
 	Devices      []string          `yaml:"devices"`
 	Capabilities []string          `yaml:"capabilities"`
 	Commands     string            `yaml:"commands"`
+	Monitors     []TestMonitorSpec `yaml:"monitors"`
 	Cores        uint64            `yaml:"cores"`
 	StartDelay   uint64            `yaml:"start_delay"` // in seconds
 	Duration     uint64            `yaml:"duration"`    // in seconds
