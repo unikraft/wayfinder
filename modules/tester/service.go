@@ -184,6 +184,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 		req.Kernel.Cores,
 		uint(memoryValueUint),
 		memoryUnit,
+		req.BenchTool.Monitors,
 	)
 	if err != nil {
 		s.p.DB.Repos().Tests().SetStatusKernelFailedByTestUuid(uuid)

@@ -201,6 +201,20 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 	return buildCoreIds
 }
 
+// Formats the test monitors for the test
+func (c *TaskConsumer) packMonitors(monitorsData *[]spec.TestMonitorSpec) []*proto.TestMonitor {
+	var monitors []*proto.TestMonitor
+
+	for _, monitor := range *monitorsData {
+		monitors = append(monitors, &proto.TestMonitor{
+			Name:     monitor.Name,
+			Commands: monitor.Commands,
+		})
+	}
+
+	return monitors
+}
+
 // Formats the environment variables for the test
 // The duration is added to the environment variables
 func (c *TaskConsumer) packEnvVars(test *spec.TestSpec, currentPerm *[]spec.ParamPermutation) []*proto.TestEnvVar {
@@ -520,6 +534,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 				Devices:      currentTest.BenchTool.Devices,
 				Capabilities: currentTest.BenchTool.Capabilities,
 				Commands:     currentTest.BenchTool.Commands,
+				Monitors:     c.packMonitors(&currentTest.BenchTool.Monitors),
 				Cores:        benchToolCoreIds,
 				StartDelay:   currentTest.BenchTool.StartDelay,
 				EnvVars:      c.packEnvVars(&currentTest, &task.CurrentPerm.Params),

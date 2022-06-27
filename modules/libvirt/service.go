@@ -67,10 +67,11 @@ type Service struct {
 type Domain struct {
 	*metrics.Measurable
 
-	p       *provider
-	pid     int
-	fakePid int
-	args    string
+	monitors []*proto.TestMonitor
+	p        *provider
+	pid      int
+	fakePid  int
+	args     string
 	// uuid    string
 	timer time.Time
 	// runtime *time.Duration
@@ -82,7 +83,8 @@ type Domain struct {
 	measure bool
 }
 
-func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage, cores []uint64, memoryValue uint, memoryUnit string) (*Domain, error) {
+func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage,
+	cores []uint64, memoryValue uint, memoryUnit string, monitors []*proto.TestMonitor) (*Domain, error) {
 	// This maintains an open door for debug purpose
 	console := libvirtxml.DomainConsole{
 		TTY: "/dev/pts/4",
@@ -185,6 +187,7 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 		fakePid:    fakePid,
 		args:       args,
 		config:     config,
+		monitors:   monitors,
 	}
 
 	return domain, nil
@@ -506,11 +509,15 @@ func (d *Domain) InitMeasurements() error {
 	}
 
 	if err := d.MemLookup(); err != nil {
-		return fmt.Errorf("could not look up CPU cores: %s", err)
+		return fmt.Errorf("could not look up memory: %s", err)
 	}
 
 	if err := d.NetLookup(); err != nil {
-		return fmt.Errorf("could not look up CPU cores: %s", err)
+		return fmt.Errorf("could not look up networks: %s", err)
+	}
+
+	if err := d.MetricLookup(); err != nil {
+		return fmt.Errorf("could not look up custom metrics: %s", err)
 	}
 
 	return nil
@@ -532,6 +539,12 @@ func (d *Domain) MeasureResources() []error {
 		errs = append(errs, fmt.Errorf("could not measure network: %s", err))
 	}
 
+	for _, monitor := range d.monitors {
+		if err := d.MetricMeasure(monitor.Name, monitor.Commands); err != nil {
+			errs = append(errs, fmt.Errorf("could not measure custom metrics: %s", err))
+		}
+	}
+
 	return errs
 }
 
@@ -548,6 +561,12 @@ func (d *Domain) GetResourceMeasurements() map[string]string {
 
 	for k, v := range d.NetPrint() {
 		res[k] = v
+	}
+
+	for _, monitor := range d.monitors {
+		for k, v := range d.MetricPrint(monitor.Name) {
+			res[k] = v
+		}
 	}
 
 	return res

@@ -156,6 +156,8 @@ func (s *Service) CreateBuild(ctx context.Context, req *proto.CreateBuildRequest
 
 	builder.AddEnvVars(envVars)
 
+	// TODO: Add monitors for the builds stage
+
 	// Save the build
 	s.builds[uuid] = &build{
 		container: builder,
