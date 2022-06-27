@@ -3220,6 +3220,9 @@ test:
       capabilities:
         - CAP_NET_ADMIN
       commands: /test.sh index.html
+      monitors:
+        - name: power
+          commands: ./examples/linux-nginx/power-monitor.sh http://192.168.0.225/meter/0
       cores: 1
       start_delay: 15
       duration: 30
