@@ -581,6 +581,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			Results: results,
 		})
 		if err != nil {
+			_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
+				Uuid: test.uuid,
+			})
 			c.releaseCoresById(testCoreIds)
 			return fmt.Errorf("could not start test: %s", err)
 		}
@@ -597,6 +600,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			if err != nil {
 				numRetries++
 				if numRetries >= 5 {
+					_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
+						Uuid: test.uuid,
+					})
 					c.releaseCoresById(testCoreIds)
 					return fmt.Errorf("could not get test status: %s", err)
 				}
@@ -628,6 +634,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 
 				_, err = time.ParseDuration(statusTestResp.Runtime)
 				if err != nil {
+					_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
+						Uuid: test.uuid,
+					})
 					c.releaseCoresById(testCoreIds)
 					return fmt.Errorf("could not convert test runtime into duration: %s", err)
 				}
