@@ -39,7 +39,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/adjust/rmq/v4"
@@ -99,6 +102,9 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
 	// Create a new logger for this task
 	c.Log = c.p.Log.Sub(task.CurrentPerm.Checksum)
 
+	signalChannel := make(chan os.Signal)
+	c.cleanupOnSignal(signalChannel)
+
 	// Start the task
 	err = c.StartTask(&task)
 
@@ -110,6 +116,23 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
 	} else {
 		delivery.Ack()
 	}
+}
+
+func (c *TaskConsumer) cleanupOnSignal(signalChannel chan os.Signal) {
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGABRT)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGQUIT)
+	go func() {
+		<-signalChannel
+
+		// Run the cleanup script
+		c.p.Log.Debugf("running cleanup script")
+		err := exec.Command(c.p.Cfg.ShellType, c.p.Cfg.CleanupPath).Run()
+		if err != nil {
+			c.p.Log.Errorf("could not run cleanup script: %s", err)
+		}
+		os.Exit(1)
+	}()
 }
 
 // Busy-waits to release all cores. This happens because sometimes the

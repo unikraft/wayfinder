@@ -64,6 +64,8 @@ type config struct {
 	PollDuration  time.Duration `file:"poll_duration"  env:"SCHEDULER_POLL_DURATION"  default:"100ms"`
 	GraceTime     time.Duration `file:"grace_time"     env:"SCHEDULER_GRACE_TIME"     default:"5s"`
 	MaxRetries    int64         `file:"max_retries"    env:"SCHEDULER_MAX_RETRIES"    default:"3"`
+	ShellType     string        `file:"shell"          env:"SCHEDULER_CLEANUP_SHELL"  default:"bash"`
+	CleanupPath   string        `file:"path"           env:"SCHEDULER_CLEANUP_PATH"   default:"./scripts/resetrun.sh"`
 }
 
 type provider struct {
