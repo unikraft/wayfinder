@@ -203,6 +203,12 @@ scheduler:
   # Number of times to re-try the permutation in case it fails
   max_retries: ${SCHEDULER_MAX_RETRIES:3}
 
+  # Cleanup script shell and path
+  cleanup:
+    shell: "${SCHEDULER_CLEANUP_SHELL:bash}"
+    # TODO: Change to absolute path
+    path: "${SCHEDULER_CLEANUP_PATH:./scripts/resetrun.sh}"
+
 # Container Service
 # =================
 #
