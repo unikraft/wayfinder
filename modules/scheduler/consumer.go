@@ -119,9 +119,8 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
 }
 
 func (c *TaskConsumer) cleanupOnSignal(signalChannel chan os.Signal) {
-	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
-	signal.Notify(signalChannel, os.Interrupt, syscall.SIGABRT)
-	signal.Notify(signalChannel, os.Interrupt, syscall.SIGQUIT)
+	signal.Notify(signalChannel, os.Interrupt,
+		syscall.SIGTERM, syscall.SIGABRT, syscall.SIGQUIT)
 	go func() {
 		<-signalChannel
 
