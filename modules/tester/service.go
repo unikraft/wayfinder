@@ -187,7 +187,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 		req.BenchTool.Monitors,
 	)
 	if err != nil {
-		s.p.DB.Repos().Tests().SetStatusKernelFailedByTestUuid(uuid)
+		s.p.DB.Repos().Tests().SetStatusKernelFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
 		}, status.Errorf(codes.Internal, "cannot create test VM: %s", err)
@@ -195,6 +195,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 
 	// Initialize the domain
 	if err = domain.Init(); err != nil {
+		s.p.DB.Repos().Tests().SetStatusKernelFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
 		}, status.Errorf(codes.Internal, "could not get initialise domain: %s", err)
@@ -202,6 +203,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 
 	if len(req.VmmCores) > 0 {
 		if err = domain.PinVMMToCores(req.VmmCores); err != nil {
+			s.p.DB.Repos().Tests().SetStatusWayfinderFailedInternal(uuid)
 			return &proto.CreateTestResponse{
 				Success: false,
 			}, status.Errorf(codes.Internal, "could not pin VMM to cores: %s", err)
@@ -211,21 +213,21 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 	// Initialize the benchmark tool's container
 	container, err := s.p.Container.NewContainer(uuid)
 	if err != nil {
-		s.p.DB.Repos().Tests().SetStatusBenchToolFailedByTestUuid(uuid)
+		s.p.DB.Repos().Tests().SetStatusBenchToolFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
 		}, status.Errorf(codes.Internal, "cannot create test container: %s", err)
 	}
 
 	if err := container.PullAndAttachImage(req.BenchTool.Image); err != nil {
-		s.p.DB.Repos().Tests().SetStatusBenchToolFailedByTestUuid(uuid)
+		s.p.DB.Repos().Tests().SetStatusBenchToolFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
 		}, status.Errorf(codes.Internal, "cannot pull test container's image: %s", err)
 	}
 
 	if err := container.SetCommands(req.BenchTool.Commands); err != nil {
-		s.p.DB.Repos().Tests().SetStatusBenchToolFailedByTestUuid(uuid)
+		s.p.DB.Repos().Tests().SetStatusBenchToolFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
 		}, status.Errorf(codes.Internal, "cannot set test container's command: %s", err)
@@ -234,6 +236,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 	var envVars []string
 
 	if domain.IP() == nil {
+		s.p.DB.Repos().Tests().SetStatusKernelFailedNetworkByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
 		}, status.Errorf(codes.Internal, "could not get domain IP: %s", err)
@@ -291,6 +294,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 
 func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*proto.StartTestResponse, error) {
 	if req.Uuid == "" {
+		s.p.DB.Repos().Tests().SetStatusWayfinderFailedInternal(req.Uuid)
 		return &proto.StartTestResponse{
 			Success: false,
 		}, errors.NewMissingParameterError("uuid")
@@ -301,6 +305,7 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
 
 	test, ok := s.tests[req.Uuid]
 	if !ok {
+		s.p.DB.Repos().Tests().SetStatusWayfinderFailedInternal(req.Uuid)
 		return &proto.StartTestResponse{
 			Success: false,
 		}, status.Errorf(codes.NotFound, "cannot find test with id=%s", req.Uuid)
@@ -309,7 +314,7 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
 	err := test.container.Init()
 	if err != nil {
 		test.err = err
-		s.p.DB.Repos().Tests().SetStatusBenchToolFailedByTestUuid(req.Uuid)
+		s.p.DB.Repos().Tests().SetStatusBenchToolFailedStartupByTestUuid(req.Uuid)
 
 		return &proto.StartTestResponse{
 			Success: false,
@@ -324,7 +329,7 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
 		err := test.domain.Start()
 		if err != nil {
 			test.err = err
-			s.p.DB.Repos().Tests().SetStatusKernelFailedByTestUuid(req.Uuid)
+			s.p.DB.Repos().Tests().SetStatusKernelFailedStartupByTestUuid(req.Uuid)
 		}
 	}()
 
