@@ -131,6 +131,7 @@ func NewRootCommand() *cobra.Command {
 	rootCmd.AddCommand(listPerCmd)
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(streamCmd)
+	rootCmd.AddCommand(statusCmd)
 
 	return rootCmd
 }
