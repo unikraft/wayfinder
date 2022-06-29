@@ -58,6 +58,7 @@ type TaskConsumer struct {
 	p                 *provider
 	prevBuildChecksum string
 	prevBuildOutput   *proto.SaveBuildOutputsToDiskResponse
+	currentPermId     uint
 	Log               logs.Logger
 }
 
@@ -130,6 +131,7 @@ func (c *TaskConsumer) cleanupOnSignal(signalChannel chan os.Signal) {
 		if err != nil {
 			c.p.Log.Errorf("could not run cleanup script: %s", err)
 		}
+		c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedExternal(int64(c.currentPermId))
 		os.Exit(1)
 	}()
 }
@@ -339,35 +341,11 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 	// Find or create this permutation in the database
 	permutation, err := c.p.DB.Repos().Permutations().FindOrCreateFromJobSpec(task)
 	if err != nil {
+		c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 		return err
 	}
 
-	// if req.JobId <= 0 {
-	//   return &proto.CreateBuildResponse{
-	//     Success: false,
-	//     Status:  proto.BuildStatus_BUILD_FAILED,
-	//   }, errors.NewMissingParameterError("job_id")
-	// }
-
-	// if req.PermutationId <= 0 {
-	//   return &proto.CreateBuildResponse{
-	//     Success: false,
-	//     Status:  proto.BuildStatus_BUILD_FAILED,
-	//   }, errors.NewMissingParameterError("permutation_id")
-	// }
-
-	// job := &models.Job{}
-	// if err := s.p.DB.Repos().Job().FindJob(req.JobId, job); err != nil {
-	//   return &proto.CreateBuildResponse{
-	//     Success: false,
-	//     Status:  proto.BuildStatus_BUILD_FAILED,
-	//   }, status.Errorf(codes.NotFound, "job with id=%d not found", req.JobId)
-	// }
-
-	// permutation := &models.Permutation{}
-	// if err := c.p.DB.DB().Where("id = ?", perm.Id).First(&permutation).Error; err != nil {
-	//   return fmt.Errorf("permutation with id=%d not found", perm.Id)
-	// }
+	c.currentPermId = task.CurrentPerm.Id
 
 	var buildOutput *proto.SaveBuildOutputsToDiskResponse
 	build := build{}
@@ -397,11 +375,14 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			EnvVars:       buildEnvVars,
 		})
 		if err != nil {
+			c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(buildCoreIds)
 			return fmt.Errorf("could not create build: %s", err)
 		}
 
 		build.uuid = createBuildResp.Uuid
+
+		c.p.DB.Repos().Permutations().SetStatusBuildInitByPermutationId(int64(task.CurrentPerm.Id))
 
 		// Start the build
 		c.Log.Infof("starting build container for permutation_id=%d", permutation.Id)
@@ -409,9 +390,12 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			Uuid: build.uuid,
 		})
 		if err != nil {
+			c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(buildCoreIds)
 			return fmt.Errorf("could not start build: %s", err)
 		}
+
+		c.p.DB.Repos().Permutations().SetStatusBuildRunningByPermutationId(int64(task.CurrentPerm.Id))
 
 		// Wait for the build to complete
 		c.Log.Infof("waiting for build container for permutation_id=%d to complete...", permutation.Id)
@@ -426,6 +410,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			if err != nil {
 				numRetries++
 				if numRetries >= 5 {
+					c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(task.CurrentPerm.Id))
 					c.releaseCoresById(buildCoreIds)
 					return fmt.Errorf("could not get build status: %s", err)
 				}
@@ -433,21 +418,31 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 				continue
 			}
 
+			buildFinished := false
+
 			switch statusBuildResp.Status {
-			case proto.BuildStatus_BUILD_SUCCESS,
-				proto.BuildStatus_BUILD_KILLED,
-				proto.BuildStatus_BUILD_FAILED:
+			case proto.BuildStatus_BUILD_SUCCESS:
+				c.p.DB.Repos().Permutations().SetStatusBuildPausedByPermutationId(int64(task.CurrentPerm.Id))
+				buildFinished = true
+			case proto.BuildStatus_BUILD_KILLED:
+				c.p.DB.Repos().Permutations().SetStatusBuildKilledByPermutationId(int64(permutation.Id))
+				buildFinished = true
+			case proto.BuildStatus_BUILD_FAILED:
+				c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(permutation.Id))
+				buildFinished = true
+			case proto.BuildStatus_BUILD_RUNNING:
+				c.p.DB.Repos().Permutations().SetStatusBuildRunningByPermutationId(int64(permutation.Id))
+			case proto.BuildStatus_BUILD_PAUSED:
+				c.p.DB.Repos().Permutations().SetStatusBuildPausedByPermutationId(int64(permutation.Id))
+				buildFinished = true
+			case proto.BuildStatus_BUILD_CREATED:
+				c.p.DB.Repos().Permutations().SetStatusBuildInitByPermutationId(int64(permutation.Id))
+			}
 
-				if statusBuildResp.Status == proto.BuildStatus_BUILD_KILLED {
-					c.p.DB.Repos().Permutations().SetStatusBuildKilledByPermutationId(int64(permutation.Id))
-				}
-
-				if statusBuildResp.Status == proto.BuildStatus_BUILD_FAILED {
-					c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(permutation.Id))
-				}
-
+			if buildFinished {
 				_, err = time.ParseDuration(statusBuildResp.Runtime)
 				if err != nil {
+					c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 					c.releaseCoresById(buildCoreIds)
 					return fmt.Errorf("could not convert test runtime into duration: %s", err)
 				}
@@ -498,6 +493,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		if c.prevBuildOutput != nil {
 			err = cleanPreviousBuild(c.prevBuildOutput.Outputs)
 			if err != nil {
+				c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 				c.releaseCoresById(buildCoreIds)
 				return fmt.Errorf("could not clean previous build: %s", err)
 			}
@@ -511,6 +507,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			Uuid: build.uuid,
 		})
 		if err != nil {
+			c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(buildCoreIds)
 			return fmt.Errorf("could not destroy build environment%s", err)
 		}
@@ -518,10 +515,12 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		// Free up cores
 		err = c.releaseCoresById(buildCoreIds)
 		if err != nil {
+			c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 			return fmt.Errorf("could not release cores: %s", err)
 		}
 	} else {
 		c.Log.Infof("skipping build for permutation_id=%d", permutation.Id)
+		c.p.DB.Repos().Permutations().SetStatusBuildKilledByPermutationId(int64(task.CurrentPerm.Id))
 		buildOutput = c.prevBuildOutput
 	}
 
@@ -563,11 +562,14 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			},
 		})
 		if err != nil {
+			// TODO: filter the error to make it more specific
+			c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(testCoreIds)
 			return fmt.Errorf("could not create test: %s", err)
 		}
 
 		test.uuid = createTestResp.Uuid
+		c.p.DB.Repos().Permutations().SetStatusTestInitByPermutationId(int64(task.CurrentPerm.Id))
 
 		var results []*proto.TestResult
 		var resultType proto.TestResultType
@@ -606,10 +608,12 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
 				Uuid: test.uuid,
 			})
+			c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(testCoreIds)
 			return fmt.Errorf("could not start test: %s", err)
 		}
 
+		c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(task.CurrentPerm.Id))
 		// Wait for the test to complete
 		numRetries := 0
 		c.Log.Infof("waiting for test for permutation_id=%d to complete...", permutation.Id)
@@ -625,6 +629,8 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 					_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
 						Uuid: test.uuid,
 					})
+
+					c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 					c.releaseCoresById(testCoreIds)
 					return fmt.Errorf("could not get test status: %s", err)
 				}
@@ -632,33 +638,61 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 				continue
 			}
 
+			testFinished := false
+
 			switch statusTestResp.Status {
-			case proto.TestStatus_TEST_SUCCESS,
-				proto.TestStatus_TEST_KILLED,
-				proto.TestStatus_TEST_KERNEL_FAILED,
-				proto.TestStatus_TEST_BENCHTOOL_FAILED:
+			case proto.TestStatus_TEST_SUCCESS:
+				c.p.DB.Repos().Permutations().SetStatusSuccessByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_KILLED:
+				c.p.DB.Repos().Permutations().SetStatusTestKilledByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_KERNEL_FAILED:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_KERNEL_FAILED_DRIVE:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_KERNEL_FAILED_NETWORK:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_KERNEL_FAILED_STARTUP:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_BENCHTOOL_FAILED:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_BENCHTOOL_FAILED_DRIVE:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_BENCHTOOL_FAILED_NETWORK:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_BENCHTOOL_FAILED_STARTUP:
+				c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_WAYFINDER_FAILED_INTERNAL:
+				c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_WAYFINDER_FAILED_EXTERNAL:
+				c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedExternal(int64(permutation.Id))
+				testFinished = true
+			case proto.TestStatus_TEST_CREATED:
+				c.p.DB.Repos().Permutations().SetStatusTestInitByPermutationId(int64(permutation.Id))
+			case proto.TestStatus_TEST_RUNNING:
+				c.p.DB.Repos().Permutations().SetStatusTestRunningByPermutationId(int64(permutation.Id))
+			case proto.TestStatus_TEST_PAUSED:
+				c.p.DB.Repos().Permutations().SetStatusTestPausedByPermutationId(int64(permutation.Id))
+			}
 
-				if statusTestResp.Status == proto.TestStatus_TEST_KILLED {
-					c.p.DB.Repos().Permutations().SetStatusTestKilledByPermutationId(int64(permutation.Id))
-				}
-
-				if statusTestResp.Status == proto.TestStatus_TEST_KERNEL_FAILED {
-					c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
-				}
-
-				if statusTestResp.Status == proto.TestStatus_TEST_BENCHTOOL_FAILED {
-					c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(permutation.Id))
-				}
-
-				if statusTestResp.Status == proto.TestStatus_TEST_SUCCESS {
-					c.p.DB.Repos().Permutations().SetStatusSuccessByPermutationId(int64(permutation.Id))
-				}
-
+			if testFinished {
 				_, err = time.ParseDuration(statusTestResp.Runtime)
 				if err != nil {
 					_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
 						Uuid: test.uuid,
 					})
+
+					c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 					c.releaseCoresById(testCoreIds)
 					return fmt.Errorf("could not convert test runtime into duration: %s", err)
 				}
@@ -677,12 +711,14 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			Uuid: test.uuid,
 		})
 		if err != nil {
+			c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(testCoreIds)
 			return fmt.Errorf("could not destroy test: %s", err)
 		}
 
 		err = c.releaseCoresById(testCoreIds)
 		if err != nil {
+			c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 			return fmt.Errorf("could not release cores: %s", err)
 		}
 
@@ -690,15 +726,18 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		if task.DryRun {
 			err = c.p.DB.Repos().Results().DeleteResultByTestUuid(test.uuid, true)
 			if err != nil {
+				c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 				return fmt.Errorf("could not delete test: %s", err)
 			}
 			err = c.p.DB.Repos().Tests().DeleteTestByTestUuid(test.uuid, true)
 			if err != nil {
+				c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 				return fmt.Errorf("could not delete test: %s", err)
 			}
 			if build.uuid != "" {
 				err = c.p.DB.Repos().Builds().DeleteBuildByBuildUuid(build.uuid, true)
 				if err != nil {
+					c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 					return fmt.Errorf("could not delete build: %s", err)
 				}
 			}
