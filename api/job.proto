@@ -118,6 +118,12 @@ service JobService {
       get: "/api/redirect-debug",
     };
   }
+
+  rpc PermutationStatus (PermutationStatusRequest) returns (PermutationStatusResponse)  {
+    option (google.api.http) = {
+      get: "/api/permutation/{id}/status",
+    };
+  }
 }
 
 enum JobScheduler {
@@ -369,4 +375,13 @@ message RedirectDebugRequest {
 message RedirectDebugResponse {
   bool success  = 1 [json_name = "success"];
   string output = 2 [json_name = "output"];
+}
+
+message PermutationStatusRequest {
+  int32 id = 1;
+}
+
+message PermutationStatusResponse {
+  bool                 success = 1 [json_name = "success"];
+  JobPermutationStatus status  = 2 [json_name = "status"];
 }
