@@ -81,13 +81,21 @@ message TestMonitor {
 }
 
 enum TestStatus {
-  TEST_CREATED          = 0;
-  TEST_RUNNING          = 1;
-  TEST_PAUSED           = 2;
-  TEST_KILLED           = 3;
-  TEST_KERNEL_FAILED    = 4;
-  TEST_BENCHTOOL_FAILED = 5;
-  TEST_SUCCESS          = 6;
+  TEST_CREATED                   = 0;
+  TEST_RUNNING                   = 1;
+  TEST_PAUSED                    = 2;
+  TEST_KILLED                    = 3;
+  TEST_KERNEL_FAILED             = 4;
+  TEST_BENCHTOOL_FAILED          = 5;
+  TEST_SUCCESS                   = 6;
+  TEST_KERNEL_FAILED_NETWORK     = 7;
+  TEST_KERNEL_FAILED_DRIVE       = 8;
+  TEST_KERNEL_FAILED_STARTUP     = 9;
+  TEST_BENCHTOOL_FAILED_NETWORK  = 10;
+  TEST_BENCHTOOL_FAILED_DRIVE    = 11;
+  TEST_BENCHTOOL_FAILED_STARTUP  = 12;
+  TEST_WAYFINDER_FAILED_INTERNAL = 13;
+  TEST_WAYFINDER_FAILED_EXTERNAL = 14;
 }
 
 enum TestResultType {
