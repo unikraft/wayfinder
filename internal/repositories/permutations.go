@@ -221,7 +221,7 @@ func (repo *PermutationsRepository) SetStatusTestPausedByPermutationId(id int64)
 }
 
 func (repo *PermutationsRepository) SetStatusTestFailedByPermutationId(id int64) error {
-	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_FAILED)
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_FAILED_GENERAL)
 }
 
 func (repo *PermutationsRepository) SetStatusTestKilledByPermutationId(id int64) error {
@@ -230,4 +230,36 @@ func (repo *PermutationsRepository) SetStatusTestKilledByPermutationId(id int64)
 
 func (repo *PermutationsRepository) SetStatusSuccessByPermutationId(id int64) error {
 	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_SUCCESS)
+}
+
+func (repo *PermutationsRepository) SetStatusTestKernelFailedNetwork(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_KERNEL_FAILED_NETWORK)
+}
+
+func (repo *PermutationsRepository) SetStatusTestKernelFailedDrive(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_KERNEL_FAILED_DRIVE)
+}
+
+func (repo *PermutationsRepository) SetStatusTestKernelFailedStartup(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_KERNEL_FAILED_STARTUP)
+}
+
+func (repo *PermutationsRepository) SetStatusTestBenchtoolFailedNetwork(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_BENCHTOOL_FAILED_NETWORK)
+}
+
+func (repo *PermutationsRepository) SetStatusTestBenchtoolFailedDrive(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_BENCHTOOL_FAILED_DRIVE)
+}
+
+func (repo *PermutationsRepository) SetStatusTestBenchtoolFailedStartup(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_BENCHTOOL_FAILED_STARTUP)
+}
+
+func (repo *PermutationsRepository) SetStatusTestWayfinderFailedInternal(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_WAYFINDER_FAILED_INTERNAL)
+}
+
+func (repo *PermutationsRepository) SetStatusTestWayfinderFailedExternal(id int64) error {
+	return repo.SetStatusByPermutationId(id, proto.JobPermutationStatus_JOB_PERM_STATUS_TEST_WAYFINDER_FAILED_EXTERNAL)
 }

@@ -178,6 +178,46 @@ func (repo *TestsRepository) SetStatusSuccessByTestUuid(uuid string) error {
 	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_SUCCESS)
 }
 
+// SetStatusKernelFailedNetworkByTestUuid sets the state of the test to "failed_kernel_network"
+func (repo *TestsRepository) SetStatusKernelFailedNetworkByTestUuid(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_KERNEL_FAILED_NETWORK)
+}
+
+// SetStatusKernelFailedDriveByTestUuid sets the state of the test to "failed_kernel_drive"
+func (repo *TestsRepository) SetStatusKernelFailedDriveByTestUuid(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_KERNEL_FAILED_DRIVE)
+}
+
+// SetStatusKernelFailedStartupByTestUuid sets the state of the test to "failed_kernel_startup"
+func (repo *TestsRepository) SetStatusKernelFailedStartupByTestUuid(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_KERNEL_FAILED_STARTUP)
+}
+
+// SetStatusBenchToolFailedNetworkByTestUuid sets the state of the test to "failed_bench_network"
+func (repo *TestsRepository) SetStatusBenchToolFailedNetworkByTestUuid(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_BENCHTOOL_FAILED_NETWORK)
+}
+
+// SetStatusBenchToolFailedDriveByTestUuid sets the state of the test to "failed_bench_drive"
+func (repo *TestsRepository) SetStatusBenchToolFailedDriveByTestUuid(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_BENCHTOOL_FAILED_DRIVE)
+}
+
+// SetStatusBenchToolFailedStartupByTestUuid sets the state of the test to "failed_bench_startup"
+func (repo *TestsRepository) SetStatusBenchToolFailedStartupByTestUuid(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_BENCHTOOL_FAILED_STARTUP)
+}
+
+// SetStatusWayfinderFailedInternal sets the state of the test to "failed_wayfinder_internal"
+func (repo *TestsRepository) SetStatusWayfinderFailedInternal(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_WAYFINDER_FAILED_INTERNAL)
+}
+
+// SetStatusWayfinderFailedExternal sets the state of the test to "failed_wayfinder_external"
+func (repo *TestsRepository) SetStatusWayfinderFailedExternal(uuid string) error {
+	return repo.SetStatusByTestUuid(uuid, proto.TestStatus_TEST_WAYFINDER_FAILED_EXTERNAL)
+}
+
 // SetRuntimeByTestUuid sets the state of the test to "created"
 func (repo *TestsRepository) SetRuntimeByTestUuid(uuid string, runtime time.Duration) error {
 	test := &models.Test{}
