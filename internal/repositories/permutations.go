@@ -157,6 +157,19 @@ func (s *PermutationsRepository) UpdatePermutation(permutation *models.Permutati
 	return permutation, nil
 }
 
+// Get the permutation with the given id
+func (s *PermutationsRepository) GetPermutationStatus(id int64, status *proto.JobPermutationStatus) error {
+	permutation := &models.Permutation{}
+
+	if err := s.db.Where("id = ?", id).First(permutation).Error; err != nil {
+		return err
+	}
+
+	*status = permutation.Status
+
+	return nil
+}
+
 // SetStatusById sets the status of the permutation to the desired status by
 // the Permutation's ID.
 func (repo *PermutationsRepository) SetStatusByPermutationId(id int64, status proto.JobPermutationStatus) error {
