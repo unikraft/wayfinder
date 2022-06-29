@@ -732,3 +732,22 @@ func (s *service) RedirectDebug(ctx context.Context, req *proto.RedirectDebugReq
 		Output:  output,
 	}, nil
 }
+
+// Returns the permutation status for a permutation Id
+func (s *service) PermutationStatus(ctx context.Context, req *proto.PermutationStatusRequest) (*proto.PermutationStatusResponse, error) {
+	s.p.Log.Infof("requested to get permutation status...")
+
+	var permStatus proto.JobPermutationStatus
+
+	err := s.p.DB.Repos().Permutations().GetPermutationStatus(int64(req.Id), &permStatus)
+	if err != nil {
+		return &proto.PermutationStatusResponse{
+			Success: false,
+		}, status.Errorf(codes.Internal, "could not get permutation status: %s", err)
+	}
+
+	return &proto.PermutationStatusResponse{
+		Success: true,
+		Status:  permStatus,
+	}, nil
+}
