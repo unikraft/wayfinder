@@ -48,16 +48,16 @@ import (
 )
 
 type config struct {
-	DefaultStartDelay     time.Duration `file:"default_start_delay"      env:"TESTER_DEFAULT_START_DELAY"      default:"5s"`
-	MetricsFreq           time.Duration `file:"metrics_freq"             env:"TESTER_METRICS_FREQ"             default:"1s"`
-	InfluxReceiverType    string        `file:"metrics_receiver_type"    env:"TESTER_METRICS_RECEIVER_TYPE"    default:"http"`
-	InfluxUsername        string        `file:"metrics_username"         env:"TESTER_METRICS_USERNAME"         default:""`
-	InfluxPassword        string        `file:"metrics_password"         env:"TESTER_METRICS_PASSWORD"         default:""`
-	InfluxToken           string        `file:"metrics_token"            env:"TESTER_METRICS_TOKEN"            default:""`
-	InfluxBucket          string        `file:"metrics_bucket"           env:"TESTER_METRICS_BUCKET"           default:"wayfinder"`
-	InfluxOrg             string        `file:"metrics_org"              env:"TESTER_METRICS_ORG"              default:"wayfinder"`
-	InfluxReceiver        string        `file:"metrics_receiver"         env:"TESTER_METRICS_RECEIVER"         default:"127.0.0.1:8086"`
-	InfluxReceiverTimeout time.Duration `file:"metrics_receiver_timeout" env:"TESTER_METRICS_RECEIVER_TIMEOUT" default:"5s"`
+	DefaultStartDelay     time.Duration `file:"default_start_delay"     env:"TESTER_DEFAULT_START_DELAY"     default:"5s"`
+	MetricsFreq           time.Duration `file:"metrics_freq"            env:"TESTER_INFLUX_FREQ"             default:"1s"`
+	InfluxReceiverType    string        `file:"influx_receiver_type"    env:"TESTER_INFLUX_RECEIVER_TYPE"    default:"http"`
+	InfluxUsername        string        `file:"influx_username"         env:"TESTER_INFLUX_USERNAME"         default:""`
+	InfluxPassword        string        `file:"influx_password"         env:"TESTER_INFLUX_PASSWORD"         default:""`
+	InfluxToken           string        `file:"influx_token"            env:"TESTER_INFLUX_TOKEN"            default:""`
+	InfluxBucket          string        `file:"influx_bucket"           env:"TESTER_INFLUX_BUCKET"           default:"wayfinder"`
+	InfluxOrg             string        `file:"influx_org"              env:"TESTER_INFLUX_ORG"              default:"wayfinder"`
+	InfluxReceiver        string        `file:"influx_receiver"         env:"TESTER_INFLUX_RECEIVER"         default:"127.0.0.1:8086"`
+	InfluxReceiverTimeout time.Duration `file:"influx_receiver_timeout" env:"TESTER_INFLUX_RECEIVER_TIMEOUT" default:"5s"`
 }
 
 type provider struct {
