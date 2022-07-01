@@ -293,7 +293,22 @@ tester:
   metrics_freq: 1s
 
   # Mechanic to connect to the metrics receiver.
-  metrics_receiver_type: tcp
+  influx_receiver_type: http
+
+  # Username used to connect to the metrics receiver.
+  influx_username: wayfinder
+
+  # Password used to connect to the metrics receiver.
+  influx_password: wayfinder
+
+  # The influx database to write metrics to.
+  influx_bucket: wayfinder
+
+  # The organization to write metrics to.
+  influx_org: wayfinder
+
+  # Token used to connect to the metrics receiver.
+  influx_token: TOKEN
 
   # Location of the remote metrics receiver.
-  metrics_receiver: 127.0.0.1:12345
+  influx_receiver: 127.0.0.1:8086
