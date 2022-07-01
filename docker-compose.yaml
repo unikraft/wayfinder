@@ -36,23 +36,26 @@ services:
       - wayfinder
 
   influxdb:
-    image: influxdb:1.4-alpine
+    image: influxdb:2.3-alpine
     container_name: wayfinder-influxdb
     hostname: influxdb
     restart: on-failure
     stdin_open: true
     volumes:
      - influxdb:/var/lib/influxdb
+     - influxdb2:/var/lib/influxdb2
     # env_file: ./.env
     ports:
      - 8086:8086
     networks:
       - wayfinder
     environment:
-      INFLUXDB_DB: wayfinder
-      INFLUXDB_HTTP_AUTH_ENABLED: "true"
-      INFLUXDB_ADMIN_USER: wayfinder
-      INFLUXDB_ADMIN_PASSWORD: wayfinder
+      DOCKER_INFLUXDB_DB: wayfinder
+      DOCKER_INFLUXDB_HTTP_AUTH_ENABLED: "true"
+      DOCKER_INFLUXDB_INIT_BUCKET: wayfinder
+      DOCKER_INFLUXDB_INIT_ORG: wayfinder
+      DOCKER_INFLUXDB_INIT_USERNAME: wayfinder
+      DOCKER_INFLUXDB_INIT_PASSWORD: wayfinder
       HTTP_PROXY: ""
       HTTPS_PROXY: ""
       http_proxy: ""
