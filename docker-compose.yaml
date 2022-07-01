@@ -6,6 +6,7 @@ networks:
 volumes:
   postgres:
   influxdb:
+  influxdb2:
   chronograf:
 
 services:
