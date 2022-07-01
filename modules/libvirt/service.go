@@ -36,6 +36,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -548,24 +549,44 @@ func (d *Domain) MeasureResources() []error {
 	return errs
 }
 
-func (d *Domain) GetResourceMeasurements() map[string]string {
-	res := make(map[string]string)
+func (d *Domain) GetResourceMeasurements() map[string]interface{} {
+	res := make(map[string]interface{})
 
 	for k, v := range d.CpuPrint() {
-		res[k] = v
+		valFloat, err := strconv.ParseFloat(v, 64)
+		if err == nil {
+			res[k] = valFloat
+		} else {
+			res[k] = v
+		}
 	}
 
 	for k, v := range d.MemPrint() {
-		res[k] = v
+		valFloat, err := strconv.ParseFloat(v, 64)
+		if err == nil {
+			res[k] = valFloat
+		} else {
+			res[k] = v
+		}
 	}
 
 	for k, v := range d.NetPrint() {
-		res[k] = v
+		valFloat, err := strconv.ParseFloat(v, 64)
+		if err == nil {
+			res[k] = valFloat
+		} else {
+			res[k] = v
+		}
 	}
 
 	for _, monitor := range d.monitors {
 		for k, v := range d.MetricPrint(monitor.Name) {
-			res[k] = v
+			valFloat, err := strconv.ParseFloat(v, 64)
+			if err == nil {
+				res[k] = valFloat
+			} else {
+				res[k] = v
+			}
 		}
 	}
 
