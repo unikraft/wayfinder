@@ -10,6 +10,7 @@ require (
 	github.com/evolbioinfo/gotree v0.4.2
 	github.com/go-redis/redis/v8 v8.3.2
 	github.com/google/go-containerregistry v0.5.1
+	github.com/influxdata/influxdb-client-go/v2 v2.9.1
 	github.com/lancs-net/netns v0.6.1
 	github.com/libvirt/libvirt-go v7.4.0+incompatible
 	github.com/libvirt/libvirt-go-xml v7.4.0+incompatible
@@ -29,6 +30,11 @@ require (
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/gorm v1.22.3
+)
+
+require (
+	github.com/deepmap/oapi-codegen v1.8.2 // indirect
+	github.com/influxdata/line-protocol v0.0.0-20200327222509-2487e7298839 // indirect
 )
 
 require (
