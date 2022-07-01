@@ -32,9 +32,7 @@ package tester
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
-	"encoding/json"
 	"fmt"
-	"net"
 	"reflect"
 	"time"
 
@@ -42,6 +40,7 @@ import (
 	"github.com/erda-project/erda-infra/pkg/transport"
 
 	"github.com/erda-project/erda-infra/base/logs"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/unikraft/wayfinder/api/proto"
 	"github.com/unikraft/wayfinder/modules/container"
 	"github.com/unikraft/wayfinder/modules/libvirt"
@@ -49,39 +48,30 @@ import (
 )
 
 type config struct {
-	DefaultStartDelay      time.Duration `file:"default_start_delay"      env:"TESTER_DEFAULT_START_DELAY"      default:"5s"`
-	MetricsFreq            time.Duration `file:"metrics_freq"             env:"TESTER_METRICS_FREQ"             default:"1s"`
-	MetricsReceiverType    string        `file:"metrics_receiver_type"    env:"TESTER_METRICS_RECEIVER_TYPE"    default:"tcp"`
-	MetricsReceiver        string        `file:"metrics_receiver"         env:"TESTER_METRICS_RECEIVER"         default:"127.0.0.1:12345"`
-	MetricsReceiverTimeout time.Duration `file:"metrics_receiver_timeout" env:"TESTER_METRICS_RECEIVER_TIMEOUT" default:"5s"`
+	DefaultStartDelay     time.Duration `file:"default_start_delay"      env:"TESTER_DEFAULT_START_DELAY"      default:"5s"`
+	MetricsFreq           time.Duration `file:"metrics_freq"             env:"TESTER_METRICS_FREQ"             default:"1s"`
+	InfluxReceiverType    string        `file:"metrics_receiver_type"    env:"TESTER_METRICS_RECEIVER_TYPE"    default:"http"`
+	InfluxUsername        string        `file:"metrics_username"         env:"TESTER_METRICS_USERNAME"         default:""`
+	InfluxPassword        string        `file:"metrics_password"         env:"TESTER_METRICS_PASSWORD"         default:""`
+	InfluxToken           string        `file:"metrics_token"            env:"TESTER_METRICS_TOKEN"            default:""`
+	InfluxBucket          string        `file:"metrics_bucket"           env:"TESTER_METRICS_BUCKET"           default:"wayfinder"`
+	InfluxOrg             string        `file:"metrics_org"              env:"TESTER_METRICS_ORG"              default:"wayfinder"`
+	InfluxReceiver        string        `file:"metrics_receiver"         env:"TESTER_METRICS_RECEIVER"         default:"127.0.0.1:8086"`
+	InfluxReceiverTimeout time.Duration `file:"metrics_receiver_timeout" env:"TESTER_METRICS_RECEIVER_TIMEOUT" default:"5s"`
 }
 
 type provider struct {
-	Cfg       *config
-	Log       logs.Logger
-	Register  transport.Register
-	service   *Service
-	DB        postgres.Interface `autowired:"postgres"`
-	Container *container.Service `autowired:"container"`
-	Libvirt   *libvirt.Service   `autowired:"libvirt"`
-	// metricServer  net.Conn
+	Cfg           *config
+	Log           logs.Logger
+	Register      transport.Register
+	service       *Service
+	DB            postgres.Interface `autowired:"postgres"`
+	Container     *container.Service `autowired:"container"`
+	Libvirt       *libvirt.Service   `autowired:"libvirt"`
+	metricsClient influxdb2.Client
 }
 
 func (p *provider) Init(ctx servicehub.Context) error {
-	// TODO: This connection should be checked and re-established if it fails
-	// (e.g. if the remote receiver is restarted)
-	// conn, err := net.Dial(p.Cfg.MetricsReceiverType, p.Cfg.MetricsReceiver)
-	// if err != nil {
-	//   return fmt.Errorf("failed to open metrics server connection to %s://%s", p.Cfg.MetricsReceiverType, p.Cfg.MetricsReceiver)
-	// }
-
-	// if p.Cfg.MetricsReceiverTimeout > 0 {
-	//   conn.SetDeadline
-	// }Z
-
-	// p.Log.Infof("connected to metrics server: %s://%s", p.Cfg.MetricsReceiverType, p.Cfg.MetricsReceiver)
-	// p.metricServer = conn
-
 	p.service = &Service{
 		p:     p,
 		tests: make(map[string]*test),
@@ -89,6 +79,13 @@ func (p *provider) Init(ctx servicehub.Context) error {
 
 	if p.Register != nil {
 		proto.RegisterTesterServiceImp(p.Register, p.service)
+	}
+
+	p.metricsClient = influxdb2.NewClient(p.Cfg.InfluxReceiverType+"://"+p.Cfg.InfluxReceiver, p.Cfg.InfluxToken)
+
+	_, err := p.metricsClient.Health(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to connect to metrics server: %s", err)
 	}
 
 	return nil
@@ -106,32 +103,13 @@ func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}
 	return p
 }
 
-func (p *provider) PushMetrics(testUuid string, metrics map[string]string) error {
-	// Each metric is registered as a "string: string" map
-	type measuredMetrics map[string]string
+func (p *provider) PushMetrics(testUuid string, metrics map[string]interface{}) error {
+	tags := make(map[string]string)
+	tags["test_uuid"] = testUuid
 
-	metrics["test_uuid"] = testUuid
+	point := influxdb2.NewPoint("domain", tags, metrics, time.Now())
 
-	// Creates a JSON from a map of "string: measuredMetrics"
-	jsonBytes, err := json.Marshal(map[string]measuredMetrics{
-		"domain": metrics,
-	})
-	if err != nil {
-		return fmt.Errorf("could not serialize metrics: %s", err)
-	}
-
-	conn, err := net.Dial(p.Cfg.MetricsReceiverType, p.Cfg.MetricsReceiver)
-	if err != nil {
-		return fmt.Errorf("failed to open metrics server connection to %s://%s", p.Cfg.MetricsReceiverType, p.Cfg.MetricsReceiver)
-	}
-
-	defer conn.Close()
-
-	// _, err = p.metricServer.Write(jsonBytes)
-	_, err = conn.Write(jsonBytes)
-	if err != nil {
-		return fmt.Errorf("failed to send to network connection: %s", err)
-	}
+	p.metricsClient.WriteAPI(p.Cfg.InfluxOrg, p.Cfg.InfluxBucket).WritePoint(point)
 
 	return nil
 }
