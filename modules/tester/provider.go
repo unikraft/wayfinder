@@ -103,8 +103,9 @@ func (p *provider) Provide(ctx servicehub.DependencyContext, args ...interface{}
 	return p
 }
 
-func (p *provider) PushMetrics(testUuid string, metrics map[string]interface{}) error {
+func (p *provider) PushMetrics(testUuid string, jobId int64, metrics map[string]interface{}) error {
 	tags := make(map[string]string)
+	tags["job_id"] = fmt.Sprintf("%d", jobId)
 	tags["test_uuid"] = testUuid
 
 	point := influxdb2.NewPoint("domain", tags, metrics, time.Now())

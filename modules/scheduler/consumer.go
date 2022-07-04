@@ -601,8 +601,10 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		// Start the test
 		c.Log.Infof("starting test for permutation_id=%d", permutation.Id)
 		_, err = c.p.Tester.StartTest(context.TODO(), &proto.StartTestRequest{
-			Uuid:    test.uuid,
-			Results: results,
+			Uuid:          test.uuid,
+			Results:       results,
+			PermutationId: int64(task.CurrentPerm.Id),
+			JobId:         int64(task.CurrentPerm.JobId),
 		})
 		if err != nil {
 			_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{

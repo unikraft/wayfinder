@@ -344,7 +344,7 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
 
 		for pushMetrics {
 			time.Sleep(s.p.Cfg.MetricsFreq)
-			if err := s.p.PushMetrics(req.Uuid, test.domain.GetResourceMeasurements()); err != nil {
+			if err := s.p.PushMetrics(req.Uuid, req.JobId, test.domain.GetResourceMeasurements()); err != nil {
 				s.p.Log.Errorf("could not push metrics: %s", err)
 			}
 			select {
