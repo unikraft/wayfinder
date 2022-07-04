@@ -153,7 +153,7 @@ func (d *Domain) CpuPrintThreadMetric(lookupMetric string, metric string) string
 	}
 
 	percent := avg * 100
-	return fmt.Sprintf("%.0f", percent)
+	return fmt.Sprintf("%.5f", percent)
 }
 
 func removeFromArray(s []int, r int) []int {

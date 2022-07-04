@@ -52,7 +52,8 @@ func (d *Domain) MemLookup() error {
 		if stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_UNUSED) {
 			unused = stat.Val
 		}
-		if stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_AVAILABLE) {
+		if stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_AVAILABLE) ||
+			stat.Tag == int32(libvirt.DOMAIN_MEMORY_STAT_ACTUAL_BALLOON) {
 			total = stat.Val
 		}
 	}
