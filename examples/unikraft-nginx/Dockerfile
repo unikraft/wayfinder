@@ -1,6 +1,6 @@
 FROM unikraft/kraft:staging AS kraft
 
-ARG UK_KRAFT_GITHUB_TOKEN=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
+ARG UK_KRAFT_GITHUB_TOKEN=
 ENV UK_KRAFTRC=/usr/src/unikraft/.kraftrc
 ENV UK_CACHEDIR=/usr/src/unikraft/.kraftcache
 ENV UK_WORKDIR=/usr/src/unikraft 
