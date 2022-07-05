@@ -43,6 +43,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/unikraft/wayfinder/api/proto"
+	"github.com/unikraft/wayfinder/internal/coremap"
 	"github.com/unikraft/wayfinder/internal/models"
 	"github.com/unikraft/wayfinder/internal/strutils"
 	"github.com/unikraft/wayfinder/modules/container"
@@ -127,10 +128,14 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 		}, errors.NewMissingParameterError("benchtool.cores")
 	}
 
+	var vmmCores []uint64
+	vmmCores = append(vmmCores, req.EmulatorCores...)
+	vmmCores = append(vmmCores, req.IoThreadCores...)
+
 	// Create a new entry in the database for this test
 	testModel, err := s.p.DB.Repos().Tests().CreateTestForPermutation(&models.Test{
 		PermutationId:  uint(req.PermutationId),
-		VMMCores:       strutils.JoinUint64(req.VmmCores, ","),
+		VMMCores:       strutils.JoinUint64(vmmCores, ","),
 		KernelCores:    strutils.JoinUint64(req.Kernel.Cores, ","),
 		BenchToolCores: strutils.JoinUint64(req.BenchTool.Cores, ","),
 	})
@@ -185,6 +190,9 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 		uint(memoryValueUint),
 		memoryUnit,
 		req.BenchTool.Monitors,
+		coremap.CoreRestriction(req.IsolationLevel),
+		req.EmulatorCores,
+		req.IoThreadCores,
 	)
 	if err != nil {
 		s.p.DB.Repos().Tests().SetStatusKernelFailedStartupByTestUuid(uuid)
@@ -201,14 +209,15 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 		}, status.Errorf(codes.Internal, "could not get initialise domain: %s", err)
 	}
 
-	if len(req.VmmCores) > 0 {
-		if err = domain.PinVMMToCores(req.VmmCores); err != nil {
-			s.p.DB.Repos().Tests().SetStatusWayfinderFailedInternal(uuid)
-			return &proto.CreateTestResponse{
-				Success: false,
-			}, status.Errorf(codes.Internal, "could not pin VMM to cores: %s", err)
-		}
-	}
+	// TODO: No need for this anymore, we now pin through libvirt
+	// if len(req.VmmCores) > 0 {
+	// 	if err = domain.PinVMMToCores(req.VmmCores); err != nil {
+	// 		s.p.DB.Repos().Tests().SetStatusWayfinderFailedInternal(uuid)
+	// 		return &proto.CreateTestResponse{
+	// 			Success: false,
+	// 		}, status.Errorf(codes.Internal, "could not pin VMM to cores: %s", err)
+	// 	}
+	// }
 
 	// Initialize the benchmark tool's container
 	container, err := s.p.Container.NewContainer(uuid)
