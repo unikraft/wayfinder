@@ -45,6 +45,7 @@ import (
 
 	"github.com/unikraft/wayfinder/api/proto"
 	"github.com/unikraft/wayfinder/internal/bridge"
+	"github.com/unikraft/wayfinder/internal/coremap"
 	"github.com/unikraft/wayfinder/internal/metrics"
 	"github.com/unikraft/wayfinder/internal/strutils"
 	"github.com/unikraft/wayfinder/pkg/sys"
@@ -85,7 +86,8 @@ type Domain struct {
 }
 
 func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage,
-	cores []uint64, memoryValue uint, memoryUnit string, monitors []*proto.TestMonitor) (*Domain, error) {
+	cores []uint64, memoryValue uint, memoryUnit string, monitors []*proto.TestMonitor, coreIsolationLevel coremap.CoreRestriction,
+	emulatorCores []uint64, ioThreadCores []uint64) (*Domain, error) {
 	// This maintains an open door for debug purpose
 	console := libvirtxml.DomainConsole{
 		TTY: "/dev/pts/4",
@@ -134,7 +136,7 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 	}
 
 	logDir := path.Join(s.p.Cfg.LogDir, uuid)
-	logFile := path.Join(logDir, "domain.log") // TODO: configuration opt?
+	logFile := path.Join(logDir, "domain.log")
 	if _, err := os.Stat(logDir); os.IsNotExist(err) {
 		os.MkdirAll(logDir, os.ModePerm)
 	}
@@ -145,6 +147,62 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 			Append: "on",
 		},
 	}
+
+	// Does not currently work
+	// // Numa tuning computation
+	// numaMemoryMode := "strict"
+	// if coreIsolationLevel == coremap.CoreOptionNoRestriction ||
+	// 	coreIsolationLevel == coremap.CoreOptionSameSocket {
+	// 	numaMemoryMode = "interleave"
+	// }
+
+	// Enable all performance events
+	var perfEvents []libvirtxml.DomainPerfEvent
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "cmt", Enabled: "no"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "mbmt", Enabled: "no"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "mbml", Enabled: "no"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "cpu_cycles", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "instructions", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "cache_references", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "cache_misses", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "branch_instructions", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "branch_misses", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "bus_cycles", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "stalled_cycles_frontend", Enabled: "no"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "stalled_cycles_backend", Enabled: "no"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "ref_cpu_cycles", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "cpu_clock", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "task_clock", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "page_faults", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "context_switches", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "cpu_migrations", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "page_faults_min", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "page_faults_maj", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "alignment_faults", Enabled: "yes"})
+	perfEvents = append(perfEvents, libvirtxml.DomainPerfEvent{Name: "emulation_faults", Enabled: "yes"})
+
+	// Generate ids for iothreads
+	var ioThreads []libvirtxml.DomainIOThread
+	var ioThreadId uint = 1
+	ioThreads = append(ioThreads, libvirtxml.DomainIOThread{ID: ioThreadId})
+
+	// Pin vcpus and iothreads
+	var VCPUPins []libvirtxml.DomainCPUTuneVCPUPin
+	var IOThreadPins []libvirtxml.DomainCPUTuneIOThreadPin
+
+	// We already calculate 1-to-1 so we can set the same here
+	for _, core := range cores {
+		VCPUPins = append(VCPUPins, libvirtxml.DomainCPUTuneVCPUPin{
+			VCPU:   uint(core),
+			CPUSet: fmt.Sprintf("%d", core),
+		})
+	}
+
+	// Should do once for every thread, but we currently use only one
+	IOThreadPins = append(IOThreadPins, libvirtxml.DomainCPUTuneIOThreadPin{
+		IOThread: ioThreadId,
+		CPUSet:   strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ioThreadCores)), ","), "[]"),
+	})
 
 	config := &libvirtxml.Domain{
 		Type:        "kvm",
@@ -168,10 +226,47 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 				Machine: archToMachine[x86_64],
 			},
 		},
+		// Does not currently work
+		// NUMATune: &libvirtxml.DomainNUMATune{
+		// 	Memory: &libvirtxml.DomainNUMATuneMemory{
+		// 		Mode: numaMemoryMode,
+		// 	},
+		// },
+		MemoryTune: &libvirtxml.DomainMemoryTune{
+			HardLimit: &libvirtxml.DomainMemoryTuneLimit{
+				Unit:  memoryUnit,
+				Value: uint64(memoryValue),
+			},
+			SwapHardLimit: &libvirtxml.DomainMemoryTuneLimit{
+				Unit:  memoryUnit,
+				Value: uint64(memoryValue),
+			},
+		},
+		MemoryBacking: &libvirtxml.DomainMemoryBacking{
+			MemoryAllocation: &libvirtxml.DomainMemoryAllocation{
+				Mode: "immediate",
+			},
+			// MemoryLocked: &libvirtxml.DomainMemoryLocked{}, // Might not work
+		},
+		IOThreads: 1,
+		IOThreadIDs: &libvirtxml.DomainIOThreadIDs{
+			IOThreads: ioThreads,
+		},
 		VCPU: &libvirtxml.DomainVCPU{
 			Placement: "static",
 			CPUSet:    strings.Trim(strings.Join(strings.Fields(fmt.Sprint(cores)), ","), "[]"),
 			Value:     uint(len(cores)),
+		},
+		CPU: &libvirtxml.DomainCPU{
+			Mode: "host-passthrough",
+			Cache: &libvirtxml.DomainCPUCache{
+				Mode: "passthrough",
+			},
+		},
+		CPUTune: &libvirtxml.DomainCPUTune{
+			EmulatorPin: &libvirtxml.DomainCPUTuneEmulatorPin{CPUSet: strings.Trim(strings.Join(strings.Fields(fmt.Sprint(emulatorCores)), ","), "[]")},
+			IOThreadPin: IOThreadPins,
+			VCPUPin:     VCPUPins,
 		},
 		Memory: &libvirtxml.DomainMemory{
 			Value: memoryValue,
@@ -180,6 +275,9 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 		OnCrash:    "destroy",
 		OnPoweroff: "destroy",
 		OnReboot:   "destroy",
+		Perf: &libvirtxml.DomainPerf{
+			Events: perfEvents,
+		},
 	}
 
 	domain := &Domain{
