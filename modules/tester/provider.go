@@ -41,6 +41,7 @@ import (
 
 	"github.com/erda-project/erda-infra/base/logs"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	libvirtStats "github.com/libvirt/libvirt-go"
 	"github.com/unikraft/wayfinder/api/proto"
 	"github.com/unikraft/wayfinder/modules/container"
 	"github.com/unikraft/wayfinder/modules/libvirt"
@@ -61,14 +62,16 @@ type config struct {
 }
 
 type provider struct {
-	Cfg           *config
-	Log           logs.Logger
-	Register      transport.Register
-	service       *Service
-	DB            postgres.Interface `autowired:"postgres"`
-	Container     *container.Service `autowired:"container"`
-	Libvirt       *libvirt.Service   `autowired:"libvirt"`
-	metricsClient influxdb2.Client
+	Cfg            *config
+	Log            logs.Logger
+	Register       transport.Register
+	service        *Service
+	DB             postgres.Interface `autowired:"postgres"`
+	Container      *container.Service `autowired:"container"`
+	Libvirt        *libvirt.Service   `autowired:"libvirt"`
+	metricsClient  influxdb2.Client
+	libvirtClient  *libvirtStats.Connect
+	libvirtDomains []*libvirtStats.Domain
 }
 
 func (p *provider) Init(ctx servicehub.Context) error {
@@ -86,6 +89,20 @@ func (p *provider) Init(ctx servicehub.Context) error {
 	_, err := p.metricsClient.Health(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to connect to metrics server: %s", err)
+	}
+
+	p.libvirtClient, err = libvirtStats.NewConnectReadOnly("")
+	if err != nil {
+		return err
+	}
+
+	domains, err := p.libvirtClient.ListAllDomains(libvirtStats.CONNECT_LIST_DOMAINS_ACTIVE)
+	if err != nil {
+		return err
+	}
+
+	for _, domain := range domains {
+		p.libvirtDomains = append(p.libvirtDomains, &domain)
 	}
 
 	return nil
@@ -107,6 +124,80 @@ func (p *provider) PushMetrics(testUuid string, jobId int64, metrics map[string]
 	tags := make(map[string]string)
 	tags["job_id"] = fmt.Sprintf("%d", jobId)
 	tags["test_uuid"] = testUuid
+
+	stats, err := p.libvirtClient.GetAllDomainStats(p.libvirtDomains, libvirtStats.DOMAIN_STATS_PERF, libvirtStats.CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE)
+	if err != nil {
+		return err
+	}
+	domainPerfStats := stats[0].Perf
+
+	// Everything contained inside libvirt
+	if domainPerfStats.AlignmentFaultsSet {
+		metrics["alignment_faults"] = domainPerfStats.AlignmentFaults
+	}
+	if domainPerfStats.BranchInstructionsSet {
+		metrics["branch_instructions"] = domainPerfStats.BranchInstructions
+	}
+	if domainPerfStats.BranchMissesSet {
+		metrics["branch_misses"] = domainPerfStats.BranchMisses
+	}
+	if domainPerfStats.BusCyclesSet {
+		metrics["bus_cycles"] = domainPerfStats.BusCycles
+	}
+	if domainPerfStats.CacheReferencesSet {
+		metrics["cache_references"] = domainPerfStats.CacheReferences
+	}
+	if domainPerfStats.CacheMissesSet {
+		metrics["cache_misses"] = domainPerfStats.CacheMisses
+	}
+	if domainPerfStats.CmtSet {
+		metrics["cmt"] = domainPerfStats.Cmt
+	}
+	if domainPerfStats.ContextSwitchesSet {
+		metrics["context_switches"] = domainPerfStats.ContextSwitches
+	}
+	if domainPerfStats.CpuClockSet {
+		metrics["cpu_clock"] = domainPerfStats.CpuClock
+	}
+	if domainPerfStats.CpuCyclesSet {
+		metrics["cpu_cycles"] = domainPerfStats.CpuCycles
+	}
+	if domainPerfStats.CpuMigrationsSet {
+		metrics["cpu_migrations"] = domainPerfStats.CpuMigrations
+	}
+	if domainPerfStats.EmulationFaultsSet {
+		metrics["emulation_faults"] = domainPerfStats.EmulationFaults
+	}
+	if domainPerfStats.InstructionsSet {
+		metrics["instructions"] = domainPerfStats.Instructions
+	}
+	if domainPerfStats.MbmlSet {
+		metrics["mbml"] = domainPerfStats.Mbml
+	}
+	if domainPerfStats.MbmtSet {
+		metrics["mbmt"] = domainPerfStats.Mbmt
+	}
+	if domainPerfStats.PageFaultsMajSet {
+		metrics["page_faults_maj"] = domainPerfStats.PageFaultsMaj
+	}
+	if domainPerfStats.PageFaultsMinSet {
+		metrics["page_faults_min"] = domainPerfStats.PageFaultsMin
+	}
+	if domainPerfStats.PageFaultsSet {
+		metrics["page_faults"] = domainPerfStats.PageFaults
+	}
+	if domainPerfStats.RefCpuCyclesSet {
+		metrics["ref_cpu_cycles"] = domainPerfStats.RefCpuCycles
+	}
+	if domainPerfStats.StalledCyclesBackendSet {
+		metrics["stalled_cycles_backend"] = domainPerfStats.StalledCyclesBackend
+	}
+	if domainPerfStats.StalledCyclesFrontendSet {
+		metrics["stalled_cycles_frontend"] = domainPerfStats.StalledCyclesFrontend
+	}
+	if domainPerfStats.TaskClockSet {
+		metrics["task_clock"] = domainPerfStats.TaskClock
+	}
 
 	point := influxdb2.NewPoint("domain", tags, metrics, time.Now())
 

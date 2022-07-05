@@ -365,6 +365,7 @@ func (s *Service) StartTest(ctx context.Context, req *proto.StartTestRequest) (*
 				continue
 			}
 		}
+		s.p.libvirtClient.Close()
 	}()
 
 	// Start a threat which oversees the running benchmark tool's container
