@@ -530,10 +530,12 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 	for _, currentTest := range task.Test {
 		test := test{}
 
-		vmmCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
+		emulatorCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
+		iothreadCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
 		benchToolCoreIds := c.busyWaitForCores(int(currentTest.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
 		kernelCoreIds := c.busyWaitForCores(int(currentTest.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
-		testCoreIds := append(vmmCoreIds, benchToolCoreIds...)
+		testCoreIds := append(emulatorCoreIds, benchToolCoreIds...)
+		testCoreIds = append(testCoreIds, iothreadCoreIds...)
 		testCoreIds = append(testCoreIds, kernelCoreIds...)
 
 		// Create the test
@@ -541,7 +543,8 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		c.Log.Infof("creating test for permutation_id=%d", permutation.Id)
 		createTestResp, err := c.p.Tester.CreateTest(context.TODO(), &proto.CreateTestRequest{
 			PermutationId: int64(permutation.Id),
-			VmmCores:      vmmCoreIds,
+			EmulatorCores: emulatorCoreIds,
+			IoThreadCores: iothreadCoreIds,
 			Kernel: &proto.TestKernel{
 				Image:  buildOutput.Outputs.Kernel,
 				InitRd: buildOutput.Outputs.InitRd,
