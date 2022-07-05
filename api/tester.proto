@@ -134,11 +134,13 @@ message TestResult {
 }
 
 message CreateTestRequest {
-  int64           jobId         = 1 [json_name = "job_id"];
-  int64           permutationId = 2 [json_name = "permutation_id"];
-  repeated uint64 vmmCores      = 3 [json_name = "vmm_cores"];
-  TestKernel      kernel        = 4 [json_name = "kernel"];
-  TestBenchTool   benchTool     = 5 [json_name = "benchtool"];
+  int64           jobId          = 1 [json_name = "job_id"];
+  int64           permutationId  = 2 [json_name = "permutation_id"];
+  repeated uint64 emulatorCores  = 3 [json_name = "emulator_cores"];
+  repeated uint64 ioThreadCores  = 4 [json_name = "iothread_cores"];
+  uint32          isolationLevel = 5 [json_name = "isolation_level"];
+  TestKernel      kernel         = 6 [json_name = "kernel"];
+  TestBenchTool   benchTool      = 7 [json_name = "benchtool"];
 }
 
 message CreateTestResponse {
