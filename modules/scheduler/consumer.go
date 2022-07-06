@@ -186,7 +186,7 @@ func (c *TaskConsumer) calculateCoremap(taskStage stage, level proto.JobIsolLeve
 // which will be assigned to the core, and the list of core IDs which are then
 // reserved will be returned.
 func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface{}, taskStage stage,
-	level proto.JobIsolLevel, split proto.JobIsolSplit) []uint64 {
+	level proto.JobIsolLevel, split proto.JobIsolSplit, laxMode bool) []uint64 {
 	var buildCoreIds []uint64
 	var buildCores []*coremap.Core
 	retries := 0
@@ -196,7 +196,7 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 
 		c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
 
-		if retries == 5 && level != proto.JobIsolLevel_JOB_ISOL_LEVEL_NONE &&
+		if laxMode && retries == 5 && level != proto.JobIsolLevel_JOB_ISOL_LEVEL_NONE &&
 			((taskStage == stageBuild && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BUILDS) ||
 				(taskStage == stageTest && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_TESTS)) {
 			c.Log.Debugf("Retries exceeded, expanding search")
@@ -366,7 +366,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 	if c.prevBuildChecksum != task.CurrentPerm.BuildChecksum {
 		c.prevBuildChecksum = task.CurrentPerm.BuildChecksum
 
-		buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit)
+		buildCoreIds := c.busyWaitForCores(int(task.Build.Cores), &build, stageBuild, task.IsolLevel, task.IsolSplit, task.LaxMode)
 
 		var buildEnvVars []*proto.BuildEnvVar
 		for _, param := range task.CurrentPerm.Params {
@@ -544,10 +544,10 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 	for _, currentTest := range task.Test {
 		test := test{}
 
-		emulatorCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
-		iothreadCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit)
-		benchToolCoreIds := c.busyWaitForCores(int(currentTest.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
-		kernelCoreIds := c.busyWaitForCores(int(currentTest.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit)
+		emulatorCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
+		iothreadCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
+		benchToolCoreIds := c.busyWaitForCores(int(currentTest.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
+		kernelCoreIds := c.busyWaitForCores(int(currentTest.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
 		testCoreIds := append(emulatorCoreIds, benchToolCoreIds...)
 		testCoreIds = append(testCoreIds, iothreadCoreIds...)
 		testCoreIds = append(testCoreIds, kernelCoreIds...)
