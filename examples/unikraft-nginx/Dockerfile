@@ -30,21 +30,29 @@ RUN set -xe; \
     kraft list add https://github.com/unikraft/lib-tlsf.git; \
     kraft list add https://github.com/unikraft/app-nginx.git; \
     kraft list update; \
-    kraft list pull unikraft@0.7.0; \
-    kraft list pull lib/pthread-embedded@0.7.0; \
-    kraft list pull lib/newlib@0.7.0; \
-    kraft list pull lib/lwip@0.7.0; \
-    kraft list pull lib/tinyalloc@0.7.0; \
-    kraft list pull lib/mimalloc@0.7.0; \
-    kraft list pull lib/tlsf@0.7.0; \
-    kraft list pull lib/nginx@0.6; \
-    kraft list pull --no-deps app/nginx; \
+    kraft list pull unikraft@0.9.0; \
+    kraft list pull lib/pthread-embedded@0.9.0; \
+    kraft list pull lib/newlib@0.9.0; \
+    kraft list pull lib/lwip@0.9.0; \
+    kraft list pull lib/tinyalloc@0.9.0; \
+    kraft list pull lib/mimalloc@0.9.0; \
+    kraft list pull lib/tlsf@0.9.0; \
+    kraft list pull lib/nginx@0.9.0; \
+    kraft list pull --no-deps app/nginx@0.6; \
     cd /usr/src/unikraft/apps/nginx; \
-    kraft configure \
-      -u unikraft@0.7.0 \
-      -u pthread-embedded@0.7.0 \
-      -u newlib@0.7.0 \
-      -u lwip@0.7.0 \
-      -u nginx@0.6; \
-    kraft build --no-progress --fast; \
+    sed -i 's/UK_FEATURE_RXQ_INTR_AVAILABLE/UK_NETDEV_F_RXQ_INTR/g' /usr/src/unikraft/libs/lwip/uknetdev.c; \
+    kraft -v configure -F \
+      -u unikraft@0.9.0 \
+      -u pthread-embedded@0.9.0 \
+      -u newlib@0.9.0 \
+      -u lwip@0.9.0 \
+      -u lib/nginx@0.9.0 \
+      -u app/nginx@0.6 \
+      --arch x86_64 \
+      --plat kvm \
+      --yes LIBVFSCORE_ROOTFS_INITRD \
+      --yes LIBCPIO \
+      --no  LIB9PFS \
+      --no  LIBUK9P; \
+    kraft build --no-fetch --no-progress --fast; \
     unset UK_KRAFT_GITHUB_TOKEN
