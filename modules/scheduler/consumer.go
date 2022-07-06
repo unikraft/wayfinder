@@ -189,11 +189,20 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 	level proto.JobIsolLevel, split proto.JobIsolSplit) []uint64 {
 	var buildCoreIds []uint64
 	var buildCores []*coremap.Core
+	retries := 0
 
 	// Wait until we have some free cores.
 	for {
 
 		c.Log.Debugf("Waiting for %d cores...", requiredNumCores)
+
+		if retries == 5 && level != proto.JobIsolLevel_JOB_ISOL_LEVEL_NONE &&
+			((taskStage == stageBuild && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_BUILDS) ||
+				(taskStage == stageTest && split == proto.JobIsolSplit_JOB_ISOL_SPLIT_TESTS)) {
+			c.Log.Debugf("Retries exceeded, expanding search")
+			retries = 0
+			level--
+		}
 
 		restriction := c.calculateCoremap(taskStage, level, split)
 		cores := c.p.CoreMap().FindFreeCores(restriction)
@@ -220,6 +229,7 @@ func (c *TaskConsumer) busyWaitForCores(requiredNumCores int, activity interface
 		if len(buildCores) >= requiredNumCores {
 			break
 		} else {
+			retries++
 			time.Sleep(c.p.Cfg.GraceTime)
 		}
 	}
