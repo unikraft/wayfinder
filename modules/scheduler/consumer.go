@@ -39,7 +39,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -60,6 +59,7 @@ type TaskConsumer struct {
 	prevBuildOutput      *proto.SaveBuildOutputsToDiskResponse
 	currentPermId        uint
 	signalChannelCreated bool
+	runningDomains       []string
 	Log                  logs.Logger
 }
 
@@ -129,11 +129,14 @@ func (c *TaskConsumer) cleanupOnSignal(signalChannel chan os.Signal) {
 	go func() {
 		<-signalChannel
 
-		// Run the cleanup script
-		c.p.Log.Debugf("running cleanup script")
-		err := exec.Command(c.p.Cfg.ShellType, c.p.Cfg.CleanupPath).Run()
-		if err != nil {
-			c.p.Log.Errorf("could not run cleanup script: %s", err)
+		// Call DestroyTest on all domains currently running
+		for _, testUuid := range c.runningDomains {
+			_, err := c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
+				Uuid: testUuid,
+			})
+			if err != nil {
+				fmt.Printf("could not cleanup properly: %s", err)
+			}
 		}
 		c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedExternal(int64(c.currentPermId))
 		os.Exit(1)
@@ -178,6 +181,19 @@ func (c *TaskConsumer) calculateCoremap(taskStage stage, level proto.JobIsolLeve
 	}
 
 	return coremap.CoreOptionNoRestriction
+}
+
+func removeFromArray(arrayPtr *[]string, elem string) {
+	var pos int
+
+	for step, arrayElem := range *arrayPtr {
+		if arrayElem == elem {
+			pos = step
+			break
+		}
+	}
+
+	*arrayPtr = append((*arrayPtr)[:pos], (*arrayPtr)[pos+1:]...)
 }
 
 // Busy-waits to reserve a core.  This method is required for builds and tests
@@ -589,6 +605,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		}
 
 		test.uuid = createTestResp.Uuid
+		c.runningDomains = append(c.runningDomains, test.uuid)
 		c.p.DB.Repos().Permutations().SetStatusTestInitByPermutationId(int64(task.CurrentPerm.Id))
 
 		var results []*proto.TestResult
@@ -627,6 +644,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			JobId:         int64(task.CurrentPerm.JobId),
 		})
 		if err != nil {
+			removeFromArray(&c.runningDomains, test.uuid)
 			_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
 				Uuid: test.uuid,
 			})
@@ -648,6 +666,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			if err != nil {
 				numRetries++
 				if numRetries >= 5 {
+					removeFromArray(&c.runningDomains, test.uuid)
 					_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
 						Uuid: test.uuid,
 					})
@@ -710,6 +729,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			if testFinished {
 				_, err = time.ParseDuration(statusTestResp.Runtime)
 				if err != nil {
+					removeFromArray(&c.runningDomains, test.uuid)
 					_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
 						Uuid: test.uuid,
 					})
@@ -726,6 +746,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		}
 
 		c.Log.Infof("test for permutation_id=%d to complete!", permutation.Id)
+		removeFromArray(&c.runningDomains, test.uuid)
 
 		// Destroy the test
 		c.Log.Infof("destroying test permutation_id=%d", permutation.Id)
