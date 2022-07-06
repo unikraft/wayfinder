@@ -87,6 +87,7 @@ type StartJobConfig struct {
 	Repeats          int
 	DryRun           bool
 	SeqScheduler     bool
+	Lax              bool
 }
 
 var (
@@ -166,6 +167,14 @@ func init() {
 		"Specify whether to save output to the database or not.",
 	)
 
+	startCmd.PersistentFlags().BoolVarP(
+		&jobCfg.Lax,
+		"lax",
+		"X",
+		false,
+		"Specify whether to use strict mode when choosing cores. By default lax mode is disabled.",
+	)
+
 	startCmd.PersistentFlags().VarP(
 		enumflag.New(
 			&jobCfg.IsolLevel,
@@ -228,6 +237,7 @@ func doStartCmd(cmd *cobra.Command, args []string) {
 		IsolSplit:        jobCfg.IsolSplit,
 		PermutationLimit: fmt.Sprint(jobCfg.PermutationLimit),
 		Repeats:          uint64(jobCfg.Repeats),
+		LaxMode:          jobCfg.Lax,
 		DryRun:           jobCfg.DryRun,
 	})
 	if err != nil {
