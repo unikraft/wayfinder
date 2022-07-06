@@ -383,11 +383,12 @@ build:
 
     # Configure Image for Nginx
     kraft -v configure -F \
-      -u unikraft@0.7.0 \
-      -u nginx@0.6 \
-      -u newlib@0.7.0 \
-      -u pthread-embedded@0.7.0 \
-      -u lwip@0.7.0 \
+      -u unikraft@0.9.0 \
+      -u lib/nginx@0.9.0 \
+      -u app/nginx@0.6 \
+      -u newlib@0.9.0 \
+      -u pthread-embedded@0.9.0 \
+      -u lwip@0.9.0 \
       ${KRAFT_CONFIGURE_COND_LIBS[@]} \
       --arch x86_64 \
       --plat kvm \
@@ -415,7 +416,7 @@ build:
       --no  LIBUK9P
 
     # Build the image
-    kraft build --no-fetch --no-progress
+    kraft build --no-fetch --no-progress --fast
 
     # Modify values inside the configuration
     cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
