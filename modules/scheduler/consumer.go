@@ -55,11 +55,12 @@ import (
 )
 
 type TaskConsumer struct {
-	p                 *provider
-	prevBuildChecksum string
-	prevBuildOutput   *proto.SaveBuildOutputsToDiskResponse
-	currentPermId     uint
-	Log               logs.Logger
+	p                    *provider
+	prevBuildChecksum    string
+	prevBuildOutput      *proto.SaveBuildOutputsToDiskResponse
+	currentPermId        uint
+	signalChannelCreated bool
+	Log                  logs.Logger
 }
 
 const (
@@ -103,8 +104,11 @@ func (c *TaskConsumer) Consume(delivery rmq.Delivery) {
 	// Create a new logger for this task
 	c.Log = c.p.Log.Sub(task.CurrentPerm.Checksum)
 
-	signalChannel := make(chan os.Signal)
-	c.cleanupOnSignal(signalChannel)
+	if !c.signalChannelCreated {
+		signalChannel := make(chan os.Signal)
+		c.cleanupOnSignal(signalChannel)
+		c.signalChannelCreated = true
+	}
 
 	// Start the task
 	err = c.StartTask(&task)
