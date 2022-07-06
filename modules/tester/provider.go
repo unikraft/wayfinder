@@ -129,7 +129,19 @@ func (p *provider) PushMetrics(testUuid string, jobId int64, metrics map[string]
 	if err != nil {
 		return err
 	}
-	domainPerfStats := stats[0].Perf
+
+	var domainPerfStats *libvirtStats.DomainStatsPerf
+	for _, stat := range stats {
+		name, _ := stat.Domain.GetUUIDString()
+		if name == testUuid {
+			domainPerfStats = stat.Perf
+			break
+		}
+	}
+
+	if domainPerfStats == nil {
+		return fmt.Errorf("domain can no longer be found")
+	}
 
 	// Everything contained inside libvirt
 	if domainPerfStats.AlignmentFaultsSet {
