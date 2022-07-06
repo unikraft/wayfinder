@@ -581,6 +581,9 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 		if err != nil {
 			// TODO: filter the error to make it more specific
 			c.p.DB.Repos().Permutations().SetStatusTestFailedByPermutationId(int64(task.CurrentPerm.Id))
+			_, _ = c.p.Tester.DestroyTest(context.TODO(), &proto.DestroyTestRequest{
+				Uuid: test.uuid,
+			})
 			c.releaseCoresById(testCoreIds)
 			return fmt.Errorf("could not create test: %s", err)
 		}
