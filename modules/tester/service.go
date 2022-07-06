@@ -203,25 +203,17 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 
 	// Initialize the domain
 	if err = domain.Init(); err != nil {
+		domain.CleanBridge()
 		s.p.DB.Repos().Tests().SetStatusKernelFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
 		}, status.Errorf(codes.Internal, "could not get initialise domain: %s", err)
 	}
 
-	// TODO: No need for this anymore, we now pin through libvirt
-	// if len(req.VmmCores) > 0 {
-	// 	if err = domain.PinVMMToCores(req.VmmCores); err != nil {
-	// 		s.p.DB.Repos().Tests().SetStatusWayfinderFailedInternal(uuid)
-	// 		return &proto.CreateTestResponse{
-	// 			Success: false,
-	// 		}, status.Errorf(codes.Internal, "could not pin VMM to cores: %s", err)
-	// 	}
-	// }
-
 	// Initialize the benchmark tool's container
 	container, err := s.p.Container.NewContainer(uuid)
 	if err != nil {
+		domain.CleanBridge()
 		s.p.DB.Repos().Tests().SetStatusBenchToolFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
@@ -229,6 +221,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 	}
 
 	if err := container.PullAndAttachImage(req.BenchTool.Image); err != nil {
+		domain.CleanBridge()
 		s.p.DB.Repos().Tests().SetStatusBenchToolFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
@@ -236,6 +229,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 	}
 
 	if err := container.SetCommands(req.BenchTool.Commands); err != nil {
+		domain.CleanBridge()
 		s.p.DB.Repos().Tests().SetStatusBenchToolFailedStartupByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
@@ -245,6 +239,7 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 	var envVars []string
 
 	if domain.IP() == nil {
+		domain.CleanBridge()
 		s.p.DB.Repos().Tests().SetStatusKernelFailedNetworkByTestUuid(uuid)
 		return &proto.CreateTestResponse{
 			Success: false,
