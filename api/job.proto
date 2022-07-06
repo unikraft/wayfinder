@@ -205,6 +205,7 @@ message Job {
   string                totalPermutations = 9  [json_name = "total_permutations"];
   repeated Permutation  permutations      = 10 [json_name = "permutations"];
   bool                  seqScheduler      = 11 [json_name = "seq_scheduler"];
+  bool                  laxMode           = 12 [json_name = "lax_mode"];
 }
 
 message Permutation {
@@ -286,6 +287,7 @@ message StartJobRequest {
   uint64       repeats          = 6;
   bool         dryRun           = 7;
   bool         seqScheduler     = 8;
+  bool         laxMode          = 9;
 }
 
 message StartJobResponse {
