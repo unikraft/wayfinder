@@ -576,9 +576,18 @@ func (d *Domain) Destroy() error {
 		return fmt.Errorf("could not undefine domain: %s", err)
 	}
 
-	// TODO sometimes fails
+	if err := d.CleanBridge(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *Domain) CleanBridge() error {
 	retries := 0
 	var err error
+
+	// TODO sometimes fails
 	for retries < 5 {
 		// Clean up the network
 		if err = d.bridge.Delete(d.fakePid, d.ip); err != nil {
