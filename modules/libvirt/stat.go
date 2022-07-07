@@ -50,7 +50,7 @@ func (d *Domain) MetricMeasure(name, command string) error {
 		return err
 	}
 
-	d.AddMeasurement(name, metrics.CreateMeasurement(result[:]))
+	d.AddMeasurement(name, metrics.CreateMeasurement(string(result)))
 	return nil
 }
 
