@@ -1,9 +1,11 @@
 package libvirt
 
 import (
-	"os/exec"
+        "os/exec"
+  "strings"
+  "strconv"
 
-	"github.com/unikraft/wayfinder/internal/metrics"
+  "github.com/unikraft/wayfinder/internal/metrics"
 )
 
 // SPDX-License-Identifier: BSD-3-Clause
@@ -39,24 +41,27 @@ import (
 
 // Same as the other metrics, but format is general
 func (d *Domain) MetricLookup() error {
-	return nil
+        return nil
 }
 
 // Runs every measurement script and adds the values obtain
 func (d *Domain) MetricMeasure(name, command string) error {
-	// TODO: variablize 'sh' such that user can specify entrypoint program
-	result, err := exec.Command("sh", command).Output()
-	if err != nil {
-		return err
-	}
+        // TODO: variablize 'sh' such that user can specify entrypoint program
+  result, err := exec.Command("sh", "-c", command).Output()
+  if err != nil {
+                return err
+        }
 
-	d.AddMeasurement(name, metrics.CreateMeasurement(string(result)))
-	return nil
+  measurement, _ := strconv.ParseFloat(strings.TrimSuffix(string(result), "\n"), 64)
+
+  d.AddMeasurement(name, metrics.CreateMeasurement(measurement))
+
+  return nil
 }
 
 // Prints the name-value pairs for each monitor
 func (d *Domain) MetricPrint(name string) map[string]string {
-	return map[string]string{
-		name: d.GetMetricDiffUint64(name, true),
-	}
+        return map[string]string{
+                name: d.GetMetricFloat64(name, 0),
+        }
 }
