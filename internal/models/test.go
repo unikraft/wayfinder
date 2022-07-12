@@ -44,7 +44,7 @@ import (
 type Test struct {
 	Base
 
-	UUID uuid.UUID `gorm:"type:char(36)"`
+	UUID uuid.UUID `gorm:"column:uuid;" json:"uuid"`
 
 	PermutationId uint `gorm:"column:permutation_id;"    json:"permutation_id"`
 
