@@ -276,6 +276,7 @@ func (s *service) createPermutation(job *models.Job) []*proto.Permutation {
 		for _, build := range permutation.Builds {
 			builds = append(builds, &proto.Build{
 				PermutationId:    uint64(build.PermutationId),
+				Uuid:             build.UUID.String(),
 				Status:           int32(build.Status),
 				Runtime:          build.Runtime.String(),
 				WayfinderVersion: build.WayfinderVersion,
@@ -289,6 +290,7 @@ func (s *service) createPermutation(job *models.Job) []*proto.Permutation {
 		for _, test := range permutation.Tests {
 			tests = append(tests, &proto.Test{
 				PermutationId:    uint64(test.PermutationId),
+				Uuid:             test.UUID.String(),
 				Status:           int32(test.Status),
 				Runtime:          test.Runtime.String(),
 				WayfinderVersion: test.WayfinderVersion,
