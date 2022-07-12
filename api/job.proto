@@ -227,24 +227,26 @@ message Param {
 
 message Build {
   uint64 permutationId    = 1 [json_name = "permutation_id"];
-  int32  status           = 2 [json_name = "status"];
-  string  runtime         = 3 [json_name = "runtime"];
-  string wayfinderVersion = 4 [json_name = "wayfinder_version"];
-  string kernelPath       = 5 [json_name = "kernel_path"];
-  string initRdPath       = 6 [json_name = "initrd_path"];
-  string logPath          = 7 [json_name = "log_path"];
-  string cores            = 8 [json_name = "cores"];
+  string uuid             = 2 [json_name = "uuid"];
+  int32  status           = 3 [json_name = "status"];
+  string  runtime         = 4 [json_name = "runtime"];
+  string wayfinderVersion = 5 [json_name = "wayfinder_version"];
+  string kernelPath       = 6 [json_name = "kernel_path"];
+  string initRdPath       = 7 [json_name = "initrd_path"];
+  string logPath          = 8 [json_name = "log_path"];
+  string cores            = 9 [json_name = "cores"];
 }
 
 message Test {
   uint64 permutationId    = 1 [json_name = "permutation_id"];
-  int32  status           = 2 [json_name = "status"];
-  string  runtime         = 3 [json_name = "runtime"];
-  string wayfinderVersion = 4 [json_name = "wayfinder_version"];
-  repeated Result results = 5 [json_name = "results"];
-  string vmmCores         = 6 [json_name = "vmm_cores"];
-  string kernelCores      = 7 [json_name = "kernel_cores"];
-  string benchToolCores   = 8 [json_name = "bench_tool_cores"];
+  string uuid             = 2 [json_name = "uuid"];
+  int32  status           = 3 [json_name = "status"];
+  string  runtime         = 4 [json_name = "runtime"];
+  string wayfinderVersion = 5 [json_name = "wayfinder_version"];
+  repeated Result results = 6 [json_name = "results"];
+  string vmmCores         = 7 [json_name = "vmm_cores"];
+  string kernelCores      = 8 [json_name = "kernel_cores"];
+  string benchToolCores   = 9 [json_name = "bench_tool_cores"];
 }
 
 message Result {
