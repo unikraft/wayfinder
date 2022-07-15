@@ -338,6 +338,8 @@ params:
   # /proc/sys/fs
   - name:    AIO_MAX_NR
     type:    int
+    min:     0
+    max:     6553600000
     default: 65536
     only:    [65536]
     when:    test
@@ -350,12 +352,16 @@ params:
 
   - name:    FILE_MAX
     type:    int
+    min:     0
+    max:     3979910000
     default: 816968
     only:    [816968]
     when:    test
 
   - name:    LEASE_BREAK_TIME
     type:    int
+    min:     0
+    max:     450000000
     default: 45
     only:    [45]
     when:    test
@@ -368,24 +374,32 @@ params:
 
   - name:    NR_OPEN
     type:    int
+    min:     100
+    max:     10485760000
     default: 1048576
     only:    [1048576]
     when:    test
 
   - name:    OVERFLOWGID
     type:    int
+    min:     0
+    max:     65534
     default: 65534
     only:    [65534]
     when:    test
 
   - name:    OVERFLOWUID
     type:    int
+    min:     0
+    max:     65534
     default: 65534
     only:    [65534]
     when:    test
 
   - name:    PIPE_MAX_SIZE
     type:    int
+    min:     10480
+    max:     10485760000
     default: 1048576
     only:    [1048576]
     when:    test
@@ -471,6 +485,8 @@ params:
 
   - name:    HUNG_TASK_CHECK_COUNT
     type:    int
+    min:     0
+    max:     419430400
     default: 4194304
     only:    [4194304]
     when:    test
@@ -483,12 +499,16 @@ params:
 
   - name:    HUNG_TASK_TIMEOUT_SECS
     type:    int
+    min:     0
+    max:     12000000000
     default: 120
     only:    [120]
     when:    test
 
   - name:    HUNG_TASK_WARNINGS
     type:    int
+    min:     0
+    max:     10000000000
     default: 10
     only:    [10]
     when:    test
@@ -513,6 +533,8 @@ params:
 
   - name:    KSTACK_DEPTH_TO_PRINT
     type:    int
+    min:     0
+    max:     1200000000
     default: 12
     only:    [12]
     when:    test
@@ -525,6 +547,8 @@ params:
 
   - name:    MAX_LOCK_DEPTH
     type:    int
+    min:     0
+    max:     1024000000
     default: 1024
     only:    [1024]
     when:    test
@@ -538,18 +562,24 @@ params:
 
   - name:    MSGMAX
     type:    int
+    min:     0
+    max:     819200000
     default: 8192
     only:    [8192]
     when:    test
 
   - name:    MSGMNB
     type:    int
+    min:     0
+    max:     1638400000
     default: 16384
     only:    [16384]
     when:    test
 
   - name:    MSGMNI
     type:    int
+    min:     0
+    max:     320000000
     default: 32000
     only:    [32000]
     when:    test
@@ -562,30 +592,40 @@ params:
 
   - name:    NS_LAST_PID
     type:    int
+    min:     0
+    max:     26230
     default: 2793
     only:    [2793]
     when:    test
 
   - name:    NUMA_BALANCING_SCAN_DELAY_MS
     type:    int
+    min:     0
+    max:     1000000000
     default: 1000
     only:    [1000]
     when:    test
 
   - name:    NUMA_BALANCING_SCAN_PERIOD_MAX_MS
     type:    int
+    min:     0
+    max:     600000000
     default: 60000
     only:    [60000]
     when:    test
 
   - name:    NUMA_BALANCING_SCAN_PERIOD_MIN_MS
     type:    int
+    min:     0
+    max:     1000000000
     default: 1000
     only:    [1000]
     when:    test
 
   - name:    NUMA_BALANCING_SCAN_SIZE_MB
     type:    int
+    min:     10
+    max:     256000000
     default: 256
     only:    [256]
     when:    test
@@ -622,18 +662,24 @@ params:
 
   - name:    PERF_CPU_TIME_MAX_PERCENT
     type:    int
+    min:     0
+    max:     250000000
     default: 25
     only:    [25]
     when:    test
 
   - name:    PERF_EVENT_MAX_SAMPLE_RATE
     type:    int
+    min:     10
+    max:     10000000000
     default: 100000
     only:    [100000]
     when:    test
 
   - name:    PERF_EVENT_MLOCK_KB
     type:    int
+    min:     0
+    max:     516000000
     default: 516
     only:    [516]
     when:    test
@@ -646,6 +692,8 @@ params:
 
   - name:    PID_MAX
     type:    int
+    min:     1310
+    max:     1310720
     default: 32768
     only:    [32768]
     when:    test
@@ -670,18 +718,24 @@ params:
 
   - name:    PRINTK_RATELIMIT
     type:    int
+    min:     0
+    max:     5000000000
     default: 5
     only:    [5]
     when:    test
 
   - name:    PRINTK_RATELIMIT_BURST
     type:    int
+    min:     0
+    max:     1000000000
     default: 10
     only:    [10]
     when:    test
 
   - name:    RANDOMIZE_VA_SPACE
     type:    int
+    min:     0
+    max:     2000000000
     default: 2
     only:    [2]
     when:    test
@@ -700,6 +754,8 @@ params:
 
   - name:    SCHED_CFS_BANDWIDTH_SLICE_US
     type:    int
+    min:     10
+    max:     5000000000
     default: 5000
     only:    [5000]
     when:    test
@@ -712,54 +768,72 @@ params:
 
   - name:    SCHED_LATENCY_NS
     type:    int
-    default: 18000000
-    only:    [18000000]
+    min:     120000
+    max:     120000000
+    default: 12000000
+    only:    [12000000]
     when:    test
 
   - name:    SCHED_MIGRATION_COST_NS
     type:    int
+    min:     0
+    max:     500000000
     default: 500000
     only:    [500000]
     when:    test
 
   - name:    SCHED_MIN_GRANULARITY_NS
     type:    int
-    default: 2250000
-    only:    [2250000]
+    min:     150000
+    max:     150000000
+    default: 1500000
+    only:    [1500000]
     when:    test
 
   - name:    SCHED_NR_MIGRATE
     type:    int
+    min:     0
+    max:     320000000
     default: 32
     only:    [32]
     when:    test
 
   - name:    SCHED_RR_TIMESLICE_MS
     type:    int
+    min:     0
+    max:     250000000
     default: 25
     only:    [25]
     when:    test
 
   - name:    SCHED_RT_PERIOD_US
     type:    int
+    min:     1000000
+    max:     1000000000
     default: 1000000
     only:    [1000000]
     when:    test
 
   - name:    SCHED_RT_RUNTIME_US
     type:    int
+    min:     0
+    max:     950000
     default: 950000
     only:    [950000]
     when:    test
 
   - name:    SCHED_SHARES_WINDOW_NS
     type:    int
+    min:     0
+    max:     1000000000
     default: 10000000
     only:    [10000000]
     when:    test
 
   - name:    SCHED_TIME_AVG_MS
     type:    int
+    min:     0
+    max:     1000000000
     default: 1000
     only:    [1000]
     when:    test
@@ -772,8 +846,10 @@ params:
 
   - name:    SCHED_WAKEUP_GRANULARITY_NS
     type:    int
-    default: 3000000
-    only:    [3000000]
+    min:     0
+    max:     200000000
+    default: 2000000
+    only:    [2000000]
     when:    test
 
   - name:    SEM
@@ -802,6 +878,8 @@ params:
 
   - name:    SHMMNI
     type:    int
+    min:     0
+    max:     409600000
     default: 4096
     only:    [4096]
     when:    test
@@ -832,6 +910,8 @@ params:
 
   - name:    SYSRQ
     type:    int
+    min:     0
+    max:     1760000000
     default: 176
     only:    [176]
     when:    test
@@ -844,6 +924,8 @@ params:
 
   - name:    THREADS_MAX
     type:    int
+    min:     30
+    max:     312070000
     default: 63834
     only:    [63834]
     when:    test
@@ -880,6 +962,8 @@ params:
 
   - name:    WATCHDOG_THRESH
     type:    int
+    min:     0
+    max:     10
     default: 10
     only:    [10]
     when:    test
@@ -914,6 +998,8 @@ params:
   #  maximum number of packets that kernel can handle on a NAPI interrupt
   - name:    DEV_WEIGHT
     type:    int
+    min:     0
+    max:     640000000
     default: 64
     only:    [64]
     when:    test
@@ -931,6 +1017,8 @@ params:
 
   - name:    FLOW_LIMIT_TABLE_LEN
     type:    int
+    min:     4090
+    max:     4096
     default: 4096
     only:    [4096]
     when:    test
@@ -938,12 +1026,16 @@ params:
   # Logging infromation limits from the network. Probably should be turned off.
   - name:    MESSAGE_BURST
     type:    int
+    min:     0
+    max:     1000000000
     default: 10
     only:    [10]
     when:    test
 
   - name:    MESSAGE_COST
     type:    int
+    min:     0
+    max:     5000000000
     default: 5
     only:    [5]
     when:    test
@@ -952,6 +1044,8 @@ params:
   # although since backpressure will occur naturally, not that important)
   - name:    NETDEV_BUDGET
     type:    int
+    min:     0
+    max:     300000000
     default: 300
     only:    [300]
     when:    test
@@ -959,6 +1053,8 @@ params:
   # size of receive queue between netdev and ip kernel layers
   - name:    NETDEV_MAX_BACKLOG
     type:    int
+    min:     0
+    max:     1000000000
     default: 1000
     only:    [1000]
     when:    test
@@ -974,6 +1070,8 @@ params:
   # Memory limit for per packet metadata. probably exponentially increasing.
   - name:    OPTMEM_MAX
     type:    int
+    min:     0
+    max:     2048000000
     default: 20480
     only:    [20480]
     when:    test
@@ -981,12 +1079,16 @@ params:
   # read mem limits
   - name:    RMEM_DEFAULT
     type:    int
+    min:     21290
+    max:     2129920000
     default: 212992
     only:    [212992]
     when:    test
 
   - name:    RMEM_MAX
     type:    int
+    min:     21290
+    max:     2129920000
     default: 212992
     only:    [212992]
     when:    test
@@ -1001,6 +1103,8 @@ params:
   # listen socket backlog limit - also related: tcp_max_syn_backlog
   - name:    SOMAXCONN
     type:    int
+    min:     0
+    max:     1280000000
     default: 128
     only:    [128]
     when:    test
@@ -1014,12 +1118,16 @@ params:
   # write mem limits
   - name:    WMEM_DEFAULT
     type:    int
+    min:     21290
+    max:     2129920000
     default: 212992
     only:    [212992]
     when:    test
 
   - name:    WMEM_MAX
     type:    int
+    min:     21290
+    max:     2129920000
     default: 212992
     only:    [212992]
     when:    test
@@ -1072,30 +1180,40 @@ params:
 
   - name:    ICMP_MSGS_BURST
     type:    int
+    min:     0
+    max:     5000000000
     default: 50
     only:    [50]
     when:    test
 
   - name:    ICMP_MSGS_PER_SEC
     type:    int
+    min:     0
+    max:     10000000000
     default: 1000
     only:    [1000]
     when:    test
 
   - name:    ICMP_RATELIMIT
     type:    int
+    min:     0
+    max:     10000000000
     default: 1000
     only:    [1000]
     when:    test
 
   - name:    ICMP_RATEMASK
     type:    int
+    min:     0
+    max:     616800000
     default: 6168
     only:    [6168]
     when:    test
 
   - name:    IGMP_MAX_MEMBERSHIPS
     type:    int
+    min:     0
+    max:     2000000000
     default: 20
     only:    [20]
     when:    test
@@ -1104,12 +1222,16 @@ params:
   # that the host can subscribe to - probably useless
   - name:    IGMP_MAX_MSF
     type:    int
+    min:     0
+    max:     1000000000
     default: 10
     only:    [10]
     when:    test
 
   - name:    IGMP_QRV
     type:    int
+    min:     2
+    max:     2000000000
     default: 2
     only:    [2]
     when:    test
@@ -1117,24 +1239,32 @@ params:
   # temp storage per-ip information - probable useless.
   - name:    INET_PEER_MAXTTL
     type:    int
+    min:     0
+    max:     6000000000
     default: 600
     only:    [600]
     when:    test
 
   - name:    INET_PEER_MINTTL
     type:    int
+    min:     0
+    max:     12000000000
     default: 120
     only:    [120]
     when:    test
 
   - name:    INET_PEER_THRESHOLD
     type:    int
+    min:     0
+    max:     656640000
     default: 65664
     only:    [65664]
     when:    test
 
   - name:    IP_DEFAULT_TTL
     type:    int
+    min:     10
+    max:     64
     default: 64
     only:    [64]
     when:    test
@@ -1177,18 +1307,24 @@ params:
 
   - name:    IPFRAG_HIGH_THRESH
     type:    int
+    min:     4194300
+    max:     419430400
     default: 4194304
     only:    [4194304]
     when:    test
 
   - name:    IPFRAG_LOW_THRESH
     type:    int
+    min:     0
+    max:     3145728
     default: 3145728
     only:    [3145728]
     when:    test
 
   - name:    IPFRAG_MAX_DIST
     type:    int
+    min:     0
+    max:     6400000000
     default: 64
     only:    [64]
     when:    test
@@ -1201,6 +1337,8 @@ params:
 
   - name:    IPFRAG_TIME
     type:    int
+    min:     0
+    max:     3000000000
     default: 30
     only:    [30]
     when:    test
@@ -1221,6 +1359,8 @@ params:
 
   - name:    TCP_APP_WIN
     type:    int
+    min:     0
+    max:     310000000
     default: 31
     only:    [31]
     when:    test
@@ -1235,13 +1375,17 @@ params:
   # Jumbo frames are not realistic in the Internet.
   - name:    TCP_BASE_MSS
     type:    int
-    default: 512
-    only:    [512]
+    min:     0
+    max:     1024000000
+    default: 1024
+    only:    [1024]
     when:    test
 
   # Side-channel atack to infer seq number. Probably irrelevant.
   - name:    TCP_CHALLENGE_ACK_LIMIT
     type:    int
+    min:     0
+    max:     1000000000
     default: 100
     only:    [100]
     when:    test
@@ -1266,6 +1410,8 @@ params:
   # recovery mechanism for short connections. Probably useful and boolean. off is 0, on is 3.
   - name:    TCP_EARLY_RETRANS
     type:    int
+    min:     0
+    max:     3
     default: 3
     only:    [3]
     when:    test
@@ -1274,6 +1420,8 @@ params:
   # irrelevant.
   - name:    TCP_ECN
     type:    int
+    min:     0
+    max:     2000000000
     default: 2
     only:    [2]
     when:    test
@@ -1294,12 +1442,16 @@ params:
   # random seed to generate random tcp cookies for fastopen. Probably irrelevant.
   - name:    TCP_FIN_TIMEOUT
     type:    int
+    min:     0
+    max:     6000000000
     default: 60
     only:    [60]
     when:    test
 
   - name:    TCP_FRTO
     type:    int
+    min:     0
+    max:     2000000000
     default: 2
     only:    [2]
     when:    test
@@ -1312,32 +1464,42 @@ params:
 
   - name:    TCP_INVALID_RATELIMIT
     type:    int
+    min:     0
+    max:     5000000000
     default: 500
     only:    [500]
     when:    test
 
   - name:    TCP_KEEPALIVE_INTVL
     type:    int
+    min:     0
+    max:     7500000000
     default: 75
     only:    [75]
     when:    test
 
   - name:    TCP_KEEPALIVE_PROBES
     type:    int
+    min:     0
+    max:     900000000
     default: 9
     only:    [9]
     when:    test
 
   - name:    TCP_KEEPALIVE_TIME
     type:    int
+    min:     0
+    max:     7200000000
     default: 7200
     only:    [7200]
     when:    test
 
   - name:    TCP_LIMIT_OUTPUT_BYTES
     type:    int
-    default: 131072
-    only:    [131072]
+    min:     0
+    max:     262144000
+    default: 262144
+    only:    [262144]
     when:    test
 
   - name:    TCP_LOW_LATENCY
@@ -1348,26 +1510,34 @@ params:
 
   - name:    TCP_MAX_ORPHANS
     type:    int
-    default: 32768
-    only:    [32768]
+    min:     0
+    max:     1638400000
+    default: 16384
+    only:    [16384]
     when:    test
 
   - name:    TCP_MAX_REORDERING
     type:    int
+    min:     0
+    max:     300000000
     default: 300
     only:    [300]
     when:    test
 
   - name:    TCP_MAX_SYN_BACKLOG
     type:    int
-    default: 256
-    only:    [256]
+    min:     0
+    max:     1280000000
+    default: 128
+    only:    [128]
     when:    test
 
   - name:    TCP_MAX_TW_BUCKETS
     type:    int
-    default: 32768
-    only:    [32768]
+    min:     0
+    max:     1638400000
+    default: 16384
+    only:    [16384]
     when:    test
 
   - name:    TCP_MEM
@@ -1378,6 +1548,8 @@ params:
 
   - name:    TCP_MIN_TSO_SEGS
     type:    int
+    min:     2
+    max:     20000
     default: 2
     only:    [2]
     when:    test
@@ -1426,12 +1598,16 @@ params:
 
   - name:    TCP_RETRIES1
     type:    int
+    min:     0
+    max:     30
     default: 3
     only:    [3]
     when:    test
 
   - name:    TCP_RETRIES2
     type:    int
+    min:     0
+    max:     1500000000
     default: 15
     only:    [15]
     when:    test
@@ -1469,12 +1645,16 @@ params:
 
   - name:    TCP_SYN_RETRIES
     type:    int
+    min:     6
+    max:     60
     default: 6
     only:    [6]
     when:    test
 
   - name:    TCP_SYNACK_RETRIES
     type:    int
+    min:     0
+    max:     500000000
     default: 5
     only:    [5]
     when:    test
@@ -1505,6 +1685,8 @@ params:
 
   - name:    TCP_TSO_WIN_DIVISOR
     type:    int
+    min:     0
+    max:     300000000
     default: 3
     only:    [3]
     when:    test
@@ -1547,12 +1729,16 @@ params:
 
   - name:    UDP_RMEM_MIN
     type:    int
+    min:     10
+    max:     409600000
     default: 4096
     only:    [4096]
     when:    test
 
   - name:    UDP_WMEM_MIN
     type:    int
+    min:     10
+    max:     409600000
     default: 4096
     only:    [4096]
     when:    test
@@ -1566,24 +1752,32 @@ params:
   # /proc/sys/net/ipv4/route
   - name:    ERROR_BURST
     type:    int
+    min:     0
+    max:     1250000000
     default: 1250
     only:    [1250]
     when:    test
 
   - name:    ERROR_COST
     type:    int
+    min:     0
+    max:     250000000
     default: 250
     only:    [250]
     when:    test
 
   - name:    GC_ELASTICITY
     type:    int
+    min:     0
+    max:     800000000
     default: 8
     only:    [8]
     when:    test
 
   - name:    GC_INTERVAL
     type:    int
+    min:     0
+    max:     6000000000
     default: 60
     only:    [60]
     when:    test
@@ -1596,6 +1790,8 @@ params:
 
   - name:    GC_MIN_INTERVAL_MS
     type:    int
+    min:     0
+    max:     5000000000
     default: 500
     only:    [500]
     when:    test
@@ -1608,24 +1804,32 @@ params:
 
   - name:    GC_TIMEOUT
     type:    int
+    min:     0
+    max:     3000000000
     default: 300
     only:    [300]
     when:    test
 
   - name:    MAX_SIZE
     type:    int
+    min:     0
+    max:     2147483647
     default: 2147483647
     only:    [2147483647]
     when:    test
 
   - name:    MIN_ADV_MSS
     type:    int
+    min:     0
+    max:     256000000
     default: 256
     only:    [256]
     when:    test
 
   - name:    MIN_PMTU
     type:    int
+    min:     0
+    max:     552000000
     default: 552
     only:    [552]
     when:    test
@@ -1633,24 +1837,32 @@ params:
   # Probably irrelevant
   - name:    MTU_EXPIRES
     type:    int
+    min:     0
+    max:     6000000000
     default: 600
     only:    [600]
     when:    test
 
   - name:    REDIRECT_LOAD
     type:    int
+    min:     0
+    max:     500000000
     default: 5
     only:    [5]
     when:    test
 
   - name:    REDIRECT_NUMBER
     type:    int
+    min:     0
+    max:     900000000
     default: 9
     only:    [9]
     when:    test
 
   - name:    REDIRECT_SILENCE
     type:    int
+    min:     0
+    max:     512000000
     default: 5120
     only:    [5120]
     when:    test
@@ -1736,12 +1948,16 @@ params:
 
   - name:    IGMPV2_UNSOLICITED_REPORT_INTERVAL
     type:    int
+    min:     0
+    max:     1000000000
     default: 10000
     only:    [10000]
     when:    test
 
   - name:    IGMPV3_UNSOLICITED_REPORT_INTERVAL
     type:    int
+    min:     0
+    max:     1000000000
     default: 1000
     only:    [1000]
     when:    test
@@ -1912,6 +2128,8 @@ params:
   # /proc/sys/net/unix
   - name:    MAX_DGRAM_QLEN
     type:    int
+    min:     0
+    max:     512000000
     default: 10
     only:    [10]
     when:    test
