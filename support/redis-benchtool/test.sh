@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: test.sh path/to/payload.html
+# Usage: test.sh
 
 NUM_PARALLEL_CONNS=${NUM_PARALLEL_CONNS:-50}
 REQUESTS_SIZE=${REQUESTS_SIZE:-2}
@@ -27,15 +27,30 @@ echo "Starting experiment..."
 
 set -xe
 
-taskset -c ${WAYFINDER_CORE_ID0} \
-  redis-benchmark \
-    -h ${WAYFINDER_DOMAIN_IP_ADDR} \
-    -c ${NUM_PARALLEL_CONNS} \
-    -d ${REQUESTS_SIZE} \
-    -n ${NUM_TOTAL_REQUESTS} \
-    -t GET,SET,LPUSH,LPOP \
-    -q \
-    |& tee /results.txt
+retries=3
+
+while [[ $retries -gt 0 ]]; do
+  taskset -c ${WAYFINDER_CORE_ID0} \
+    redis-benchmark \
+      -h ${WAYFINDER_DOMAIN_IP_ADDR} \
+      -c ${NUM_PARALLEL_CONNS} \
+      -d ${REQUESTS_SIZE} \
+      -n ${NUM_TOTAL_REQUESTS} \
+      -t GET,SET,LPUSH,LPOP \
+      -q \
+      |& tee /results.txt
+
+  if [[ $? -eq 0 && $(cat /results.txt | grep "Connection refused") == "" ]]; then
+    break
+  fi
+  retries=$((retries - 1))
+  sleep 1
+done
+
+if [[ $retries -eq 0 ]]; then
+  echo "Failed to run redis-benchmark!"
+  exit 1
+fi
 
 set +x
 
@@ -45,9 +60,9 @@ if [[ ! -f /results.txt ]]; then
 fi
 
 mkdir -p /results/
-echo -n "$(cat results.txt | grep -e '^SET:' | awk '{ print $2 }')" > /results/set.txt
-echo -n "$(cat results.txt | grep -e '^GET:' | awk '{ print $2 }')" > /results/get.txt
-echo -n "$(cat results.txt | grep -e '^LPUSH:' | awk '{ print $2 }')" > /results/lpush.txt
-echo -n "$(cat results.txt | grep -e '^LPOP:' | awk '{ print $2 }')" > /results/lpop.txt
+echo -n "$(cat /results.txt | grep -e '^SET:'   | awk -F'[ \n]' '{ print $4 }' | awk -F'[.]' '{ print $1 }')" > /results/set.txt
+echo -n "$(cat /results.txt | grep -e '^GET:'   | awk -F'[ \n]' '{ print $4 }' | awk -F'[.]' '{ print $1 }')" > /results/get.txt
+echo -n "$(cat /results.txt | grep -e '^LPUSH:' | awk -F'[ \n]' '{ print $4 }' | awk -F'[.]' '{ print $1 }')" > /results/lpush.txt
+echo -n "$(cat /results.txt | grep -e '^LPOP:'  | awk -F'[ \n]' '{ print $4 }' | awk -F'[.]' '{ print $1 }')" > /results/lpop.txt
 
 echo "Done!"
