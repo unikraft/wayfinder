@@ -178,6 +178,12 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
 		newPermutationInJob.CurrentPerm.Id = 0
 	}
 
+	perm, err := s.p.DB.Repos().Permutations().FindOrCreateFromJobSpec(&newPermutationInJob)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not save job to DB: %s", err)
+	}
+	newPermutationInJob.CurrentPerm.Id = uint(perm.Id)
+
 	// Publish permutation to queue
 	taskBytes, err := json.Marshal(newPermutationInJob)
 	if err != nil {
@@ -196,7 +202,7 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
 
 	return &proto.CreatePermutationJobResponse{
 		Success: true,
-		Id:      int64(job.Id),
+		Id:      int64(perm.Id),
 	}, nil
 }
 
