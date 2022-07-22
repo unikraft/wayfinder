@@ -8,6 +8,7 @@ volumes:
   influxdb:
   influxdb2:
   chronograf:
+  pyroscope:
 
 services:
   logstash:
@@ -141,6 +142,17 @@ services:
       - 5000:5000
     networks:
       - wayfinder
+  
+  pyroscope:
+    image: "pyroscope/pyroscope:latest"
+    ports:
+      - "4040:4040"
+    command:
+      - "server"
+    networks:
+      - wayfinder
+    volumes:
+      - pyroscope:/var/lib/pyroscope
 
   wayfinder:
     image: ghcr.io/unikraft/wayfinder:latest
