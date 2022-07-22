@@ -2749,6 +2749,65 @@ params:
 
   # Redis-specific
   # TODO
+  - name: REDIS_TCP_BACKLOG
+    type: int
+    min: 1
+    max: 1024
+    default: 512
+    when: build
+  - name: REDIS_TCP_KEEPALIVE
+    type: int
+    only: [0, 60]
+    default: 0
+    when: build
+  - name: REDIS_DATABASES
+    type: int
+    min: 1
+    max: 24
+    default: 12
+    when: build
+  - name: REDIS_SAVE_TIME
+    type: int
+    min: 1
+    max: 2048
+    default: 60
+    when: build    
+  - name: REDIS_SAVE_RECORDS
+    type: int
+    min: 1
+    max: 10000
+    default: 10000
+    when: build
+  - name: REDIS_RBCOMRESSION
+    type: string
+    only: ["yes", "no"]
+    when: build
+  - name: REDIS_RDBCHECKSUM
+    type: string
+    only: ["yes", "no"]
+    when: build
+  - name: REDIS_MAX_MEMORY_POLICY
+    type: string
+    only: ["volatile-lru", "allkeys-lru", "volatile-lfu", "allkeys-lfu", "volatile-random", "allkeys-random", "olatile-ttl", "noeviction"]
+    when: build
+  - name: REDIS_MAX_MEMORY_SAMPLE
+    type: int
+    only: [3, 5, 10]
+    when: build
+  - name: REDIS_HASH_ENTRIES
+    type: int
+    default: 512
+    when: build
+  - name: REDIS_HASH_VALUE
+    type: int
+    default: 64
+    when: build
+  - name: REDIS_ZIPLIST_SIZE
+    value: int
+    only: [-5, -4, -3, -2, -1]
+    default: -2
+    when: build
+    
 
 build:
   image: ghcr.io/unikraft/wayfinder/linux-redis:latest
