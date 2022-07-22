@@ -33,8 +33,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+	"runtime"
+
+	"github.com/pyroscope-io/client/pyroscope"
+	"github.com/spf13/cobra"
 
 	"github.com/erda-project/erda-infra/base/servicehub"
 
@@ -102,6 +105,46 @@ extensible and offers convenient APIs to:
 				os.Exit(0)
 			}
 
+			startProf, err := cmd.Flags().GetBool("profile")
+			if err != nil {
+				fmt.Printf("%s\n", err)
+				os.Exit(0)
+			}
+
+			profAddr, err := cmd.Flags().GetString("address")
+			if err != nil {
+				fmt.Printf("%s\n", err)
+				os.Exit(0)
+			}
+
+			if startProf {
+				if profAddr == "" {
+					profAddr = "http://localhost:4040"
+				}
+
+				runtime.SetMutexProfileFraction(5)
+				runtime.SetBlockProfileRate(5)
+
+				pyroscope.Start(pyroscope.Config{
+					ApplicationName: "wayfinder",
+					ServerAddress:   profAddr,
+					Logger:          pyroscope.StandardLogger,
+					ProfileTypes: []pyroscope.ProfileType{
+						pyroscope.ProfileCPU,
+						pyroscope.ProfileAllocObjects,
+						pyroscope.ProfileAllocSpace,
+						pyroscope.ProfileInuseObjects,
+						pyroscope.ProfileInuseSpace,
+
+						pyroscope.ProfileGoroutines,
+						pyroscope.ProfileMutexCount,
+						pyroscope.ProfileMutexDuration,
+						pyroscope.ProfileBlockCount,
+						pyroscope.ProfileBlockDuration,
+					},
+				})
+			}
+
 			return nil
 		},
 	}
@@ -111,6 +154,20 @@ extensible and offers convenient APIs to:
 		"V",
 		false,
 		"Show version and quit",
+	)
+
+	rootCmd.PersistentFlags().BoolP(
+		"profile",
+		"p",
+		false,
+		"Start in profiling mode",
+	)
+
+	rootCmd.PersistentFlags().StringP(
+		"address",
+		"a",
+		"http://localhost:4040",
+		"Address of the Pyroscope server",
 	)
 
 	rootCmd.PersistentFlags().StringVarP(
