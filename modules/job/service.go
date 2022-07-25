@@ -315,6 +315,7 @@ func (s *service) createPermutation(job *models.Job) []*proto.Permutation {
 			Params:   params,
 			Builds:   builds,
 			Tests:    tests,
+			Id:       uint64(permutation.Id),
 		})
 	}
 
