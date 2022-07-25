@@ -213,9 +213,10 @@ message Permutation {
   int64           jobId    = 2 [json_name = "job_id"];
   string          checksum = 3 [json_name = "checksum"];
   repeated Param  params   = 4 [json_name = "params"];
-  int64           status   = 8 [json_name = "status"];
-  repeated Build  builds   = 9 [json_name = "builds"];
-  repeated Test   tests    = 10 [json_name = "tests"];
+  int64           status   = 5 [json_name = "status"];
+  repeated Build  builds   = 6 [json_name = "builds"];
+  repeated Test   tests    = 7 [json_name = "tests"];
+  uint64          id       = 8 [json_name = "id"];
 }
 
 message Param {
