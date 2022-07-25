@@ -128,7 +128,7 @@ extensible and offers convenient APIs to:
 				pyroscope.Start(pyroscope.Config{
 					ApplicationName: "wayfinder",
 					ServerAddress:   profAddr,
-					Logger:          pyroscope.StandardLogger,
+					Logger:          nil,
 					ProfileTypes: []pyroscope.ProfileType{
 						pyroscope.ProfileCPU,
 						pyroscope.ProfileAllocObjects,
