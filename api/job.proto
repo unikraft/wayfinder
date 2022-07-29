@@ -82,6 +82,12 @@ service JobService {
     };
   }
 
+  rpc GetPermutationJob (GetPermutationJobRequest) returns (GetPermutationJobResponse)  {
+    option (google.api.http) = {
+      get: "/api/job/{id}/permutation/{permId}",
+    };
+  }
+
   // get job results
   rpc GetJobResults (GetJobResultsRequest) returns (GetJobResultsResponse)  {
     option (google.api.http) = {
@@ -317,6 +323,16 @@ message GetJobRequest {
 message GetJobResponse {
   bool success = 1 [json_name = "success"];
   Job  job     = 2 [json_name = "job"];
+}
+
+message GetPermutationJobRequest {
+  int64 id     = 1;
+  int64 permId = 2;
+}
+
+message GetPermutationJobResponse {
+  bool success            = 1 [json_name = "success"];
+  Permutation permutation = 2 [json_name = "permutation"];
 }
 
 message GetJobResultsRequest {
