@@ -2,6 +2,8 @@
 
 # Usage: test.sh
 
+DURATION=${DURATION:-30}
+
 if [[ -z "${WAYFINDER_CORE_ID0}" ]]; then
   echo "Missing core to pin!"
   exit 1
@@ -20,7 +22,7 @@ fi
 
 echo "Waiting for results..."
 
-curl -s ${WAYFINDER_DOMAIN_IP_ADDR}:8070 > /results.txt
+timeout ${DURATION} curl -s ${WAYFINDER_DOMAIN_IP_ADDR}:8070 > /results.txt
 
 if [[ ! -f /results.txt ]]; then
   echo "No results!"
