@@ -1,0 +1,57 @@
+From bfdcd5a819903b5255b864eb175925edffcaf437 Mon Sep 17 00:00:00 2001
+From: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+Date: Thu, 28 Jul 2022 13:30:39 +0300
+Subject: [PATCH] Add compatibility with external scrapers
+
+Signed-off-by: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+---
+ benchmark.c | 8 +++++---
+ main.c      | 2 +-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/benchmark.c b/benchmark.c
+index 3bc8613..cb18655 100644
+--- a/benchmark.c
++++ b/benchmark.c
+@@ -159,8 +159,8 @@ void finished_single_op() {
+     if (FLAGS_histogram) {
+       histogram_add(&hist_, micros);
+       if (micros > 20000) {
+-        fprintf(stderr, "long op: %.1f micros%30s\r", micros, "");
+-        fflush(stderr);
++        // fprintf(stderr, "long op: %.1f micros%30s\r", micros, "");
++        // fflush(stderr);
+       }
+     }
+     if (FLAGS_raw) {
+@@ -199,11 +199,13 @@ static void stop(const char* name) {
+     }
+   }
+ 
+-  fprintf(stderr, "%-12s : %11.3f micros/op;%s%s\n",
++  FILE *file = fopen("output.txt", "w");
++  fprintf(file, "%-12s : %11.3f micros/op;%s%s\n",
+           name,
+           (finish - start_) * 1e6 / done_,
+           (!message_ || !strcmp(message_, "") ? "" : " "),
+           (!message_) ? "" : message_);
++  fclose(file);
+   if (FLAGS_raw) {
+     raw_print(stdout, &raw_);
+   }
+diff --git a/main.c b/main.c
+index 07a3d58..b878094 100644
+--- a/main.c
++++ b/main.c
+@@ -142,7 +142,7 @@ void print_usage(const char* argv0) {
+ 
+ }
+ 
+-int main(int argc, char** argv) {
++int bench_main(int argc, char** argv) {
+   init();
+ 
+   char* default_db_path = malloc(sizeof(char) * 1024);
+-- 
+2.34.1
+
