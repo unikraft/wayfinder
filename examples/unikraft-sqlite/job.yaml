@@ -1,0 +1,386 @@
+name: unikraft-sqlite
+params:
+  # Unikraft-specific:
+  - name:    LWIP_NUM_TCPCON
+    description: |
+      The number of simultaneous TCP connections.
+    type:    int
+    default: 64
+    only:    [8, 16, 32, 64]
+    when:    build
+
+  - name:    LWIP_NUM_TCPLISTENERS
+    description: |
+      The number of simultaneous TCP listeners.
+    type:    int
+    default: 64
+    only:    [8, 16, 32, 64]
+    when:    build
+  
+  - name:    LWIP_UKNETDEV_POLLONLY
+    description: |
+      If enabled, the network interface will continuosly poll for new packets.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+  
+  - name:    LWIP_POOLS
+    description: |
+      If enabled, the memory will be allocated in pools and used like that.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  # Platform options:
+  # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
+  - name:    HZ
+    description: |
+      The timer frequency.
+    type:    int
+    default: 100
+    only:    [100, 250, 300, 1000]
+    when:    build
+
+  # Allocator options:
+  - name:    ALLOCATOR
+    description: |
+      The allocator type to use inside the image.
+    type:    string
+    default: "bbuddy"
+    only:    ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"]
+    when:    build
+
+  - name:    LIBTINYALLOC_DISABLE_SPLIT
+    description: |
+      Disable the splitting of memory.
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    if:      ALLOCATOR=='tinyalloc'
+    when:    build
+
+  - name:    LIBTINYALLOC_SPLIT_THRESH
+    description: |
+      The threshold at which to split the memory
+    type:    int
+    default: 16
+    only:    [8, 16, 24, 32]
+    if:      ALLOCATOR=='tinyalloc'
+    when:    build
+
+  - name:    LIBTINYALLOC_DISABLE_COMPACT
+    description: |
+      If enabled, it disables the compacting of memory.
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    if:      ALLOCATOR=='tinyalloc'
+    when:    build
+
+  - name:    LIBTINYALLOC_ALIGNMENT
+    description: |
+      The number to align the memory to.
+    type:    int
+    default: 8
+    only:    [8, 16, 32, 64, 128]
+    if:      ALLOCATOR=='tinyalloc'
+    when:    build
+  
+  # Mimalloc options:
+  - name:    LIBMIMALLOC_MIMALLOC_DEBUG
+    description: |
+      The debug level of the allocator.
+    type:    int
+    default: 0
+    only:    [0, 1, 2]
+    if:      ALLOCATOR=='mimalloc'
+    when:    build
+
+  - name:    LIBMIMALLOC_ASSERT
+    description: |
+      If assertions are to be evaluated.
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    if:      ALLOCATOR=='mimalloc'
+    when:    build
+
+  # TLSF specific options:
+  - name:    LIBTLSF_TLSF_LOG2_SLI
+    description: |
+      Option to allocate memory based upon.
+    type:    int
+    default: 5
+    only:    [4, 5, 6, 7]
+    if:      ALLOCATOR=='tlsf'
+    when:    build
+
+  # LWIP options:
+  - name:    LWIP_TCP_QUEUE_OOSEQ
+    description: |
+      TCP will queue segments that arrive out of order.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    LWIP_TCPIP_THREAD_STACKSIZE
+    description: |
+      The size of the stack for each TCP thread.
+    type:    int
+    default: 0
+    only:    [0, 256, 512, 1024, 2048, 4096, 8192, 16384]
+    when:    build
+
+  - name:    LWIP_TCP_SND_BUF
+    description: |
+      The send buffer size.
+    type:    int
+    default: 1048576 
+    only:    [1048576, 256000, 524288, 1048576, 1572864, 2097152]
+    when:    build
+  
+  - name:    LWIP_DNS_MAX_SERVERS
+    description: |
+      Number of DNS servers to have space for.
+    type:    int
+    default: 2
+    only:    [1, 2, 5, 10]
+    when:    build
+
+  - name:    LWIP_DNS_LOCAL_HOST_LIST
+    description: |
+      Use localhost list for DNS.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC
+    description: |
+      If the list on localhost is dynamic.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    LIBUKDEBUG_TRACEPOINTS
+    description: |
+      If enabled, tracepoints are activated.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    LIBUKDEBUG_ALL_TRACEPOINTS
+    description: |
+      If enabled, no tracepoints are missed.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    LWIP_POOLS_TRY_BIGGER_POOL
+    description: |
+      If enabled, lwip will try to increase the size of the pools.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  - name:    MEMP_USE_CUSTOM_POOLS
+    description: |
+      If enabled, lwip will not use standard pools.
+    type:    string
+    default: "n"
+    only:    ["y", "n"]
+    when:    build
+
+  # Sqlite-specific
+  # TODO
+
+  # Client-specific
+  - name:    BENCHMARKS
+    description: |
+      The type of benchmark to run from the suite.
+    type:    string
+    default: "fillseqsync"
+    only:    ["fillseqsync"] #, "fillrandsync", "readseq", "readrandom"] # We only want a test at a time
+    when:    test
+
+build:
+  image: ghcr.io/unikraft/wayfinder/unikraft-sqlite:latest
+  outputs:
+    kernel: /usr/src/unikraft/apps/sqlite/build/sqlite_kvm-x86_64
+    initrd: /usr/src/unikraft/apps/sqlite/initramfs.cpio
+    arch: x86_64
+    plat: kvm
+  devices:
+    - /dev/urandom
+  capabilities:
+    - CAP_NET_ADMIN
+  cores: 2
+  commands:
+    |
+    set -ex
+    env
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export UK_CACHEDIR=/usr/src/unikraft/.kraftcache/
+    export UK_WORKDIR=/usr/src/unikraft 
+
+    cd /usr/src/unikraft/apps/sqlite
+
+    # Conditioned configurations to be given to kraft
+    # LIBS    == libs to be configured
+    # ENABLE  == used for enabling/disabling libs
+    # OPTIONS == options for selected libs
+    KRAFT_CONFIGURE_COND_LIBS=()
+    KRAFT_CONFIGURE_COND_ENABLE=()
+    KRAFT_CONFIGURE_COND_OPTIONS=()
+
+    if [[ ${ALLOCATOR} == "tinyalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_ALIGNMENT=${LIBTINYALLOC_ALIGNMENT}")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_DISABLE_COMPACT=${LIBTINYALLOC_DISABLE_COMPACT}")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_SPLIT_THRESH=${LIBTINYALLOC_SPLIT_THRESH}")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_DISABLE_SPLIT=${LIBTINYALLOC_DISABLE_SPLIT}")
+    fi
+    if [[ ${ALLOCATOR} == "bbuddy" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
+    fi
+    if [[ ${ALLOCATOR} == "poolalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
+    fi
+    if [[ ${ALLOCATOR} == "regalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
+    fi
+    if [[ ${ALLOCATOR} == "tinyalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTINYALLOC_DISABLE_SPLIT=${LIBTINYALLOC_DISABLE_SPLIT}")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u tinyalloc@0.9.0")
+    fi
+    if [[ ${ALLOCATOR} == "mimalloc" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBMIMALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBMIMALLOC_ASSERT=${LIBMIMALLOC_ASSERT}")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBMIMALLOC_MIMALLOC_DEBUG=${LIBMIMALLOC_MIMALLOC_DEBUG}")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u mimalloc@0.9.0")
+    fi
+    if [[ ${ALLOCATOR} == "tlsf" ]]; then
+      KRAFT_CONFIGURE_COND_ENABLE+=("--yes LIBTLSF")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCREGION")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCPOOL")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBUKALLOCBBUDDY")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBTINYALLOC")
+      KRAFT_CONFIGURE_COND_ENABLE+=("--no LIBMIMALLOC")
+      KRAFT_CONFIGURE_COND_OPTIONS+=("--set LIBTLSF_TLSF_LOG2_SLI=${LIBTLSF_TLSF_LOG2_SLI}")
+      KRAFT_CONFIGURE_COND_LIBS+=("-u tlsf@0.9.0")
+    fi
+
+    # Configure Image for Sqlite
+    kraft -v configure -F \
+      -u unikraft@0.9.0 \
+      -u lib/sqlite@0.9.0 \
+      -u app/sqlite@0.9.0 \
+      -u newlib@0.9.0 \
+      -u pthread-embedded@0.9.0 \
+      -u lwip@0.9.0 \
+      ${KRAFT_CONFIGURE_COND_LIBS[@]} \
+      --arch x86_64 \
+      --plat kvm \
+      --set HZ=$HZ \
+      --set LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC=$LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC \
+      --set LWIP_DNS_LOCAL_HOST_LIST=$LWIP_DNS_LOCAL_HOST_LIST \
+      --set LWIP_DNS_MAX_SERVERS=$LWIP_DNS_MAX_SERVERS \
+      --set LWIP_TCP_SND_BUF=$LWIP_TCP_SND_BUF \
+      --set LWIP_TCPIP_THREAD_STACKSIZE=$LWIP_TCPIP_THREAD_STACKSIZE \
+      --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
+      --set LIBUKDEBUG_TRACEPOINTS=$LIBUKDEBUG_TRACEPOINTS \
+      --set LIBUKDEBUG_ALL_TRACEPOINTS=$LIBUKDEBUG_ALL_TRACEPOINTS \
+      --set LWIP_POOLS_TRY_BIGGER_POOL=$LWIP_POOLS_TRY_BIGGER_POOL \
+      --set MEMP_USE_CUSTOM_POOLS=$MEMP_USE_CUSTOM_POOLS \
+      --set LWIP_NUM_TCPCON=$LWIP_NUM_TCPCON \
+      --set LWIP_NUM_TCPLISTENERS=$LWIP_NUM_TCPLISTENERS \
+      --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
+      --set LWIP_POOLS=$LWIP_POOLS \
+      --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
+      ${KRAFT_CONFIGURE_COND_OPTIONS[@]} \
+      --yes LIBVFSCORE_ROOTFS_INITRD \
+      --yes LIBCPIO \
+      --yes LIBUKLIBPARAM \
+      --yes LIBUKNETDEV \
+      --yes VIRTIO_PCI \
+      ${KRAFT_CONFIGURE_COND_ENABLE[@]} \
+      --no  LIB9PFS \
+      --no LIBSQLITE_MAIN_FUNCTION \
+      --no  LIBUK9P
+
+    # Build the image
+    kraft build --no-fetch --no-progress --fast
+
+
+    # Generate cpio image
+    mkdir fs0
+    cd fs0/
+    find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
+
+    echo "Build Done!"
+
+test:
+  - name: throughput
+    kernel:
+      memory: 512M
+      args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_GW_ADDR netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK -- --benchmarks=${BENCHMARKS}
+      cores: 1
+    benchtool:
+      image: ghcr.io/unikraft/wayfinder/sqlite-benchtool:latest
+      devices:
+        - /dev/urandom
+        - /dev/kvm
+        - /dev/net/tun
+      capabilities:
+        - CAP_NET_ADMIN
+      commands: /test.sh
+      monitors:
+        - name: power
+          commands: ./examples/unikraft-sqlite/power-monitor.sh http://192.168.0.225/meter/0
+      cores: 1
+      start_delay: 5
+      duration: 30
+    results:
+      - name: benchvalue
+        path: /results/benchmark.txt
+        type: float
