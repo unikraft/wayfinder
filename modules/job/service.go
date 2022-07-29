@@ -412,6 +412,31 @@ func (s *service) GetJob(ctx context.Context, req *proto.GetJobRequest) (*proto.
 	}, nil
 }
 
+func (s *service) GetPermutationJob(ctx context.Context, req *proto.GetPermutationJobRequest) (*proto.GetPermutationJobResponse, error) {
+	s.p.Log.Infof("requested to get permutation %d from job %d...", req.PermId, req.Id)
+
+	job := &models.Job{}
+	if err := s.p.DB.Repos().Jobs().FindJobPermutation(req.Id, req.PermId, job); err != nil {
+		return nil, status.Errorf(codes.NotFound, "job with Id=%d not found", req.Id)
+	}
+
+	found := false
+	response := &proto.Permutation{}
+
+	for _, permutation := range s.createPermutation(job) {
+		if permutation.Id == uint64(req.PermId) {
+			response = permutation
+			found = true
+			break
+		}
+	}
+
+	return &proto.GetPermutationJobResponse{
+		Success:     found,
+		Permutation: response,
+	}, nil
+}
+
 func (s *service) DeleteJob(ctx context.Context, req *proto.DeleteJobRequest) (*proto.DeleteJobResponse, error) {
 	s.p.Log.Infof("deleting job with id=%d...", req.Id)
 
