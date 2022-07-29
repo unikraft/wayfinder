@@ -109,6 +109,33 @@ func (repo *JobsRepository) FindJob(id int64, offset, limit int, job *models.Job
 	return nil
 }
 
+// FindJobPermutation finds a job permutation
+func (repo *JobsRepository) FindJobPermutation(id, permId int64, job *models.Job) error {
+	if err := repo.db.
+		Where("id = ?", id).
+		Preload("Permutations", func(db *gorm.DB) *gorm.DB {
+			return repo.db.
+				Where("id = ?", permId).
+				Preload("Params").
+				Preload("Builds").
+				Preload("Tests").
+				Preload("Results")
+		}).
+		First(&job).Error; err != nil {
+		return err
+	}
+
+	if base64.IsBase64(job.Config) {
+		decoded, err := base64.Decode(job.Config)
+		if err != nil {
+			return err
+		}
+		job.Config = decoded
+	}
+
+	return nil
+}
+
 // CheckJobExists finds jobs with the same checksum
 func (repo *JobsRepository) CheckJobExists(checksum string, exists *bool) error {
 	var count int64 = 0
