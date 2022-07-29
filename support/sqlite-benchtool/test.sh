@@ -20,9 +20,7 @@ fi
 
 echo "Waiting for results..."
 
-set -xe
-
-curl --http0.9 -s ${WAYFINDER_DOMAIN_IP_ADDR}:8080 > /results.txt
+curl -s ${WAYFINDER_DOMAIN_IP_ADDR}:8070 > /results.txt
 
 if [[ ! -f /results.txt ]]; then
   echo "No results!"

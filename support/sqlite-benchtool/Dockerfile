@@ -1,4 +1,4 @@
-FROM debian:9.13 AS redis-benchtool
+FROM debian:11.4 AS redis-benchtool
 
 RUN set -xe; \
     apt-get update; \
