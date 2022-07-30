@@ -1305,4 +1305,4 @@ fi
 sleep 1
 
 # dirty, but not sure how to do this differently
-redis-server
+redis-server /redis.conf
