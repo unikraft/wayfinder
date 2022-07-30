@@ -86,6 +86,7 @@ RUN set -xe; \
 #
 COPY ./kconfig-set.sh /usr/local/bin/
 COPY ./image2rootfs.sh /usr/local/bin/
+COPY ./redis-template.conf /
 
 # Overwrite the start scripts with custom functionality, allowing for
 # use with Wayfinder's test.benchtool.args:
