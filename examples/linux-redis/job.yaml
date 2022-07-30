@@ -2748,14 +2748,18 @@ params:
     when: test
 
   # Redis-specific
-  # TODO
   - name: REDIS_TCP_BACKLOG
     type: int
     min: 1
     max: 1024
     default: 512
     when: build
-  - name: REDIS_TCP_KEEPALIVE
+  - name: REDIS_TIMEOUT
+    type: int
+    only: [0, 60]
+    default: 0
+    when: build
+  - name: REDIS_KEEPALIVE
     type: int
     only: [0, 60]
     default: 0
@@ -2771,7 +2775,7 @@ params:
     min: 1
     max: 2048
     default: 60
-    when: build    
+    when: build
   - name: REDIS_SAVE_RECORDS
     type: int
     min: 1
@@ -2781,33 +2785,113 @@ params:
   - name: REDIS_RBCOMRESSION
     type: string
     only: ["yes", "no"]
+    default: "yes"
     when: build
   - name: REDIS_RDBCHECKSUM
     type: string
     only: ["yes", "no"]
+    default: "no"
     when: build
   - name: REDIS_MAX_MEMORY_POLICY
     type: string
     only: ["volatile-lru", "allkeys-lru", "volatile-lfu", "allkeys-lfu", "volatile-random", "allkeys-random", "olatile-ttl", "noeviction"]
+    default: "noeviction"
     when: build
   - name: REDIS_MAX_MEMORY_SAMPLE
     type: int
     only: [3, 5, 10]
+    default: 5
+    when: build
+  - name: REDIS_APPENDONLY
+    type: string
+    only: ["yes", "no"]
+    default: "no"
+    when: build
+  - name: REDIS_AOF
+    type: string
+    only: ["no", "always", "everysec"]
+    default: "everysec"
+    when: build
+  - name: REDIS_AOF_REWRITE
+    type: string
+    only: ["no", "yes"]
+    default: "no"
+    when: build
+  - name: REDIS_AOF_PERCENT
+    type: int
+    min: 0
+    max: 100
+    default: 100
+    when: build
+  - name: REDIS_AOF_SIZE
+    type: int
+    min: 8
+    max: 512
+    default: 64
+    when: build
+  - name: REDIS_SLOWLOG_LEN
+    type: int
+    min: 8
+    max: 512
+    default: 128
     when: build
   - name: REDIS_HASH_ENTRIES
     type: int
+    min: 32
+    max: 1024
     default: 512
     when: build
-  - name: REDIS_HASH_VALUE
+  - name: REDIS_HASH_VALUES
     type: int
+    min: 16
+    max: 128
     default: 64
     when: build
-  - name: REDIS_ZIPLIST_SIZE
+  - name: REDIS_ZSET_ENTRIES
+    type: int
+    min: 32
+    max: 1024
+    default: 128
+    when: build
+  - name: REDIS_ZSET_VALUES
+    type: int
+    min: 16
+    max: 128
+    default: 64
+    when: build
+  - name: REDIS_LISTPACK_SIZE
     value: int
     only: [-5, -4, -3, -2, -1]
     default: -2
     when: build
-    
+  - name: REDIS_COMPRESS
+    type: int
+    only: [0, 1, 2, 3]
+    default: 0
+    when: build
+  - name: REDIS_INTSET
+    type: int
+    min: 16
+    max: 1024
+    default: 512
+    when: build
+  - name: REDIS_REHASHING
+    type: string
+    only: ["yes", "no"]
+    default: "yes"
+    when: build
+  - name: REDIS_DEFRAG
+    type: string
+    only: ["yes", "no"]
+    default: "yes"
+    when: build
+  - name: REDIS_JEMALOC_THREAD
+    type: string
+    only: ["yes", "no"]
+    default: "yes"
+    when: build
+
+
 
 build:
   image: ghcr.io/unikraft/wayfinder/linux-redis:latest
@@ -2838,7 +2922,7 @@ build:
     #
     # 1. Configure Linux
     #
-    
+
     if [ -n "${CONFIG_NETWORK_SECMARK}" ]; then
       kconfig-set.sh ${MICROVM_CFG} CONFIG_NETWORK_SECMARK ${CONFIG_NETWORK_SECMARK}
     fi
@@ -3037,6 +3121,36 @@ build:
     # Generate a variable-size payload
     mkdir -p /tmp/redis-ext3/data/www/
     tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /tmp/redis-ext3/data/www/index.html
+
+    # create redis config files
+    sed  \
+     -e "s/%REDIS_TCP_BACKLOG%/$REDIS_TCP_BACKLOG/g" \
+     -e "s/%REDIS_TIMEOUT%/$REDIS_TIMEOUT/g" \
+     -e "s/%REDIS_KEEPALIVE%/$REDIS_KEEPALIVE/g" \
+     -e "s/%REDIS_DATABASES%/$REDIS_DATABASES/g" \
+     -e "s/%REDIS_SAVE_TIME%/$REDIS_SAVE_TIME/g" \
+     -e "s/%REDIS_SAVE_RECORDS%/$REDIS_SAVE_RECORDS/g" \
+     -e "s/%REDIS_RBCOMRESSION%/$REDIS_RBCOMRESSION/g" \
+     -e "s/%REDIS_RDBCHECKSUM%/$REDIS_RDBCHECKSUM/g" \
+     -e "s/%REDIS_MAX_MEMORY_POLICY%/$REDIS_MAX_MEMORY_POLICY/g" \
+     -e "s/%REDIS_MAX_MEMORY_SAMPLE%/$REDIS_MAX_MEMORY_SAMPLE/g" \
+     -e "s/%REDIS_APPENDONLY%/$REDIS_APPENDONLY/g" \
+     -e "s/%REDIS_AOF%/$REDIS_AOF/g" \
+     -e "s/%REDIS_AOF_REWRITE%/$REDIS_AOF_REWRITE/g" \
+     -e "s/%REDIS_AOF_PERCENT%/$REDIS_AOF_PERCENT/g" \
+     -e "s/%REDIS_AOF_SIZE%/$REDIS_AOF_SIZE/g" \
+     -e "s/%REDIS_SLOWLOG_LEN%/$REDIS_SLOWLOG_LEN/g" \
+     -e "s/%REDIS_HASH_ENTRIES%/$REDIS_HASH_ENTRIES/g" \
+     -e "s/%REDIS_HASH_VALUES%/$REDIS_HASH_VALUES/g" \
+     -e "s/%REDIS_ZSET_ENTRIES%/$REDIS_ZSET_ENTRIES/g" \
+     -e "s/%REDIS_ZSET_VALUES%/$REDIS_ZSET_VALUES/g" \
+     -e "s/%REDIS_LISTPACK_SIZE%/$REDIS_LISTPACK_SIZE/g" \
+     -e "s/%REDIS_COMPRESS%/$REDIS_COMPRESS/g" \
+     -e "s/%REDIS_INTSET%/$REDIS_INTSET/g" \
+     -e "s/%REDIS_REHASHING%/$REDIS_REHASHING/g" \
+     -e "s/%REDIS_DEFRAG%/$REDIS_DEFRAG/g" \
+     -e "s/%REDIS_JEMALOC_THREAD%/$REDIS_JEMALOC_THREAD/g" \
+    /redis-template.conf > /tmp/redis-ext3/redis.conf
 
     # Unmounting seals the filesystem archive
     umount /tmp/redis-ext3
