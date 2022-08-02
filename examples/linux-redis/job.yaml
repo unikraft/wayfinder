@@ -2753,145 +2753,179 @@ params:
     min: 1
     max: 1024
     default: 512
-    when: build
+    only: [512]
+    when: test
+
   - name: REDIS_TIMEOUT
     type: int
-    only: [0, 60]
     default: 0
-    when: build
+    only: [0, 60]
+    when: test
+
   - name: REDIS_KEEPALIVE
     type: int
-    only: [0, 60]
     default: 0
-    when: build
+    only: [0, 60]
+    when: test
+
   - name: REDIS_DATABASES
     type: int
     min: 1
     max: 24
     default: 12
-    when: build
+    only: [12]
+    when: test
+
   - name: REDIS_SAVE_TIME
     type: int
     min: 1
     max: 2048
     default: 60
-    when: build
+    when: test
+
   - name: REDIS_SAVE_RECORDS
     type: int
     min: 1
     max: 10000
     default: 10000
-    when: build
+    only: [10000]
+    when: test
+
   - name: REDIS_RBCOMRESSION
     type: string
-    only: ["yes", "no"]
     default: "yes"
-    when: build
+    only: ["yes", "no"]
+    when: test
+
   - name: REDIS_RDBCHECKSUM
     type: string
-    only: ["yes", "no"]
     default: "no"
-    when: build
+    only: ["no", "yes"]
+    when: test
+
   - name: REDIS_MAX_MEMORY_POLICY
     type: string
-    only: ["volatile-lru", "allkeys-lru", "volatile-lfu", "allkeys-lfu", "volatile-random", "allkeys-random", "olatile-ttl", "noeviction"]
     default: "noeviction"
-    when: build
+    only: ["noeviction", "volatile-lru", "allkeys-lru", "volatile-lfu", "allkeys-lfu", "volatile-random", "allkeys-random", "olatile-ttl"]
+    when: test
+
   - name: REDIS_MAX_MEMORY_SAMPLE
     type: int
-    only: [3, 5, 10]
     default: 5
-    when: build
+    only: [5, 3, 10]
+    when: test
+
   - name: REDIS_APPENDONLY
     type: string
-    only: ["yes", "no"]
     default: "no"
-    when: build
+    only: ["no", "yes"]
+    when: test
+
   - name: REDIS_AOF
     type: string
-    only: ["no", "always", "everysec"]
     default: "everysec"
-    when: build
+    only: ["everysec", "no", "always"]
+    when: test
+
   - name: REDIS_AOF_REWRITE
     type: string
-    only: ["no", "yes"]
     default: "no"
-    when: build
+    only: ["no", "yes"]
+    when: test
+
   - name: REDIS_AOF_PERCENT
     type: int
     min: 0
     max: 100
     default: 100
-    when: build
+    only: [100]
+    when: test
+
   - name: REDIS_AOF_SIZE
     type: int
     min: 8
     max: 512
     default: 64
-    when: build
+    only: [64]
+    when: test
+
   - name: REDIS_SLOWLOG_LEN
     type: int
     min: 8
     max: 512
     default: 128
-    when: build
+    only: [128]
+    when: test
+
   - name: REDIS_HASH_ENTRIES
     type: int
     min: 32
     max: 1024
     default: 512
-    when: build
+    only: [512]
+    when: test
+
   - name: REDIS_HASH_VALUES
     type: int
     min: 16
     max: 128
     default: 64
-    when: build
+    only: [64]
+    when: test
+
   - name: REDIS_ZSET_ENTRIES
     type: int
     min: 32
     max: 1024
     default: 128
-    when: build
+    only: [128]
+    when: test
+
   - name: REDIS_ZSET_VALUES
     type: int
     min: 16
     max: 128
     default: 64
-    when: build
+    only: [64]
+    when: test
+
   - name: REDIS_LISTPACK_SIZE
     value: int
-    only: [-5, -4, -3, -2, -1]
     default: -2
-    when: build
+    only: [-2, -5, -4, -3, -1]
+    when: test
+
   - name: REDIS_COMPRESS
     type: int
-    only: [0, 1, 2, 3]
     default: 0
-    when: build
+    only: [0, 1, 2, 3]
+    when: test
+
   - name: REDIS_INTSET
     type: int
     min: 16
     max: 1024
     default: 512
-    when: build
+    only: [512]
+    when: test
+
   - name: REDIS_REHASHING
     type: string
-    only: ["yes", "no"]
     default: "yes"
-    when: build
+    only: ["yes", "no"]
+    when: test
+
   - name: REDIS_DEFRAG
     type: string
-    only: ["yes", "no"]
     default: "yes"
-    when: build
+    only: ["yes", "no"]
+    when: test
+
   - name: REDIS_JEMALOC_THREAD
     type: string
-    only: ["yes", "no"]
     default: "yes"
-    when: build
-
-
+    only: ["yes", "no"]
+    when: test
 
 build:
   image: ghcr.io/unikraft/wayfinder/linux-redis:latest
