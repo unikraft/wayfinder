@@ -44,7 +44,7 @@ while [[ $retries -gt 0 ]]; do
     break
   fi
   retries=$((retries - 1))
-  sleep 1
+  sleep 3
 done
 
 if [[ $retries -eq 0 ]]; then
