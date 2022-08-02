@@ -3152,10 +3152,6 @@ build:
     mkdir -p /tmp/redis-ext3/trusted
     cp -v ./scripts/libc.so /tmp/redis-ext3/trusted/libc.so
 
-    # Generate a variable-size payload
-    mkdir -p /tmp/redis-ext3/data/www/
-    tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /tmp/redis-ext3/data/www/index.html
-
     # create redis config files
     sed  \
      -e "s/%REDIS_TCP_BACKLOG%/$REDIS_TCP_BACKLOG/g" \
@@ -3184,7 +3180,7 @@ build:
      -e "s/%REDIS_REHASHING%/$REDIS_REHASHING/g" \
      -e "s/%REDIS_DEFRAG%/$REDIS_DEFRAG/g" \
      -e "s/%REDIS_JEMALOC_THREAD%/$REDIS_JEMALOC_THREAD/g" \
-    /redis-template.conf > /tmp/redis-ext3/redis.conf
+    /root/workspace/redis-template.conf > /tmp/redis-ext3/redis.conf
 
     # Unmounting seals the filesystem archive
     umount /tmp/redis-ext3
@@ -3582,8 +3578,8 @@ test:
         - name: power
           commands: ./examples/linux-redis/power-monitor.sh http://192.168.0.225/meter/0
       cores: 1
-      start_delay: 15
-      duration: 10
+      start_delay: 20
+      duration: 15
     results:
       - name: throughput-get
         path: /results/get.txt
