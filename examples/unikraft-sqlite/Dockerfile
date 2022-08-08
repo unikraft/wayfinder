@@ -9,6 +9,7 @@ ENV SQLITE_BENCH_HASH=b3f6b4c709e38093c9b89598a9ff5fe3f60df6f5
 COPY ./sqlite-bench/Makefile.uk /usr/src/unikraft/apps/sqlite/Makefile.uk
 COPY ./sqlite-bench/serve_file.c /usr/src/unikraft/apps/sqlite/serve_file.c
 COPY ./sqlite-bench/0001-Add-compatibility-with-external-scrapers.patch /usr/src/sqlite-bench/0001-Add-compatibility-with-external-scrapers.patch
+COPY ./sqlite-bench/0002-Add-option-to-execute-custom-commands.patch /usr/src/sqlite-bench/0002-Add-option-to-execute-custom-commands.patch
 
 RUN set -xe; \
     apt-get update; \
@@ -46,6 +47,7 @@ RUN set -xe; \
     git fetch --depth 1 origin ${SQLITE_BENCH_HASH}; \
     git checkout FETCH_HEAD; \
     git apply 0001-Add-compatibility-with-external-scrapers.patch; \
+    git apply 0002-Add-option-to-execute-custom-commands.patch; \
     cd /usr/src/unikraft/apps/sqlite; \
     cp /usr/src/sqlite-bench/bench.h /usr/src/sqlite-bench/benchmark.c \
       /usr/src/sqlite-bench/histogram.c /usr/src/sqlite-bench/main.c \

@@ -1,0 +1,89 @@
+From 1b35afb304e83171c637861d84f9bce9b54f7dee Mon Sep 17 00:00:00 2001
+From: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+Date: Mon, 8 Aug 2022 13:14:00 +0300
+Subject: [PATCH 2/2] Add option to execute custom commands
+
+Signed-off-by: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+---
+ bench.h     |  3 +++
+ benchmark.c |  7 +++++++
+ main.c      | 10 +++++++---
+ 3 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/bench.h b/bench.h
+index 3ab832b..5938b84 100644
+--- a/bench.h
++++ b/bench.h
+@@ -103,6 +103,9 @@ extern bool FLAGS_WAL_enabled;
+ // Use the db with the following name.
+ extern char* FLAGS_db;
+ 
++// Execute custom commands provided at start
++extern char* FLAGS_cmd;
++
+ /* benchmark.c */
+ void benchmark_init(void);
+ void benchmark_fini(void);
+diff --git a/benchmark.c b/benchmark.c
+index cb18655..42330e8 100644
+--- a/benchmark.c
++++ b/benchmark.c
+@@ -367,6 +367,13 @@ void benchmark_open() {
+     exec_error_check(status, err_msg);
+   }
+ 
++  /* Execute custom commands after opening the DB */
++  if (FLAGS_cmd) {
++    char* cmd = FLAGS_cmd;
++    status = sqlite3_exec(db_, cmd, NULL, NULL, &err_msg);
++    exec_error_check(status, err_msg);
++  }
++
+   /* Change locking mode to exclusive and create tables/index for database */
+   char* locking_stmt = "PRAGMA locking_mode = EXCLUSIVE";
+   char* create_stmt =
+diff --git a/main.c b/main.c
+index b878094..2654181 100644
+--- a/main.c
++++ b/main.c
+@@ -61,6 +61,9 @@ bool FLAGS_WAL_enabled;
+ // Use the db with the following name.
+ char* FLAGS_db;
+ 
++// Custom setup command to run before starting the bench
++char* FLAGS_cmd;
++
+ void init() {
+   // Comma-separated list of operations to run in the specified order
+   //   Actual benchmarks:
+@@ -105,6 +108,7 @@ void init() {
+   FLAGS_transaction = true;
+   FLAGS_WAL_enabled = true;
+   FLAGS_db = NULL;
++  FLAGS_cmd = NULL;
+ }
+ 
+ void print_usage(const char* argv0) {
+@@ -123,7 +127,7 @@ void print_usage(const char* argv0) {
+   fprintf(stderr, "  --page_size=INT\t\tpage size\n");
+   fprintf(stderr, "  --num_pages=INT\t\tnumber of pages\n");
+   fprintf(stderr, "  --WAL_enabled={0,1}\t\tenable WAL\n");
+-  fprintf(stderr, "  --db=PATH\t\t\tpath to location databases are created\n");
++  fprintf(stderr, "  --cmd=STRING\t\t\tcommands to run right before starting the bench. ';' separated.\n");
+   fprintf(stderr, "  --help\t\t\tshow this help\n");
+   fprintf(stderr, "\n");
+   fprintf(stderr, "[BENCH]\n");
+@@ -180,8 +184,8 @@ int bench_main(int argc, char** argv) {
+     } else if (sscanf(argv[i], "--WAL_enabled=%d%c", &n, &junk) == 1 &&
+                (n == 0 || n == 1)) {
+       FLAGS_WAL_enabled = n;
+-    } else if (strncmp(argv[i], "--db=", 5) == 0) {
+-      FLAGS_db = argv[i] + 5;
++    } else if (strncmp(argv[i], "--cmd=", 6) == 0) {
++      FLAGS_cmd = argv[i] + 6;
+     } else if (!strcmp(argv[i], "--help")) {
+       print_usage(argv[0]);
+       exit(0);
+-- 
+2.34.1
+

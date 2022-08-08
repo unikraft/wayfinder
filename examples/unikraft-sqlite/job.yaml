@@ -198,8 +198,127 @@ params:
     only:    ["y", "n"]
     when:    build
 
-  # Sqlite-specific
-  # TODO
+  # SQLite-specific
+  # PRAGMA automatic_index
+  - name:    AUTOMATIC_INDEX
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA case_sensitive_like
+  - name:    CASE_SENSITIVE_LIKE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA cell_size_check
+  - name:    CELL_SIZE_CHECK
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA checkpoint_fullfsync
+  - name:    CHECKPOINT_FULLFSYNC
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA defer_foreign_keys
+  - name:    DEFER_FOREIGN_KEYS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA empty_result_callbacks
+  - name:    EMPTY_RESULT_CALLBACKS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA foreign_keys
+  - name:    FOREIGN_KEYS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA full_column_names
+  - name:    FULL_COLUMN_NAMES
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA fullfsync
+  - name:    FULLFSYNC
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA parser_trace
+  - name:    PARSER_TRACE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # Makes the database read-only -> disabled for now
+  # # PRAGMA query_only
+  # - name:    QUERY_ONLY
+  #   type:    string
+  #   only:    ["on", "off"]
+  #   when:    test
+
+  # PRAGMA read_uncommitted
+  - name:    READ_UNCOMMITTED
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA recursive_triggers
+  - name:    RECURSIVE_TRIGGERS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA reverse_unordered_selects
+  - name:    REVERSE_UNORDERED_SELECTS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA short_column_names
+  - name:    SHORT_COLUMN_NAMES
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA trusted_schema
+  - name:    TRUSTED_SCHEMA
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_addoptrace
+  - name:    VDBE_ADDOPTRACE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_debug
+  - name:    VDBE_DEBUG
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_listing
+  - name:    VDBE_LISTING
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_trace
+  - name:    VDBE_TRACE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
 
   # Client-specific
   - name:    BENCHMARKS
@@ -363,7 +482,7 @@ test:
   - name: throughput
     kernel:
       memory: 512M
-      args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_GW_ADDR netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK -- --benchmarks=${BENCHMARKS}
+      args: netdev.ipv4_addr=$WAYFINDER_DOMAIN_IP_ADDR netdev.ipv4_gw_addr=$WAYFINDER_DOMAIN_IP_GW_ADDR netdev.ipv4_subnet_mask=$WAYFINDER_DOMAIN_IP_MASK -- --benchmarks=${BENCHMARKS} --cmd="PRAGMA automatic_index=${AUTOMATIC_INDEX}; PRAGMA case_sensitive_like=${CASE_SENSITIVE_LIKE}; PRAGMA cell_size_check=${CELL_SIZE_CHECK}; PRAGMA checkpoint_fullfsync=${CHECKPOINT_FULLFSYNC}; PRAGMA defer_foreign_keys=${DEFER_FOREIGN_KEYS}; PRAGMA empty_result_callbacks=${EMPTY_RESULT_CALLBACKS}; PRAGMA foreign_keys=${FOREIGN_KEYS}; PRAGMA full_column_names=${FULL_COLUMN_NAMES}; PRAGMA fullfsync=${FULLFSYNC}; PRAGMA parser_trace=${PARSER_TRACE}; PRAGMA read_uncommitted=${READ_UNCOMMITTED}; PRAGMA recursive_triggers=${RECURSIVE_TRIGGERS}; PRAGMA reverse_unordered_selects=${REVERSE_UNORDERED_SELECTS}; PRAGMA short_column_names=${SHORT_COLUMN_NAMES}; PRAGMA trusted_schema=${TRUSTED_SCHEMA}; PRAGMA vdbe_addoptrace=${VDBE_ADDOPTRACE}; PRAGMA vdbe_debug=${VDBE_DEBUG}; PRAGMA vdbe_listing=${VDBE_LISTING}; PRAGMA vdbe_trace=${VDBE_TRACE}"
       cores: 1
     benchtool:
       image: ghcr.io/unikraft/wayfinder/sqlite-benchtool:latest
