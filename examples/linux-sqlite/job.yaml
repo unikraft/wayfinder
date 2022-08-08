@@ -2748,7 +2748,126 @@ params:
     when: test
 
   # SQLite-specific
-  # TODO
+  # PRAGMA automatic_index
+  - name:    AUTOMATIC_INDEX
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA case_sensitive_like
+  - name:    CASE_SENSITIVE_LIKE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA cell_size_check
+  - name:    CELL_SIZE_CHECK
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA checkpoint_fullfsync
+  - name:    CHECKPOINT_FULLFSYNC
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA defer_foreign_keys
+  - name:    DEFER_FOREIGN_KEYS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA empty_result_callbacks
+  - name:    EMPTY_RESULT_CALLBACKS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA foreign_keys
+  - name:    FOREIGN_KEYS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA full_column_names
+  - name:    FULL_COLUMN_NAMES
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA fullfsync
+  - name:    FULLFSYNC
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA parser_trace
+  - name:    PARSER_TRACE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # Makes the database read-only -> disabled for now
+  # # PRAGMA query_only
+  # - name:    QUERY_ONLY
+  #   type:    string
+  #   only:    ["on", "off"]
+  #   when:    test
+
+  # PRAGMA read_uncommitted
+  - name:    READ_UNCOMMITTED
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA recursive_triggers
+  - name:    RECURSIVE_TRIGGERS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA reverse_unordered_selects
+  - name:    REVERSE_UNORDERED_SELECTS
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA short_column_names
+  - name:    SHORT_COLUMN_NAMES
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA trusted_schema
+  - name:    TRUSTED_SCHEMA
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_addoptrace
+  - name:    VDBE_ADDOPTRACE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_debug
+  - name:    VDBE_DEBUG
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_listing
+  - name:    VDBE_LISTING
+    type:    string
+    only:    ["on", "off"]
+    when:    test
+
+  # PRAGMA vdbe_trace
+  - name:    VDBE_TRACE
+    type:    string
+    only:    ["on", "off"]
+    when:    test
 
   # Client-specific
   # We only want a test at a time # Also change the name from `benchvalue` to the one you are testing
@@ -3363,6 +3482,26 @@ test:
         FLAGS=${FLAGS}
         GRO_FLUSH_TIMEOUT=${GRO_FLUSH_TIMEOUT}
         TX_QUEUE_LEN=${TX_QUEUE_LEN}
+        AUTOMATIC_INDEX=${AUTOMATIC_INDEX}
+        CASE_SENSITIVE_LIKE=${CASE_SENSITIVE_LIKE}
+        CELL_SIZE_CHECK=${CELL_SIZE_CHECK}
+        CHECKPOINT_FULLFSYNC=${CHECKPOINT_FULLFSYNC}
+        DEFER_FOREIGN_KEYS=${DEFER_FOREIGN_KEYS}
+        EMPTY_RESULT_CALLBACKS=${EMPTY_RESULT_CALLBACKS}
+        FOREIGN_KEYS=${FOREIGN_KEYS}
+        FULL_COLUMN_NAMES=${FULL_COLUMN_NAMES}
+        FULLFSYNC=${FULLFSYNC}
+        PARSER_TRACE=${PARSER_TRACE}
+        QUERY_ONLY=${QUERY_ONLY}
+        READ_UNCOMMITTED=${READ_UNCOMMITTED}
+        RECURSIVE_TRIGGERS=${RECURSIVE_TRIGGERS}
+        REVERSE_UNORDERED_SELECTS=${REVERSE_UNORDERED_SELECTS}
+        SHORT_COLUMN_NAMES=${SHORT_COLUMN_NAMES}
+        TRUSTED_SCHEMA=${TRUSTED_SCHEMA}
+        VDBE_ADDOPTRACE=${VDBE_ADDOPTRACE}
+        VDBE_DEBUG=${VDBE_DEBUG}
+        VDBE_LISTING=${VDBE_LISTING}
+        VDBE_TRACE=${VDBE_TRACE}
         BENCHMARK=${BENCHMARK}
         init=/guest_start.sh
       cores: 1

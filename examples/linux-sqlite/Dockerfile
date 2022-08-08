@@ -39,6 +39,7 @@ ENV WORKDIR="/root/workspace"
 
 COPY ./sqlite-bench/serve_file.c /usr/src/sqlite/serve_file.c
 COPY ./sqlite-bench/0001-Add-compatibility-with-external-scrapers.patch /usr/src/sqlite/0001-Add-compatibility-with-external-scrapers.patch
+COPY ./sqlite-bench/0002-Add-option-to-execute-custom-commands.patch /usr/src/sqlite/0002-Add-option-to-execute-custom-commands.patch
 
 #
 # Bechtool build
@@ -58,6 +59,7 @@ RUN set -xe; \
     rm ./sqlite-amalgamation-3300100.zip; \
     rm -rf ./sqlite-amalgamation-3300100 ./.git; \
     git apply ./0001-Add-compatibility-with-external-scrapers.patch; \
+    git apply ./0002-Add-option-to-execute-custom-commands.patch; \
     make; \
     cd ..; \
     tar -cvf /usr/src/sqlite_bench.tar /usr/src/sqlite; \
