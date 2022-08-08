@@ -13,6 +13,9 @@ client/python/vendor/
 client/python/pywfsdk/proto/
 client/python/*.py[cod]
 
+.env
+.vscode
+
 # due to using tox and pytest
 client/python/.tox
 client/python/.cache
