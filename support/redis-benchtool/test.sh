@@ -40,9 +40,10 @@ while [[ $retries -gt 0 ]]; do
       -q \
       |& tee /results.txt
 
-  if [[ $? -eq 0 && $(cat /results.txt | grep "Connection refused") == "" ]]; then
+  if [[ $? -eq 0 && $(cat /results.txt | grep "Connection refused") == "" ]] && [[ $? -eq 0 && $(cat /results.txt | grep "Error: Server closed the connection") == "" ]]; then
     break
   fi
+
   retries=$((retries - 1))
   sleep 3
 done
