@@ -2806,7 +2806,7 @@ params:
   - name: REDIS_MAX_MEMORY_POLICY
     type: string
     default: "noeviction"
-    only: ["noeviction", "volatile-lru", "allkeys-lru", "volatile-lfu", "allkeys-lfu", "volatile-random", "allkeys-random", "olatile-ttl"]
+    only: ["noeviction", "volatile-lru", "allkeys-lru", "volatile-lfu", "allkeys-lfu", "volatile-random", "allkeys-random", "volatile-ttl"]
     when: test
 
   - name: REDIS_MAX_MEMORY_SAMPLE
