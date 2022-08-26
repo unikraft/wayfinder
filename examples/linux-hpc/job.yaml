@@ -2754,7 +2754,7 @@ params:
     when: test
 
 build:
-  image: localhost:5000/linux-hpc:latest
+  image: ghcr.io/unikraft/wayfinder/linux-hpc:latest
   outputs:
     kernel: /root/workspace/kernelbuild/microvm++redis/vmlinuz-4.0.0+
     disks:
@@ -3413,7 +3413,7 @@ test:
         init=/guest_start.sh
       cores: 2
     benchtool:
-      image: localhost:5000/hpc-benchtool:latest
+      image: ghcr.io/unikraft/wayfinder/hpc-benchtool:latest
       devices:
         - /dev/urandom
         - /dev/kvm
