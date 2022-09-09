@@ -1,13 +1,5 @@
 package libvirt
 
-import (
-        "os/exec"
-  "strings"
-  "strconv"
-
-  "github.com/unikraft/wayfinder/internal/metrics"
-)
-
 // SPDX-License-Identifier: BSD-3-Clause
 //
 // Authors: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
@@ -39,29 +31,37 @@ import (
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+import (
+	"os/exec"
+	"strconv"
+	"strings"
+
+	"github.com/unikraft/wayfinder/internal/metrics"
+)
+
 // Same as the other metrics, but format is general
 func (d *Domain) MetricLookup() error {
-        return nil
+	return nil
 }
 
 // Runs every measurement script and adds the values obtain
 func (d *Domain) MetricMeasure(name, command string) error {
-        // TODO: variablize 'sh' such that user can specify entrypoint program
-  result, err := exec.Command("sh", "-c", command).Output()
-  if err != nil {
-                return err
-        }
+	// TODO: variablize 'sh' such that user can specify entrypoint program
+	result, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		return err
+	}
 
-  measurement, _ := strconv.ParseFloat(strings.TrimSuffix(string(result), "\n"), 64)
+	measurement, _ := strconv.ParseFloat(strings.TrimSuffix(string(result), "\n"), 64)
 
-  d.AddMeasurement(name, metrics.CreateMeasurement(measurement))
+	d.AddMeasurement(name, metrics.CreateMeasurement(measurement))
 
-  return nil
+	return nil
 }
 
 // Prints the name-value pairs for each monitor
 func (d *Domain) MetricPrint(name string) map[string]string {
-        return map[string]string{
-                name: d.GetMetricFloat64(name, 0),
-        }
+	return map[string]string{
+		name: d.GetMetricFloat64(name, 0),
+	}
 }
