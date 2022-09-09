@@ -232,16 +232,16 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 		// 		Mode: numaMemoryMode,
 		// 	},
 		// },
-		MemoryTune: &libvirtxml.DomainMemoryTune{
-			HardLimit: &libvirtxml.DomainMemoryTuneLimit{
-				Unit:  memoryUnit,
-				Value: uint64(memoryValue),
-			},
-			SwapHardLimit: &libvirtxml.DomainMemoryTuneLimit{
-				Unit:  memoryUnit,
-				Value: uint64(memoryValue),
-			},
-		},
+		// MemoryTune: &libvirtxml.DomainMemoryTune{
+		// 	HardLimit: &libvirtxml.DomainMemoryTuneLimit{
+		// 		Unit:  memoryUnit,
+		//		Value: uint64(memoryValue),
+		//	},
+		//	SwapHardLimit: &libvirtxml.DomainMemoryTuneLimit{
+		//		Unit:  memoryUnit,
+		//		Value: uint64(memoryValue),
+		//	},
+		// },
 		MemoryBacking: &libvirtxml.DomainMemoryBacking{
 			MemoryAllocation: &libvirtxml.DomainMemoryAllocation{
 				Mode: "immediate",
