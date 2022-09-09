@@ -278,8 +278,11 @@ message CreateJobResponse {
 }
 
 message CreatePermutationJobRequest {
-  int64           id     = 1;
-  repeated Param  params = 2;
+  int64          id        = 1;
+  repeated Param params    = 2;
+  JobIsolLevel   isolLevel = 3;
+  JobIsolSplit   isolSplit = 4;
+  bool           laxMode   = 5;
 }
 
 message CreatePermutationJobResponse {
