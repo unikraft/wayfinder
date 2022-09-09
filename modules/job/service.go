@@ -184,6 +184,10 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
 	}
 	newPermutationInJob.CurrentPerm.Id = uint(perm.Id)
 
+	newPermutationInJob.IsolLevel = req.IsolLevel
+	newPermutationInJob.IsolSplit = req.IsolSplit
+	newPermutationInJob.LaxMode = req.LaxMode
+
 	// Publish permutation to queue
 	taskBytes, err := json.Marshal(newPermutationInJob)
 	if err != nil {
