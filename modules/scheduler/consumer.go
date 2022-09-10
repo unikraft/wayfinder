@@ -405,6 +405,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			EnvVars:       buildEnvVars,
 		})
 		if err != nil {
+			c.prevBuildChecksum = "err"
 			c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(buildCoreIds)
 			return fmt.Errorf("could not create build: %s", err)
@@ -420,6 +421,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			Uuid: build.uuid,
 		})
 		if err != nil {
+			c.prevBuildChecksum = "err"
 			c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(task.CurrentPerm.Id))
 			c.releaseCoresById(buildCoreIds)
 			return fmt.Errorf("could not start build: %s", err)
@@ -440,6 +442,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			if err != nil {
 				numRetries++
 				if numRetries >= 5 {
+					c.prevBuildChecksum = "err"
 					c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(task.CurrentPerm.Id))
 					c.releaseCoresById(buildCoreIds)
 					return fmt.Errorf("could not get build status: %s", err)
@@ -472,6 +475,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			if buildFinished {
 				_, err = time.ParseDuration(statusBuildResp.Runtime)
 				if err != nil {
+					c.prevBuildChecksum = "err"
 					c.p.DB.Repos().Permutations().SetStatusTestWayfinderFailedInternal(int64(task.CurrentPerm.Id))
 					c.releaseCoresById(buildCoreIds)
 					return fmt.Errorf("could not convert test runtime into duration: %s", err)
@@ -514,6 +518,7 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 			},
 		})
 		if err != nil {
+			c.prevBuildChecksum = "err"
 			c.p.DB.Repos().Permutations().SetStatusBuildFailedByPermutationId(int64(permutation.Id))
 			c.releaseCoresById(buildCoreIds)
 			return fmt.Errorf("could not save build outputs: %s", err)
