@@ -1,0 +1,171 @@
+From d5e711f0975d6601940d33e7a2dce1dbd2ae9695 Mon Sep 17 00:00:00 2001
+From: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+Date: Thu, 25 Aug 2022 17:46:44 +0300
+Subject: [PATCH] Remove references to getaddrinfo
+
+Signed-off-by: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+---
+ netcat.c | 101 +++++++++++--------------------------------------------
+ 1 file changed, 19 insertions(+), 82 deletions(-)
+
+diff --git a/netcat.c b/netcat.c
+index 22d03b0..b6f2626 100644
+--- a/netcat.c
++++ b/netcat.c
+@@ -5,6 +5,7 @@
+ #include <string.h>
+ #include <sys/socket.h>
+ #include <unistd.h>
++#include <arpa/inet.h>
+ 
+ #define MAXBUF 65536
+ #define BACKLOG 1
+@@ -16,7 +17,6 @@ typedef struct args
+ } args;
+ 
+ void *Thread(void *arg);
+-int CreateClientSocket(char *address, char *port, int *type, int *family);
+ void Client(char *address, char *port, int *type, int *family);
+ int CreateServerSocket(char *address, char *port, int *type, int *family);
+ void Server(char *address, char *port, int *type, int *family);
+@@ -100,50 +100,6 @@ void *Thread(void *arg)
+     return NULL;
+ }
+ 
+-int CreateClientSocket(char *address, char *port, int *type, int *family)
+-{
+-    int sockfd, gai_error;
+-    struct addrinfo hints, *servinfo, *p;
+-
+-    memset(&hints, 0, sizeof(hints));
+-    hints.ai_family = *family;
+-    hints.ai_socktype = *type;
+-
+-    if ((gai_error = getaddrinfo(address, port, &hints, &servinfo)) != 0)
+-    {
+-        fprintf(stderr, "netcat: error in getaddrinfo(): %s\n", gai_strerror(gai_error));
+-        exit(0);
+-    }
+-
+-    for (p = servinfo; p != NULL; p = p->ai_next)
+-    {
+-        sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+-
+-        if (sockfd == -1)
+-        {
+-            perror("netcat: error in socket()");
+-            continue;
+-        }
+-
+-        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+-        {
+-            close(sockfd);
+-            perror("netcat: error in connect()");
+-            continue;
+-        }
+-
+-        break;
+-    }
+-
+-    if (p == NULL)
+-    {
+-        printf("netcat: error could not connect\n");
+-        exit(0);
+-    }
+-
+-    freeaddrinfo(servinfo);
+-    return sockfd;
+-}
+ 
+ void Client(char *address, char *port, int *type, int *family)
+ {
+@@ -151,7 +107,7 @@ void Client(char *address, char *port, int *type, int *family)
+     char buffer[MAXBUF];
+     pthread_t printer;
+ 
+-    sockfd = CreateClientSocket(address, port, type, family);
++    sockfd = 0;
+ 
+     args a;
+     a.src = STDIN_FILENO;
+@@ -184,52 +140,34 @@ void Client(char *address, char *port, int *type, int *family)
+ int CreateServerSocket(char *address, char *port, int *type, int *family)
+ {
+     int sockfd, gai_error;
+-    struct addrinfo hints, *servinfo, *p;
++    struct sockaddr_in server_addr;
+ 
+-    memset(&hints, 0, sizeof(hints));
+-    hints.ai_family = *family;
+-    hints.ai_socktype = *type;
+-    hints.ai_flags = AI_PASSIVE;
++    server_addr.sin_family = AF_INET;
++    server_addr.sin_port = htons(atoi(port));
++    inet_pton(AF_INET, address, &(server_addr.sin_addr));
+ 
+-    if ((gai_error = getaddrinfo(address, port, &hints, &servinfo)) != 0)
+-    {
+-        fprintf(stderr, "netcat: error in getaddrinfo(): %s\n", gai_strerror(gai_error));
+-        exit(0);
+-    }
++    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+ 
+-    for (p = servinfo; p != NULL; p = p->ai_next)
++    if (sockfd == -1)
+     {
+-        sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+-
+-        if (sockfd == -1)
+-        {
+-            perror("netcat: error in socket()");
+-            continue;
+-        }
+-
+-        if (*type == SOCK_STREAM)
+-        {
+-            int sockopt = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));
++    perror("netcat: error in socket()");
++    exit(0);
++    }
+ 
+-            if (sockopt == -1)
+-            {
+-                PrintError("setsockopt()");
+-            }
+-        }
++    if (*type == SOCK_STREAM)
++    {	
++	int sockopt = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));
+ 
+-        if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
++        if (sockopt == -1)
+         {
+-            close(sockfd);
+-            perror("netcat: error in bind()");
+-            continue;
++            PrintError("setsockopt()");
+         }
+-
+-        break;
+     }
+ 
+-    if (p == NULL)
++    if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+     {
+-        printf("netcat: error could not bind\n");
++        close(sockfd);
++        perror("netcat: error in bind()");
+         exit(0);
+     }
+ 
+@@ -238,7 +176,6 @@ int CreateServerSocket(char *address, char *port, int *type, int *family)
+         PrintError("listen()");
+     }
+ 
+-    freeaddrinfo(servinfo);
+     return sockfd;
+ }
+ 
+-- 
+2.34.1
+
