@@ -17,7 +17,7 @@ index 6f0f1c5f..e6ffdd02 100644
   */
  #define MAX_INIT_ARGS CONFIG_INIT_ENV_ARG_LIMIT
 -#define MAX_INIT_ENVS CONFIG_INIT_ENV_ARG_LIMIT
-+#define MAX_INIT_ENVS (CONFIG_INIT_ENV_ARG_LIMIT + 1024)
++#define MAX_INIT_ENVS (CONFIG_INIT_ENV_ARG_LIMIT + 2048)
  
  extern void time_init(void);
  /* Default late time init is NULL. archs can override this later. */
