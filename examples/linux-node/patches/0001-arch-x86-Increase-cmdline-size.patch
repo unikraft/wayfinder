@@ -17,7 +17,7 @@ index ff4e7b23..0e017028 100644
  #include <uapi/asm/setup.h>
  
 -#define COMMAND_LINE_SIZE 2048
-+#define COMMAND_LINE_SIZE 16384
++#define COMMAND_LINE_SIZE 32768
  
  #include <linux/linkage.h>
  

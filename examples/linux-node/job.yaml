@@ -2748,7 +2748,2246 @@ params:
     when: test
   
   # Node-specific
-  # TODO
+  - name:    ENABLE_FIPS
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NO_DEPRECATION
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NO_WARNINGS
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_SYNC_IO
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_DEPRECATION
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_WARNINGS
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACK_HEAP_OBJECTS
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ZERO_FILL_BUFFERS
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  # V8-specific
+  - name:    EXPERIMENTAL_EXTRAS
+    description: |
+     --experimental_extras (enable code compiled in via v8_experimental_extra_library_files)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    USE_STRICT
+    description: |
+     --use_strict (enforce strict mode)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ES_STAGING
+    description: |
+     --es_staging (enable test-worthy harmony features (for internal use only))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY
+    description: |
+     --harmony (enable all completed harmony features)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_SHIPPING
+    description: |
+     --harmony_shipping (enable all shipped harmony features)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    HARMONY_ARRAY_PROTOTYPE_VALUES
+    description: |
+     --harmony_array_prototype_values (enable "harmony Array.prototype.values" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_FUNCTION_SENT
+    description: |
+     --harmony_function_sent (enable "harmony function.sent" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_SHAREDARRAYBUFFER
+    description: |
+     --harmony_sharedarraybuffer (enable "harmony sharedarraybuffer" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_DO_EXPRESSIONS
+    description: |
+     --harmony_do_expressions (enable "harmony do-expressions" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_REGEXP_NAMED_CAPTURES
+    description: |
+     --harmony_regexp_named_captures (enable "harmony regexp named captures" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_REGEXP_PROPERTY
+    description: |
+     --harmony_regexp_property (enable "harmony unicode regexp property classes" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_FUNCTION_TOSTRING
+    description: |
+     --harmony_function_tostring (enable "harmony Function.prototype.toString" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_CLASS_FIELDS
+    description: |
+     --harmony_class_fields (enable "harmony public fields in class literals" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_ASYNC_ITERATION
+    description: |
+     --harmony_async_iteration (enable "harmony async iteration" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_DYNAMIC_IMPORT
+    description: |
+     --harmony_dynamic_import (enable "harmony dynamic import" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_PROMISE_FINALLY
+    description: |
+     --harmony_promise_finally (enable "harmony Promise.prototype.finally" (in progress))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_REGEXP_LOOKBEHIND
+    description: |
+     --harmony_regexp_lookbehind (enable "harmony regexp lookbehind")
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_RESTRICTIVE_GENERATORS
+    description: |
+     --harmony_restrictive_generators (enable "harmony restrictions on generator declarations")
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_OBJECT_REST_SPREAD
+    description: |
+     --harmony_object_rest_spread (enable "harmony object rest spread properties")
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARMONY_TEMPLATE_ESCAPES
+    description: |
+     --harmony_template_escapes (enable "harmony invalid escapes in tagged template literals")
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FUTURE
+    description: |
+     --future (Implies all staged features that we want to ship in the not-too-far future)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ALLOCATION_SITE_PRETENURING
+    description: |
+     --allocation_site_pretenuring (pretenure with allocation sites)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    PAGE_PROMOTION
+    description: |
+     --page_promotion (promote pages based on utilization)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_PRETENURING
+    description: |
+     --trace_pretenuring (trace pretenuring decisions of HAllocate instructions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_PRETENURING_STATISTICS
+    description: |
+     --trace_pretenuring_statistics (trace allocation site pretenuring statistics)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACK_FIELDS
+    description: |
+     --track_fields (track fields with only smi values)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACK_DOUBLE_FIELDS
+    description: |
+     --track_double_fields (track fields with double values)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACK_HEAP_OBJECT_FIELDS
+    description: |
+     --track_heap_object_fields (track fields with heap values)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACK_COMPUTED_FIELDS
+    description: |
+     --track_computed_fields (track computed boilerplate fields)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACK_FIELD_TYPES
+    description: |
+     --track_field_types (track field types)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TYPE_PROFILE
+    description: |
+     --type_profile (collect type information)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    OPTIMIZE_FOR_SIZE
+    description: |
+     --optimize_for_size (Enables optimizations which favor memory size over execution speed)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    UNBOX_DOUBLE_ARRAYS
+    description: |
+     --unbox_double_arrays (automatically unbox arrays of doubles)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    STRING_SLICES
+    description: |
+     --string_slices (use string slices)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    IGNITION_REO
+    description: |
+     --ignition_reo (use ignition register equivalence optimizer)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    IGNITION_FILTER_EXPRESSION_POSITIONS
+    description: |
+     --ignition_filter_expression_positions (filter expression positions before the bytecode pipeline)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    PRINT_BYTECODE
+    description: |
+     --print_bytecode (print bytecode generated by ignition interpreter)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_IGNITION_CODEGEN
+    description: |
+     --trace_ignition_codegen (trace the codegen of ignition interpreter bytecode handlers)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_IGNITION_DISPATCHES
+    description: |
+     --trace_ignition_dispatches (traces the dispatches to bytecode handlers by the ignition interpreter)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FAST_MATH
+    description: |
+     --fast_math (faster (but maybe less accurate) math functions)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_ENVIRONMENT_LIVENESS
+    description: |
+     --trace_environment_liveness (trace liveness of local variable slots)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_STORE_ELIMINATION
+    description: |
+     --trace_store_elimination (trace store elimination)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_ALLOC
+    description: |
+     --trace_alloc (trace register allocator)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_ALL_USES
+    description: |
+     --trace_all_uses (trace all use positions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_REPRESENTATION
+    description: |
+     --trace_representation (trace representation types)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TRACK_ALLOCATION_SITES
+    description: |
+     --trace_track_allocation_sites (trace the tracking of allocation sites)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_MIGRATION
+    description: |
+     --trace_migration (trace object migration)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_GENERALIZATION
+    description: |
+     --trace_generalization (trace map generalization)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_DEOPT_STRESS
+    description: |
+     --print_deopt_stress (print number of possible deopt points)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    POLYMORPHIC_INLINING
+    description: |
+     --polymorphic_inlining (polymorphic inlining)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    USE_OSR
+    description: |
+     --use_osr (use on-stack replacement)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ANALYZE_ENVIRONMENT_LIVENESS
+    description: |
+     --analyze_environment_liveness (analyze liveness of environment slots and zap dead values)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_OSR
+    description: |
+     --trace_osr (trace on-stack replacement)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    INLINE_ACCESSORS
+    description: |
+     --inline_accessors (inline JavaScript accessors)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    INLINE_INTO_TRY
+    description: |
+     --inline_into_try (inline into try blocks)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    CONCURRENT_RECOMPILATION
+    description: |
+     --concurrent_recompilation (optimizing hot functions asynchronously on a separate thread)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_CONCURRENT_RECOMPILATION
+    description: |
+     --trace_concurrent_recompilation (track concurrent recompilation)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    BLOCK_CONCURRENT_RECOMPILATION
+    description: |
+     --block_concurrent_recompilation (block queued jobs until released)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_SP_FRAME_ACCESS
+    description: |
+     --turbo_sp_frame_access (use stack pointer-relative access to frame wherever possible)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_PREPROCESS_RANGES
+    description: |
+     --turbo_preprocess_ranges (run pre-register allocation heuristics)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_TURBO
+    description: |
+     --trace_turbo (trace generated TurboFan IR)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TURBO_GRAPH
+    description: |
+     --trace_turbo_graph (trace generated TurboFan graphs)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TURBO_TYPES
+    description: |
+     --trace_turbo_types (trace TurboFan's types)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_TURBO_SCHEDULER
+    description: |
+     --trace_turbo_scheduler (trace TurboFan's scheduler)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TURBO_REDUCTION
+    description: |
+     --trace_turbo_reduction (trace TurboFan's various reducers)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TURBO_TRIMMING
+    description: |
+     --trace_turbo_trimming (trace TurboFan's graph trimmer)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TURBO_JT
+    description: |
+     --trace_turbo_jt (trace TurboFan's jump threading)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TURBO_CEQ
+    description: |
+     --trace_turbo_ceq (trace TurboFan's control equivalence)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_TURBO_LOOP
+    description: |
+     --trace_turbo_loop (trace TurboFan's loop optimizations)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_VERIFY
+    description: |
+     --turbo_verify (verify TurboFan graphs at each phase)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_VERIFY_CSA
+    description: |
+     --trace_verify_csa (trace code stubs verification)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_STATS
+    description: |
+     --turbo_stats (print TurboFan statistics)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_STATS_NVP
+    description: |
+     --turbo_stats_nvp (print TurboFan statistics in machine-readable format)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_SPLITTING
+    description: |
+     --turbo_splitting (split nodes during scheduling in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    FUNCTION_CONTEXT_SPECIALIZATION
+    description: |
+     --function_context_specialization (enable function context specialization in TurboFan)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_INLINING
+    description: |
+     --turbo_inlining (enable inlining in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_TURBO_INLINING
+    description: |
+     --trace_turbo_inlining (trace TurboFan inlining)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_LOAD_ELIMINATION
+    description: |
+     --turbo_load_elimination (enable load elimination in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_TURBO_LOAD_ELIMINATION
+    description: |
+     --trace_turbo_load_elimination (trace TurboFan load elimination)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_PROFILING
+    description: |
+     --turbo_profiling (enable profiling in TurboFan)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_VERIFY_ALLOCATION
+    description: |
+     --turbo_verify_allocation (verify register allocation in TurboFan)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_MOVE_OPTIMIZATION
+    description: |
+     --turbo_move_optimization (optimize gap moves in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TURBO_JT
+    description: |
+     --turbo_jt (enable jump threading in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TURBO_LOOP_PEELING
+    description: |
+     --turbo_loop_peeling (Turbofan loop peeling)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TURBO_LOOP_VARIABLE
+    description: |
+     --turbo_loop_variable (Turbofan loop variable optimization)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TURBO_CF_OPTIMIZATION
+    description: |
+     --turbo_cf_optimization (optimize control flow in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TURBO_FRAME_ELISION
+    description: |
+     --turbo_frame_elision (elide frames in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TURBO_ESCAPE
+    description: |
+     --turbo_escape (enable escape analysis)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TURBO_INSTRUCTION_SCHEDULING
+    description: |
+     --turbo_instruction_scheduling (enable instruction scheduling in TurboFan)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_STRESS_INSTRUCTION_SCHEDULING
+    description: |
+     --turbo_stress_instruction_scheduling (randomly schedule instructions to stress dependency tracking)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TURBO_STORE_ELIMINATION
+    description: |
+     --turbo_store_elimination (enable store-store elimination in TurboFan)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    MINIMAL
+    description: |
+     --minimal (simplifies execution model to make porting easier (e.g. always use Ignition, never use Crankshaft)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    EXPOSE_WASM
+    description: |
+     --expose_wasm (expose WASM interface to JavaScript)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ASSUME_ASMJS_ORIGIN
+    description: |
+     --assume_asmjs_origin (force wasm decoder to assume input is internal asm-wasm format)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WASM_DISABLE_STRUCTURED_CLONING
+    description: |
+     --wasm_disable_structured_cloning (disable WASM structured cloning)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_WASM_DECODER
+    description: |
+     --trace_wasm_decoder (trace decoding of wasm code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_WASM_DECODE_TIME
+    description: |
+     --trace_wasm_decode_time (trace decoding time of wasm code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_WASM_COMPILER
+    description: |
+     --trace_wasm_compiler (trace compiling of wasm code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_WASM_INTERPRETER
+    description: |
+     --trace_wasm_interpreter (trace interpretation of wasm code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WASM_BREAK_ON_DECODER_ERROR
+    description: |
+     --wasm_break_on_decoder_error (debug break when wasm decoder encounters an error)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    VALIDATE_ASM
+    description: |
+     --validate_asm (validate asm.js modules before compiling)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SUPPRESS_ASM_MESSAGES
+    description: |
+     --suppress_asm_messages (don't emit asm.js related messages (for golden file testing))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_ASM_TIME
+    description: |
+     --trace_asm_time (log asm.js timing info to the console)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DUMP_WASM_MODULE
+    description: |
+     --dump_wasm_module (dump WASM module bytes)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WASM_OPT
+    description: |
+     --wasm_opt (enable wasm optimization)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    WASM_NO_BOUNDS_CHECKS
+    description: |
+     --wasm_no_bounds_checks (disable bounds checks (performance testing only))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WASM_NO_STACK_CHECKS
+    description: |
+     --wasm_no_stack_checks (disable stack checks (performance testing only))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WASM_TRAP_HANDLER
+    description: |
+     --wasm_trap_handler (use signal handlers to catch out of bounds memory access in wasm (experimental, currently Linux x86_64 only))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WASM_GUARD_PAGES
+    description: |
+     --wasm_guard_pages (add guard pages to the end of WebWassembly memory (experimental, no effect on 32-bit))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    WASM_CODE_FUZZER_GEN_TEST
+    description: |
+     --wasm_code_fuzzer_gen_test (Generate a test case when running the wasm-code fuzzer)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_WASM_CODE
+    description: |
+     --print_wasm_code (Print WebAssembly code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_OPT_VERBOSE
+    description: |
+     --trace_opt_verbose (extra verbose compilation tracing)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    EXPERIMENTAL_NEW_SPACE_GROWTH_HEURISTIC
+    description: |
+     --experimental_new_space_growth_heuristic (Grow the new space based on the percentage of survivors instead of their absolute value.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    GC_GLOBAL
+    description: |
+     --gc_global (always perform global GCs)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_GC
+    description: |
+     --trace_gc (print one trace line following each garbage collection)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_GC_NVP
+    description: |
+     --trace_gc_nvp (print one detailed trace line in name=value format after each garbage collection)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_GC_IGNORE_SCAVENGER
+    description: |
+     --trace_gc_ignore_scavenger (do not print trace line after scavenger collection)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_IDLE_NOTIFICATION
+    description: |
+     --trace_idle_notification (print one trace line following each idle notification)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_IDLE_NOTIFICATION_VERBOSE
+    description: |
+     --trace_idle_notification_verbose (prints the heap state used by the idle notification)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_GC_VERBOSE
+    description: |
+     --trace_gc_verbose (print more details following each garbage collection)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_FRAGMENTATION
+    description: |
+     --trace_fragmentation (report fragmentation for old space)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_FRAGMENTATION_VERBOSE
+    description: |
+     --trace_fragmentation_verbose (report fragmentation for old space (detailed))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_EVACUATION
+    description: |
+     --trace_evacuation (report evacuation statistics)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_MUTATOR_UTILIZATION
+    description: |
+     --trace_mutator_utilization (print mutator utilization, allocation speed, gc speed)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    INCREMENTAL_MARKING
+    description: |
+     --incremental_marking (use incremental marking)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    INCREMENTAL_MARKING_WRAPPERS
+    description: |
+     --incremental_marking_wrappers (use incremental marking for marking wrappers)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    MINOR_MC
+    description: |
+     --minor_mc (perform young generation mark compact GCs)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    BLACK_ALLOCATION
+    description: |
+     --black_allocation (use black allocation)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    CONCURRENT_SWEEPING
+    description: |
+     --concurrent_sweeping (use concurrent sweeping)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    PARALLEL_COMPACTION
+    description: |
+     --parallel_compaction (use parallel compaction)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    PARALLEL_POINTER_UPDATE
+    description: |
+     --parallel_pointer_update (use parallel pointer update during compaction)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_INCREMENTAL_MARKING
+    description: |
+     --trace_incremental_marking (trace progress of the incremental marking)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACK_GC_OBJECT_STATS
+    description: |
+     --track_gc_object_stats (track object counts and memory usage)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_GC_OBJECT_STATS
+    description: |
+     --trace_gc_object_stats (trace object counts and memory usage)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACK_DETACHED_CONTEXTS
+    description: |
+     --track_detached_contexts (track native contexts that are expected to be garbage collected)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_DETACHED_CONTEXTS
+    description: |
+     --trace_detached_contexts (trace native contexts that are expected to be garbage collected)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    MOVE_OBJECT_START
+    description: |
+     --move_object_start (enable moving of object starts)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    MEMORY_REDUCER
+    description: |
+     --memory_reducer (use memory reducer)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ALWAYS_COMPACT
+    description: |
+     --always_compact (Perform compaction on every full GC)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NEVER_COMPACT
+    description: |
+     --never_compact (Never perform compaction on full GC - testing only)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    COMPACT_CODE_SPACE
+    description: |
+     --compact_code_space (Compact code space on full collections)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    CLEANUP_CODE_CACHES_AT_GC
+    description: |
+     --cleanup_code_caches_at_gc (Flush code caches in maps during mark compact cycle.)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    USE_MARKING_PROGRESS_BAR
+    description: |
+     --use_marking_progress_bar (Use a progress bar to scan large objects in increments when incremental marking is active.)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    FORCE_MARKING_DEQUE_OVERFLOWS
+    description: |
+     --force_marking_deque_overflows (force overflows of marking deque by reducing it's size to 64 words)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    STRESS_COMPACTION
+    description: |
+     --stress_compaction (stress the GC compactor to flush out bugs (implies --force_marking_deque_overflows))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    MANUAL_EVACUATION_CANDIDATES_SELECTION
+    description: |
+     --manual_evacuation_candidates_selection (Test mode only flag. It allows an unit test to select evacuation candidates pages (requires --stress_compaction).)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FAST_PROMOTION_NEW_SPACE
+    description: |
+     --fast_promotion_new_space (fast promote new space on high survival rates)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DEBUG_CODE
+    description: |
+     --debug_code (generate extra code (assertions) for debugging)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    CODE_COMMENTS
+    description: |
+     --code_comments (emit comments in code disassembly)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ENABLE_SSE3
+    description: |
+     --enable_sse3 (enable use of SSE3 instructions if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_SSSE
+    description: |
+     --enable_ssse3 (enable use of SSSE3 instructions if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_SSE4_1
+    description: |
+     --enable_sse4_1 (enable use of SSE4.1 instructions if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_SAHF
+    description: |
+     --enable_sahf (enable use of SAHF instruction if available (X64 only))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_AVX
+    description: |
+     --enable_avx (enable use of AVX instructions if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_FMA
+    description: |
+     --enable_fma3 (enable use of FMA3 instructions if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_BMI1
+    description: |
+     --enable_bmi1 (enable use of BMI1 instructions if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_BMI2
+    description: |
+     --enable_bmi2 (enable use of BMI2 instructions if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_LZCNT
+    description: |
+     --enable_lzcnt (enable use of LZCNT instruction if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_POPCNT
+    description: |
+     --enable_popcnt (enable use of POPCNT instruction if available)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_VLDR_IMM
+    description: |
+     --enable_vldr_imm (enable use of constant pools for double immediate (ARM only))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    FORCE_LONG_BRANCHES
+    description: |
+     --force_long_branches (force all emitted branches to be in long mode (MIPS/PPC only))
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ENABLE_ARMV7
+    description: |
+     --enable_armv7 (deprecated (use --arm_arch instead))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_VFP
+    description: |
+     --enable_vfp3 (deprecated (use --arm_arch instead))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_
+    description: |
+     --enable_32dregs (deprecated (use --arm_arch instead))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_NEON
+    description: |
+     --enable_neon (deprecated (use --arm_arch instead))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_SUDIV
+    description: |
+     --enable_sudiv (deprecated (use --arm_arch instead))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_ARMV8
+    description: |
+     --enable_armv8 (deprecated (use --arm_arch instead))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ENABLE_REGEXP_UNALIGNED_ACCESSES
+    description: |
+     --enable_regexp_unaligned_accesses (enable unaligned accesses for the regexp engine)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SCRIPT_STREAMING
+    description: |
+     --script_streaming (enable parsing on background)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    DISABLE_OLD_API_ACCESSORS
+    description: |
+     --disable_old_api_accessors (Disable old-style API accessors whose setters trigger through the prototype chain)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    EXPOSE_FREE_BUFFER
+    description: |
+     --expose_free_buffer (expose freeBuffer extension)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    EXPOSE_GC
+    description: |
+     --expose_gc (expose gc extension)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    EXPOSE_EXTERNALIZE_STRING
+    description: |
+     --expose_externalize_string (expose externalize string extension)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    EXPOSE_TRIGGER_FAILURE
+    description: |
+     --expose_trigger_failure (expose trigger-failure extension)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    BUILTINS_IN_STACK_TRACES
+    description: |
+     --builtins_in_stack_traces (show built-in functions in stack traces)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ALLOW_UNSAFE_FUNCTION_CONSTRUCTOR
+    description: |
+     --allow_unsafe_function_constructor (allow invoking the function constructor without security checks)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    INLINE_NEW
+    description: |
+     --inline_new (use fast inline allocation)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_CODEGEN
+    description: |
+     --trace_codegen (print name of functions for which code is generated)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LAZY
+    description: |
+     --lazy (use lazy compilation)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_OPT
+    description: |
+     --trace_opt (trace lazy optimization)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_OPT_STATS
+    description: |
+     --trace_opt_stats (trace lazy optimization statistics)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_FILE_NAMES
+    description: |
+     --trace_file_names (include file names in trace-opt/trace-deopt output)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    OPT
+    description: |
+     --opt (use adaptive optimizations)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    ALWAYS_OPT
+    description: |
+     --always_opt (always try to optimize functions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ALWAYS_OSR
+    description: |
+     --always_osr (always try to OSR functions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PREPARE_ALWAYS_OPT
+    description: |
+     --prepare_always_opt (prepare for turning on always opt)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_DEOPT
+    description: |
+     --trace_deopt (trace optimize function deoptimization)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SERIALIZE_TOPLEVEL
+    description: |
+     --serialize_toplevel (enable caching of toplevel scripts)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    SERIALIZE_EAGER
+    description: |
+     --serialize_eager (compile eagerly when caching scripts)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_SERIALIZER
+    description: |
+     --trace_serializer (print code serializer trace)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    COMPILATION_CACHE
+    description: |
+     --compilation_cache (enable compilation cache)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    CACHE_PROTOTYPE_TRANSITIONS
+    description: |
+     --cache_prototype_transitions (cache prototype transitions)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    COMPILER_DISPATCHER
+    description: |
+     --compiler_dispatcher (enable compiler dispatcher)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_COMPILER_DISPATCHER
+    description: |
+     --trace_compiler_dispatcher (trace compiler dispatcher activity)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_COMPILER_DISPATCHER_JOBS
+    description: |
+     --trace_compiler_dispatcher_jobs (trace progress of individual jobs managed by the compiler dispatcher)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_JS_ARRAY_ABUSE
+    description: |
+     --trace_js_array_abuse (trace out-of-bounds accesses to JS arrays)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_EXTERNAL_ARRAY_ABUSE
+    description: |
+     --trace_external_array_abuse (trace out-of-bounds-accesses to external arrays)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_ARRAY_ABUSE
+    description: |
+     --trace_array_abuse (trace out-of-bounds accesses to all arrays)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ENABLE_LIVEEDIT
+    description: |
+     --enable_liveedit (enable liveedit experimental feature)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_SIDE_EFFECT_FREE_DEBUG_EVALUATE
+    description: |
+     --trace_side_effect_free_debug_evaluate (print debug messages for side-effect-free debug-evaluate for testing)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HARD_ABORT
+    description: |
+     --hard_abort (abort by crashing)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    CLEAR_EXCEPTIONS_ON_JS_ENTRY
+    description: |
+     --clear_exceptions_on_js_entry (clear pending exceptions when entering JavaScript)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    HEAP_PROFILER_TRACE_OBJECTS
+    description: |
+     --heap_profiler_trace_objects (Dump heap object allocations/movements/size_updates)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SAMPLING_HEAP_PROFILER_SUPPRESS_RANDOMNESS
+    description: |
+     --sampling_heap_profiler_suppress_randomness (Use constant sample intervals to eliminate test flakiness)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    USE_IDLE_NOTIFICATION
+    description: |
+     --use_idle_notification (Use idle notification to reduce memory footprint.)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    USE_IC
+    description: |
+     --use_ic (use inline caching)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_IC
+    description: |
+     --trace_ic (trace inline cache state transitions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    NATIVE_CODE_COUNTERS
+    description: |
+     --native_code_counters (generate extra code for manipulating stats counters)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    THIN_STRINGS
+    description: |
+     --thin_strings (Enable ThinString support)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_WEAK_ARRAYS
+    description: |
+     --trace_weak_arrays (Trace WeakFixedArray usage)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_PROTOTYPE_USERS
+    description: |
+     --trace_prototype_users (Trace updates to prototype user tracking)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    USE_VERBOSE_PRINTER
+    description: |
+     --use_verbose_printer (allows verbose printing)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_FOR_IN_ENUMERATE
+    description: |
+     --trace_for_in_enumerate (Trace for-in enumerate slow-paths)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ALLOW_NATIVES_SYNTAX
+    description: |
+     --allow_natives_syntax (allow natives syntax)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_PARSE
+    description: |
+     --trace_parse (trace parsing and preparsing)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_PREPARSE
+    description: |
+     --trace_preparse (trace preparsing decisions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LAZY_INNER_FUNCTIONS
+    description: |
+     --lazy_inner_functions (enable lazy parsing inner functions)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    AGGRESSIVE_LAZY_INNER_FUNCTIONS
+    description: |
+     --aggressive_lazy_inner_functions (even lazier inner function parsing)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PREPARSER_SCOPE_ANALYSIS
+    description: |
+     --preparser_scope_analysis (perform scope analysis for preparsed inner functions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_SIM
+    description: |
+     --trace_sim (Trace simulator execution)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DEBUG_SIM
+    description: |
+     --debug_sim (Enable debugging the simulator)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    CHECK_ICACHE
+    description: |
+     --check_icache (Check icache flushes in ARM and MIPS simulator)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_REGS_MODIFIED
+    description: |
+     --log_regs_modified (When logging register values, only print modified registers.)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    LOG_COLOUR
+    description: |
+     --log_colour (When logging, try to use coloured output.)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    IGNORE_ASM_UNIMPLEMENTED_BREAK
+    description: |
+     --ignore_asm_unimplemented_break (Don't break for ASM_UNIMPLEMENTED_BREAK macros.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_SIM_MESSAGES
+    description: |
+     --trace_sim_messages (Trace simulator debug messages. Implied by --trace-sim.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    STACK_TRACE_ON_ILLEGAL
+    description: |
+     --stack_trace_on_illegal (print stack trace when an illegal exception is thrown)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    ABORT_ON_UNCAUGHT_EXCEPTION
+    description: |
+     --abort_on_uncaught_exception (abort program (dump core) when an uncaught exception is thrown)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    RANDOMIZE_HASHES
+    description: |
+     --randomize_hashes (randomize hashes to avoid predictable hash collisions (with snapshots this option cannot override the baked-in seed))
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TRACE_RAIL
+    description: |
+     --trace_rail (trace RAIL mode)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_ALL_EXCEPTIONS
+    description: |
+     --print_all_exceptions (print exception object and stack trace on each thrown exception)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    RUNTIME_CALL_STATS
+    description: |
+     --runtime_call_stats (report runtime call counts and times)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PROFILE_DESERIALIZATION
+    description: |
+     --profile_deserialization (Print the time it takes to deserialize the snapshot.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SERIALIZATION_STATISTICS
+    description: |
+     --serialization_statistics (Collect statistics on serialized objects.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    REGEXP_OPTIMIZATION
+    description: |
+     --regexp_optimization (generate optimized regexp code)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TESTING_BOOL_FLAG
+    description: |
+     --testing_bool_flag (testing_bool_flag)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    TESTING_MAYBE_BOOL_FLAG
+    description: |
+     --testing_maybe_bool_flag (testing_maybe_bool_flag)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    DUMP_COUNTERS
+    description: |
+     --dump_counters (Dump counters on exit)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    DUMP_COUNTERS_NVP
+    description: |
+     --dump_counters_nvp (Dump counters as name-value pairs on exit)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG
+    description: |
+     --log (Minimal logging (no API, code, GC, suspect, or handles samples).)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_ALL
+    description: |
+     --log_all (Log all events to the log file.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_API
+    description: |
+     --log_api (Log API events to the log file.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_CODE
+    description: |
+     --log_code (Log code events to the log file without profiling.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_GC
+    description: |
+     --log_gc (Log heap samples on garbage collection for the hp2ps tool.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_HANDLES
+    description: |
+     --log_handles (Log global handle events.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_SUSPECT
+    description: |
+     --log_suspect (Log suspect operations.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PROF
+    description: |
+     --prof (Log statistical profiling information (implies --log-code).)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PROF_CPP
+    description: |
+     --prof_cpp (Like --prof, but ignore generated code.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PROF_BROWSER_MODE
+    description: |
+     --prof_browser_mode (Used with --prof, turns on browser-compatible mode for profiling.)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    LOGFILE_PER_ISOLATE
+    description: |
+     --logfile_per_isolate (Separate log files for each isolate.)
+    type:    string
+    default: "y"
+    only:    ["y", "n"]
+    when:    test
+
+  - name:    LL_PROF
+    description: |
+     --ll_prof (Enable low-level linux profiler.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PERF_BASIC_PROF
+    description: |
+     --perf_basic_prof (Enable perf linux profiler (basic support).)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PERF_BASIC_PROF_ONLY_FUNCTIONS
+    description: |
+     --perf_basic_prof_only_functions (Only report function code ranges to perf (i.e. no stubs).)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PERF_PROF
+    description: |
+     --perf_prof (Enable perf linux profiler (experimental annotate support).)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PERF_PROF_UNWINDING_INFO
+    description: |
+     --perf_prof_unwinding_info (Enable unwinding info for perf linux profiler (experimental).)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_INTERNAL_TIMER_EVENTS
+    description: |
+     --log_internal_timer_events (Time internal events.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_TIMER_EVENTS
+    description: |
+     --log_timer_events (Time events including external callbacks.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    LOG_INSTRUCTION_STATS
+    description: |
+     --log_instruction_stats (Log AArch64 instruction statistics.)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    REDIRECT_CODE_TRACES
+    description: |
+     --redirect_code_traces (output deopt information and disassembly into file code-<pid>-<isolate id>.asm)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_OPT_SOURCE
+    description: |
+     --print_opt_source (print source code of optimized and inlined functions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_ELEMENTS_TRANSITIONS
+    description: |
+     --trace_elements_transitions (trace elements transitions)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TRACE_CREATION_ALLOCATION_SITES
+    description: |
+     --trace_creation_allocation_sites (trace the creation of allocation sites)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_CODE_STUBS
+    description: |
+     --print_code_stubs (print code stubs)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TEST_SECONDARY_STUB_CACHE
+    description: |
+     --test_secondary_stub_cache (test secondary stub cache by disabling the primary one)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TEST_PRIMARY_STUB_CACHE
+    description: |
+     --test_primary_stub_cache (test primary stub cache by disabling the secondary one)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    TEST_SMALL_MAX_FUNCTION_CONTEXT_STUB_SIZE
+    description: |
+     --test_small_max_function_context_stub_size (enable testing the function context size overflow path by making the maximum size smaller)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_CODE
+    description: |
+     --print_code (print generated code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_OPT_CODE
+    description: |
+     --print_opt_code (print optimized code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_CODE_VERBOSE
+    description: |
+     --print_code_verbose (print more information for code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_BUILTIN_CODE
+    description: |
+     --print_builtin_code (print generated code for builtins)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SODIUM
+    description: |
+     --sodium (print generated code output suitable for use with the Sodium code viewer)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PRINT_ALL_CODE
+    description: |
+     --print_all_code (enable all flags related to printing code)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    PREDICTABLE
+    description: |
+     --predictable (enable predictable mode)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
+
+  - name:    SINGLE_THREADED
+    description: |
+     --single_threaded (disable the use of background tasks)
+    type:    string
+    default: "n"
+    only:    ["n", "y"]
+    when:    test
 
 build:
   image: ghcr.io/unikraft/wayfinder/linux-node:latest
@@ -3392,7 +5631,289 @@ test:
         FLAGS=${FLAGS}
         GRO_FLUSH_TIMEOUT=${GRO_FLUSH_TIMEOUT}
         TX_QUEUE_LEN=${TX_QUEUE_LEN}
-        BENCHMARK=${BENCHMARK}
+        ENABLE_FIPS=${ENABLE_FIPS}
+        NO_DEPRECATION=${NO_DEPRECATION}
+        NO_WARNINGS=${NO_WARNINGS}
+        TRACE_SYNC_IO=${TRACE_SYNC_IO}
+        TRACE_DEPRECATION=${TRACE_DEPRECATION}
+        TRACE_WARNINGS=${TRACE_WARNINGS}
+        TRACK_HEAP_OBJECTS=${TRACK_HEAP_OBJECTS}
+        ZERO_FILL_BUFFERS=${ZERO_FILL_BUFFERS}
+        EXPERIMENTAL_EXTRAS=${EXPERIMENTAL_EXTRAS}
+        USE_STRICT=${USE_STRICT}
+        ES_STAGING=${ES_STAGING}
+        HARMONY=${HARMONY}
+        HARMONY_SHIPPING=${HARMONY_SHIPPING}
+        HARMONY_ARRAY_PROTOTYPE_VALUES=${HARMONY_ARRAY_PROTOTYPE_VALUES}
+        HARMONY_FUNCTION_SENT=${HARMONY_FUNCTION_SENT}
+        HARMONY_SHAREDARRAYBUFFER=${HARMONY_SHAREDARRAYBUFFER}
+        HARMONY_DO_EXPRESSIONS=${HARMONY_DO_EXPRESSIONS}
+        HARMONY_REGEXP_NAMED_CAPTURES=${HARMONY_REGEXP_NAMED_CAPTURES}
+        HARMONY_REGEXP_PROPERTY=${HARMONY_REGEXP_PROPERTY}
+        HARMONY_FUNCTION_TOSTRING=${HARMONY_FUNCTION_TOSTRING}
+        HARMONY_CLASS_FIELDS=${HARMONY_CLASS_FIELDS}
+        HARMONY_ASYNC_ITERATION=${HARMONY_ASYNC_ITERATION}
+        HARMONY_DYNAMIC_IMPORT=${HARMONY_DYNAMIC_IMPORT}
+        HARMONY_PROMISE_FINALLY=${HARMONY_PROMISE_FINALLY}
+        HARMONY_REGEXP_LOOKBEHIND=${HARMONY_REGEXP_LOOKBEHIND}
+        HARMONY_RESTRICTIVE_GENERATORS=${HARMONY_RESTRICTIVE_GENERATORS}
+        HARMONY_OBJECT_REST_SPREAD=${HARMONY_OBJECT_REST_SPREAD}
+        HARMONY_TEMPLATE_ESCAPES=${HARMONY_TEMPLATE_ESCAPES}
+        FUTURE=${FUTURE}
+        ALLOCATION_SITE_PRETENURING=${ALLOCATION_SITE_PRETENURING}
+        PAGE_PROMOTION=${PAGE_PROMOTION}
+        TRACE_PRETENURING=${TRACE_PRETENURING}
+        TRACE_PRETENURING_STATISTICS=${TRACE_PRETENURING_STATISTICS}
+        TRACK_FIELDS=${TRACK_FIELDS}
+        TRACK_DOUBLE_FIELDS=${TRACK_DOUBLE_FIELDS}
+        TRACK_HEAP_OBJECT_FIELDS=${TRACK_HEAP_OBJECT_FIELDS}
+        TRACK_COMPUTED_FIELDS=${TRACK_COMPUTED_FIELDS}
+        TRACK_FIELD_TYPES=${TRACK_FIELD_TYPES}
+        TYPE_PROFILE=${TYPE_PROFILE}
+        OPTIMIZE_FOR_SIZE=${OPTIMIZE_FOR_SIZE}
+        UNBOX_DOUBLE_ARRAYS=${UNBOX_DOUBLE_ARRAYS}
+        STRING_SLICES=${STRING_SLICES}
+        IGNITION_REO=${IGNITION_REO}
+        IGNITION_FILTER_EXPRESSION_POSITIONS=${IGNITION_FILTER_EXPRESSION_POSITIONS}
+        PRINT_BYTECODE=${PRINT_BYTECODE}
+        TRACE_IGNITION_CODEGEN=${TRACE_IGNITION_CODEGEN}
+        TRACE_IGNITION_DISPATCHES=${TRACE_IGNITION_DISPATCHES}
+        FAST_MATH=${FAST_MATH}
+        TRACE_ENVIRONMENT_LIVENESS=${TRACE_ENVIRONMENT_LIVENESS}
+        TRACE_STORE_ELIMINATION=${TRACE_STORE_ELIMINATION}
+        TRACE_ALLOC=${TRACE_ALLOC}
+        TRACE_ALL_USES=${TRACE_ALL_USES}
+        TRACE_REPRESENTATION=${TRACE_REPRESENTATION}
+        TRACE_TRACK_ALLOCATION_SITES=${TRACE_TRACK_ALLOCATION_SITES}
+        TRACE_MIGRATION=${TRACE_MIGRATION}
+        TRACE_GENERALIZATION=${TRACE_GENERALIZATION}
+        PRINT_DEOPT_STRESS=${PRINT_DEOPT_STRESS}
+        POLYMORPHIC_INLINING=${POLYMORPHIC_INLINING}
+        USE_OSR=${USE_OSR}
+        ANALYZE_ENVIRONMENT_LIVENESS=${ANALYZE_ENVIRONMENT_LIVENESS}
+        TRACE_OSR=${TRACE_OSR}
+        INLINE_ACCESSORS=${INLINE_ACCESSORS}
+        INLINE_INTO_TRY=${INLINE_INTO_TRY}
+        CONCURRENT_RECOMPILATION=${CONCURRENT_RECOMPILATION}
+        TRACE_CONCURRENT_RECOMPILATION=${TRACE_CONCURRENT_RECOMPILATION}
+        BLOCK_CONCURRENT_RECOMPILATION=${BLOCK_CONCURRENT_RECOMPILATION}
+        TURBO_SP_FRAME_ACCESS=${TURBO_SP_FRAME_ACCESS}
+        TURBO_PREPROCESS_RANGES=${TURBO_PREPROCESS_RANGES}
+        TRACE_TURBO=${TRACE_TURBO}
+        TRACE_TURBO_GRAPH=${TRACE_TURBO_GRAPH}
+        TRACE_TURBO_TYPES=${TRACE_TURBO_TYPES}
+        TRACE_TURBO_SCHEDULER=${TRACE_TURBO_SCHEDULER}
+        TRACE_TURBO_REDUCTION=${TRACE_TURBO_REDUCTION}
+        TRACE_TURBO_TRIMMING=${TRACE_TURBO_TRIMMING}
+        TRACE_TURBO_JT=${TRACE_TURBO_JT}
+        TRACE_TURBO_CEQ=${TRACE_TURBO_CEQ}
+        TRACE_TURBO_LOOP=${TRACE_TURBO_LOOP}
+        TURBO_ASM=${TURBO_ASM}
+        TURBO_VERIFY=${TURBO_VERIFY}
+        TRACE_VERIFY_CSA=${TRACE_VERIFY_CSA}
+        TURBO_STATS=${TURBO_STATS}
+        TURBO_STATS_NVP=${TURBO_STATS_NVP}
+        TURBO_SPLITTING=${TURBO_SPLITTING}
+        FUNCTION_CONTEXT_SPECIALIZATION=${FUNCTION_CONTEXT_SPECIALIZATION}
+        TURBO_INLINING=${TURBO_INLINING}
+        TRACE_TURBO_INLINING=${TRACE_TURBO_INLINING}
+        TURBO_LOAD_ELIMINATION=${TURBO_LOAD_ELIMINATION}
+        TRACE_TURBO_LOAD_ELIMINATION=${TRACE_TURBO_LOAD_ELIMINATION}
+        TURBO_PROFILING=${TURBO_PROFILING}
+        TURBO_VERIFY_ALLOCATION=${TURBO_VERIFY_ALLOCATION}
+        TURBO_MOVE_OPTIMIZATION=${TURBO_MOVE_OPTIMIZATION}
+        TURBO_JT=${TURBO_JT}
+        TURBO_LOOP_PEELING=${TURBO_LOOP_PEELING}
+        TURBO_LOOP_VARIABLE=${TURBO_LOOP_VARIABLE}
+        TURBO_CF_OPTIMIZATION=${TURBO_CF_OPTIMIZATION}
+        TURBO_FRAME_ELISION=${TURBO_FRAME_ELISION}
+        TURBO_ESCAPE=${TURBO_ESCAPE}
+        TURBO_INSTRUCTION_SCHEDULING=${TURBO_INSTRUCTION_SCHEDULING}
+        TURBO_STRESS_INSTRUCTION_SCHEDULING=${TURBO_STRESS_INSTRUCTION_SCHEDULING}
+        TURBO_STORE_ELIMINATION=${TURBO_STORE_ELIMINATION}
+        MINIMAL=${MINIMAL}
+        EXPOSE_WASM=${EXPOSE_WASM}
+        ASSUME_ASMJS_ORIGIN=${ASSUME_ASMJS_ORIGIN}
+        WASM_DISABLE_STRUCTURED_CLONING=${WASM_DISABLE_STRUCTURED_CLONING}
+        TRACE_WASM_DECODER=${TRACE_WASM_DECODER}
+        TRACE_WASM_DECODE_TIME=${TRACE_WASM_DECODE_TIME}
+        TRACE_WASM_COMPILER=${TRACE_WASM_COMPILER}
+        TRACE_WASM_INTERPRETER=${TRACE_WASM_INTERPRETER}
+        WASM_BREAK_ON_DECODER_ERROR=${WASM_BREAK_ON_DECODER_ERROR}
+        VALIDATE_ASM=${VALIDATE_ASM}
+        SUPPRESS_ASM_MESSAGES=${SUPPRESS_ASM_MESSAGES}
+        TRACE_ASM_TIME=${TRACE_ASM_TIME}
+        DUMP_WASM_MODULE=${DUMP_WASM_MODULE}
+        WASM_OPT=${WASM_OPT}
+        WASM_NO_BOUNDS_CHECKS=${WASM_NO_BOUNDS_CHECKS}
+        WASM_NO_STACK_CHECKS=${WASM_NO_STACK_CHECKS}
+        WASM_TRAP_HANDLER=${WASM_TRAP_HANDLER}
+        WASM_GUARD_PAGES=${WASM_GUARD_PAGES}
+        WASM_CODE_FUZZER_GEN_TEST=${WASM_CODE_FUZZER_GEN_TEST}
+        PRINT_WASM_CODE=${PRINT_WASM_CODE}
+        TRACE_OPT_VERBOSE=${TRACE_OPT_VERBOSE}
+        EXPERIMENTAL_NEW_SPACE_GROWTH_HEURISTIC=${EXPERIMENTAL_NEW_SPACE_GROWTH_HEURISTIC}
+        GC_GLOBAL=${GC_GLOBAL}
+        TRACE_GC=${TRACE_GC}
+        TRACE_GC_NVP=${TRACE_GC_NVP}
+        TRACE_GC_IGNORE_SCAVENGER=${TRACE_GC_IGNORE_SCAVENGER}
+        TRACE_IDLE_NOTIFICATION=${TRACE_IDLE_NOTIFICATION}
+        TRACE_IDLE_NOTIFICATION_VERBOSE=${TRACE_IDLE_NOTIFICATION_VERBOSE}
+        TRACE_GC_VERBOSE=${TRACE_GC_VERBOSE}
+        TRACE_FRAGMENTATION=${TRACE_FRAGMENTATION}
+        TRACE_FRAGMENTATION_VERBOSE=${TRACE_FRAGMENTATION_VERBOSE}
+        TRACE_EVACUATION=${TRACE_EVACUATION}
+        TRACE_MUTATOR_UTILIZATION=${TRACE_MUTATOR_UTILIZATION}
+        INCREMENTAL_MARKING=${INCREMENTAL_MARKING}
+        INCREMENTAL_MARKING_WRAPPERS=${INCREMENTAL_MARKING_WRAPPERS}
+        MINOR_MC=${MINOR_MC}
+        BLACK_ALLOCATION=${BLACK_ALLOCATION}
+        CONCURRENT_SWEEPING=${CONCURRENT_SWEEPING}
+        PARALLEL_COMPACTION=${PARALLEL_COMPACTION}
+        PARALLEL_POINTER_UPDATE=${PARALLEL_POINTER_UPDATE}
+        TRACE_INCREMENTAL_MARKING=${TRACE_INCREMENTAL_MARKING}
+        TRACK_GC_OBJECT_STATS=${TRACK_GC_OBJECT_STATS}
+        TRACE_GC_OBJECT_STATS=${TRACE_GC_OBJECT_STATS}
+        TRACK_DETACHED_CONTEXTS=${TRACK_DETACHED_CONTEXTS}
+        TRACE_DETACHED_CONTEXTS=${TRACE_DETACHED_CONTEXTS}
+        MOVE_OBJECT_START=${MOVE_OBJECT_START}
+        MEMORY_REDUCER=${MEMORY_REDUCER}
+        ALWAYS_COMPACT=${ALWAYS_COMPACT}
+        NEVER_COMPACT=${NEVER_COMPACT}
+        COMPACT_CODE_SPACE=${COMPACT_CODE_SPACE}
+        CLEANUP_CODE_CACHES_AT_GC=${CLEANUP_CODE_CACHES_AT_GC}
+        USE_MARKING_PROGRESS_BAR=${USE_MARKING_PROGRESS_BAR}
+        FORCE_MARKING_DEQUE_OVERFLOWS=${FORCE_MARKING_DEQUE_OVERFLOWS}
+        STRESS_COMPACTION=${STRESS_COMPACTION}
+        MANUAL_EVACUATION_CANDIDATES_SELECTION=${MANUAL_EVACUATION_CANDIDATES_SELECTION}
+        FAST_PROMOTION_NEW_SPACE=${FAST_PROMOTION_NEW_SPACE}
+        DEBUG_CODE=${DEBUG_CODE}
+        CODE_COMMENTS=${CODE_COMMENTS}
+        ENABLE_SSE3=${ENABLE_SSE3}
+        ENABLE_SSSE=${ENABLE_SSSE}
+        ENABLE_SSE4_1=${ENABLE_SSE4_1}
+        ENABLE_SAHF=${ENABLE_SAHF}
+        ENABLE_AVX=${ENABLE_AVX}
+        ENABLE_FMA=${ENABLE_FMA}
+        ENABLE_BMI1=${ENABLE_BMI1}
+        ENABLE_BMI2=${ENABLE_BMI2}
+        ENABLE_LZCNT=${ENABLE_LZCNT}
+        ENABLE_POPCNT=${ENABLE_POPCNT}
+        ENABLE_VLDR_IMM=${ENABLE_VLDR_IMM}
+        FORCE_LONG_BRANCHES=${FORCE_LONG_BRANCHES}
+        ENABLE_ARMV7=${ENABLE_ARMV7}
+        ENABLE_VFP=${ENABLE_VFP}
+        ENABLE_=${ENABLE_}
+        ENABLE_NEON=${ENABLE_NEON}
+        ENABLE_SUDIV=${ENABLE_SUDIV}
+        ENABLE_ARMV8=${ENABLE_ARMV8}
+        ENABLE_REGEXP_UNALIGNED_ACCESSES=${ENABLE_REGEXP_UNALIGNED_ACCESSES}
+        SCRIPT_STREAMING=${SCRIPT_STREAMING}
+        DISABLE_OLD_API_ACCESSORS=${DISABLE_OLD_API_ACCESSORS}
+        EXPOSE_FREE_BUFFER=${EXPOSE_FREE_BUFFER}
+        EXPOSE_GC=${EXPOSE_GC}
+        EXPOSE_EXTERNALIZE_STRING=${EXPOSE_EXTERNALIZE_STRING}
+        EXPOSE_TRIGGER_FAILURE=${EXPOSE_TRIGGER_FAILURE}
+        BUILTINS_IN_STACK_TRACES=${BUILTINS_IN_STACK_TRACES}
+        ALLOW_UNSAFE_FUNCTION_CONSTRUCTOR=${ALLOW_UNSAFE_FUNCTION_CONSTRUCTOR}
+        INLINE_NEW=${INLINE_NEW}
+        TRACE_CODEGEN=${TRACE_CODEGEN}
+        LAZY=${LAZY}
+        TRACE_OPT=${TRACE_OPT}
+        TRACE_OPT_STATS=${TRACE_OPT_STATS}
+        TRACE_FILE_NAMES=${TRACE_FILE_NAMES}
+        OPT=${OPT}
+        ALWAYS_OPT=${ALWAYS_OPT}
+        ALWAYS_OSR=${ALWAYS_OSR}
+        PREPARE_ALWAYS_OPT=${PREPARE_ALWAYS_OPT}
+        TRACE_DEOPT=${TRACE_DEOPT}
+        SERIALIZE_TOPLEVEL=${SERIALIZE_TOPLEVEL}
+        SERIALIZE_EAGER=${SERIALIZE_EAGER}
+        TRACE_SERIALIZER=${TRACE_SERIALIZER}
+        COMPILATION_CACHE=${COMPILATION_CACHE}
+        CACHE_PROTOTYPE_TRANSITIONS=${CACHE_PROTOTYPE_TRANSITIONS}
+        COMPILER_DISPATCHER=${COMPILER_DISPATCHER}
+        TRACE_COMPILER_DISPATCHER=${TRACE_COMPILER_DISPATCHER}
+        TRACE_COMPILER_DISPATCHER_JOBS=${TRACE_COMPILER_DISPATCHER_JOBS}
+        TRACE_JS_ARRAY_ABUSE=${TRACE_JS_ARRAY_ABUSE}
+        TRACE_EXTERNAL_ARRAY_ABUSE=${TRACE_EXTERNAL_ARRAY_ABUSE}
+        TRACE_ARRAY_ABUSE=${TRACE_ARRAY_ABUSE}
+        ENABLE_LIVEEDIT=${ENABLE_LIVEEDIT}
+        TRACE_SIDE_EFFECT_FREE_DEBUG_EVALUATE=${TRACE_SIDE_EFFECT_FREE_DEBUG_EVALUATE}
+        HARD_ABORT=${HARD_ABORT}
+        CLEAR_EXCEPTIONS_ON_JS_ENTRY=${CLEAR_EXCEPTIONS_ON_JS_ENTRY}
+        HEAP_PROFILER_TRACE_OBJECTS=${HEAP_PROFILER_TRACE_OBJECTS}
+        SAMPLING_HEAP_PROFILER_SUPPRESS_RANDOMNESS=${SAMPLING_HEAP_PROFILER_SUPPRESS_RANDOMNESS}
+        USE_IDLE_NOTIFICATION=${USE_IDLE_NOTIFICATION}
+        USE_IC=${USE_IC}
+        TRACE_IC=${TRACE_IC}
+        NATIVE_CODE_COUNTERS=${NATIVE_CODE_COUNTERS}
+        THIN_STRINGS=${THIN_STRINGS}
+        TRACE_WEAK_ARRAYS=${TRACE_WEAK_ARRAYS}
+        TRACE_PROTOTYPE_USERS=${TRACE_PROTOTYPE_USERS}
+        USE_VERBOSE_PRINTER=${USE_VERBOSE_PRINTER}
+        TRACE_FOR_IN_ENUMERATE=${TRACE_FOR_IN_ENUMERATE}
+        ALLOW_NATIVES_SYNTAX=${ALLOW_NATIVES_SYNTAX}
+        TRACE_PARSE=${TRACE_PARSE}
+        TRACE_PREPARSE=${TRACE_PREPARSE}
+        LAZY_INNER_FUNCTIONS=${LAZY_INNER_FUNCTIONS}
+        AGGRESSIVE_LAZY_INNER_FUNCTIONS=${AGGRESSIVE_LAZY_INNER_FUNCTIONS}
+        PREPARSER_SCOPE_ANALYSIS=${PREPARSER_SCOPE_ANALYSIS}
+        TRACE_SIM=${TRACE_SIM}
+        DEBUG_SIM=${DEBUG_SIM}
+        CHECK_ICACHE=${CHECK_ICACHE}
+        LOG_REGS_MODIFIED=${LOG_REGS_MODIFIED}
+        LOG_COLOUR=${LOG_COLOUR}
+        IGNORE_ASM_UNIMPLEMENTED_BREAK=${IGNORE_ASM_UNIMPLEMENTED_BREAK}
+        TRACE_SIM_MESSAGES=${TRACE_SIM_MESSAGES}
+        STACK_TRACE_ON_ILLEGAL=${STACK_TRACE_ON_ILLEGAL}
+        ABORT_ON_UNCAUGHT_EXCEPTION=${ABORT_ON_UNCAUGHT_EXCEPTION}
+        RANDOMIZE_HASHES=${RANDOMIZE_HASHES}
+        TRACE_RAIL=${TRACE_RAIL}
+        PRINT_ALL_EXCEPTIONS=${PRINT_ALL_EXCEPTIONS}
+        RUNTIME_CALL_STATS=${RUNTIME_CALL_STATS}
+        PROFILE_DESERIALIZATION=${PROFILE_DESERIALIZATION}
+        SERIALIZATION_STATISTICS=${SERIALIZATION_STATISTICS}
+        REGEXP_OPTIMIZATION=${REGEXP_OPTIMIZATION}
+        TESTING_BOOL_FLAG=${TESTING_BOOL_FLAG}
+        TESTING_MAYBE_BOOL_FLAG=${TESTING_MAYBE_BOOL_FLAG}
+        DUMP_COUNTERS=${DUMP_COUNTERS}
+        DUMP_COUNTERS_NVP=${DUMP_COUNTERS_NVP}
+        LOG=${LOG}
+        LOG_ALL=${LOG_ALL}
+        LOG_API=${LOG_API}
+        LOG_CODE=${LOG_CODE}
+        LOG_GC=${LOG_GC}
+        LOG_HANDLES=${LOG_HANDLES}
+        LOG_SUSPECT=${LOG_SUSPECT}
+        PROF=${PROF}
+        PROF_CPP=${PROF_CPP}
+        PROF_BROWSER_MODE=${PROF_BROWSER_MODE}
+        LOGFILE_PER_ISOLATE=${LOGFILE_PER_ISOLATE}
+        LL_PROF=${LL_PROF}
+        PERF_BASIC_PROF=${PERF_BASIC_PROF}
+        PERF_BASIC_PROF_ONLY_FUNCTIONS=${PERF_BASIC_PROF_ONLY_FUNCTIONS}
+        PERF_PROF=${PERF_PROF}
+        PERF_PROF_UNWINDING_INFO=${PERF_PROF_UNWINDING_INFO}
+        LOG_INTERNAL_TIMER_EVENTS=${LOG_INTERNAL_TIMER_EVENTS}
+        LOG_TIMER_EVENTS=${LOG_TIMER_EVENTS}
+        LOG_INSTRUCTION_STATS=${LOG_INSTRUCTION_STATS}
+        REDIRECT_CODE_TRACES=${REDIRECT_CODE_TRACES}
+        PRINT_OPT_SOURCE=${PRINT_OPT_SOURCE}
+        TRACE_ELEMENTS_TRANSITIONS=${TRACE_ELEMENTS_TRANSITIONS}
+        TRACE_CREATION_ALLOCATION_SITES=${TRACE_CREATION_ALLOCATION_SITES}
+        PRINT_CODE_STUBS=${PRINT_CODE_STUBS}
+        TEST_SECONDARY_STUB_CACHE=${TEST_SECONDARY_STUB_CACHE}
+        TEST_PRIMARY_STUB_CACHE=${TEST_PRIMARY_STUB_CACHE}
+        TEST_SMALL_MAX_FUNCTION_CONTEXT_STUB_SIZE=${TEST_SMALL_MAX_FUNCTION_CONTEXT_STUB_SIZE}
+        PRINT_CODE=${PRINT_CODE}
+        PRINT_OPT_CODE=${PRINT_OPT_CODE}
+        PRINT_CODE_VERBOSE=${PRINT_CODE_VERBOSE}
+        PRINT_BUILTIN_CODE=${PRINT_BUILTIN_CODE}
+        SODIUM=${SODIUM}
+        PRINT_ALL_CODE=${PRINT_ALL_CODE}
+        PREDICTABLE=${PREDICTABLE}
+        SINGLE_THREADED=${SINGLE_THREADED}
         init=/guest_start.sh
       cores: 2
     benchtool:
