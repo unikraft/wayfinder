@@ -5,10 +5,10 @@
 # and prints it in the yaml format.
 
 node_link="https://nodejs.org/docs/latest-v8.x/api/cli.html"
-v8_link="https://gist.githubusercontent.com/sarupbanskota/a68e8148aa4cdc95e66a1b0e93df48ef/raw/701463e3a70b4cb2cbd679d0fe5b07df73adcee7/node_8_v8_options"
+v8_link="./node-v8-help.txt"
 
 node_options_list=$(curl -s $node_link | grep "<li><code>--" | grep -o -e "--[a-z1-9-]*")
-v8_options_list=$(curl -s $v8_link | tail -n +18)
+v8_options_list=$(cat $v8_link | tail -n +18)
 
 FILE="$(mktemp)"
 echo "$node_options_list" > $FILE
