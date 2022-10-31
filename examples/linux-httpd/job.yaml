@@ -2750,7 +2750,161 @@ params:
   - name: PAYLOAD_SIZE
     type: int
     only: [612] # bytes
-    when: testz
+    when: test
+
+  # httpd-specific
+  # https://httpd.apache.org/docs/2.4/mod/core.html
+  - name: CONTENT_DIGEST # ContentDigest
+    type: string
+    default: "Off"
+    only: ["On", "Off"]
+    when: test
+
+  - name: ENABLE_MMAP # EnableMMAP
+    type: string
+    default: "On"
+    only: ["On", "Off"]
+    when: test
+
+  - name: ENABLE_SEND_FILE # EnableSendfile
+    type: string
+    default: "Off"
+    only: ["On", "Off"]
+    when: test
+
+  - name: EXTENDED_STATUS # ExtendedStatus
+    type: string
+    default: "Off"
+    only: ["On", "Off"]
+    when: test
+
+  - name: FLUSH_MAX_PIPELINED # FlushMaxPipelined
+    type: int
+    min: 0
+    max: 100
+    default: 5
+    only: [5]
+    when: test
+    
+  - name: FLUSH_MAX_THRESHOLD # FlushMaxThreshold
+    type: int
+    min: 0
+    max: 524288
+    default: 65536 
+    only: [65536]
+    when: test
+
+  - name: KEEP_ALIVE # KeepAlive
+    type: string
+    default: "On"
+    only: ["On", "Off"]
+    when: test
+  
+  - name: KEEP_ALIVE_TIMEOUT # KeepAliveTimeout
+    type: int
+    min: 0
+    max: 300
+    default: 5
+    only: [5]
+    when: test
+
+  - name: LIMIT_REQUEST_BODY # LimitRequestBody
+    type: int
+    min: 0
+    max: 1073741824
+    default: 1073741824
+    only: [1073741824]
+    when: test
+
+  - name: LIMIT_REQUEST_FIELDS # LimitRequestFields
+    type: int
+    min: 0
+    max: 100
+    default: 200
+    only: [100]
+    when: test
+  
+  - name: LIMIT_REQUEST_FILED_SIZE # LimitRequestFieldSize
+    type: int
+    min: 0
+    max: 16384
+    default: 8190
+    only: [8190]
+    when: test
+
+  - name: LIMIT_REQUEST_LINE # LimitRequestLine
+    type: int
+    min: 0
+    max: 16384
+    default: 8190
+    only: [8190]
+    when: test
+
+  - name: LOG_LEVEL # LogLevel
+    type: string
+    default: "warn"
+    only: ["trace7", "trace6", "trace5", "trace4", "trace3", "trace2", "trace1", "debug", "info", "notice", "warn", "error", "crit", "alert", "emerg"]
+    when: test
+
+  - name: MAX_KEEP_ALIVE_REQUESTS # MaxKeepAliveRequests
+    type: int
+    min: 0
+    max: 1000
+    default: 100
+    only: [100]
+    when: test
+
+  - name: MAX_RANGE_OVERLAPS # MaxRangeOverlaps
+    type: int
+    min: 0
+    max: 100
+    default: 20
+    only: [20]
+    when: test
+
+  - name: MAX_RANGE_REVERSALS # MaxRangeReversals
+    type: int
+    min: 0
+    max: 100
+    default: 20
+    only: [20]
+    when: test
+
+  - name: MAX_RANGES # MaxRanges
+    type: int
+    min: 0
+    max: 1000
+    default: 200
+    only: [200]
+    when: test
+
+  - name: MUTEX # Mutex
+    type: string
+    default: "default"
+    only: ["posixsem", "sysvsem", "pthread", "default"]
+    when: test
+
+  - name: READ_BUFFER_SIZE # ReadBufferSize
+    type: int
+    min: 0
+    max: 1048576
+    default: 8192
+    only: [8192]
+    when: test
+
+  - name: SERVER_TOKENS # ServerTokens
+    type: string
+    default: "Full"
+    only: ["Full", "OS", "Prod", "Min", "Minor", "Major"]
+    when: test
+
+  - name: TIME_OUT # TimeOut
+    type: int
+    min: 0
+    max: 300
+    default: 60
+    only: [60]
+    when: test
 
 build:
   image: ghcr.io/unikraft/wayfinder/linux-httpd:latest
@@ -3353,6 +3507,27 @@ test:
         GRO_FLUSH_TIMEOUT=${GRO_FLUSH_TIMEOUT}
         TX_QUEUE_LEN=${TX_QUEUE_LEN}
         PAYLOAD_SIZE=${PAYLOAD_SIZE}
+        CONTENT_DIGEST=${CONTENT_DIGEST}
+        ENABLE_MMAP=${ENABLE_MMAP}
+        ENABLE_SEND_FILE=${ENABLE_SEND_FILE}
+        EXTENDED_STATUS=${EXTENDED_STATUS}
+        FLUSH_MAX_PIPELINED=${FLUSH_MAX_PIPELINED}
+        FLUSH_MAX_THRESHOLD=${FLUSH_MAX_THRESHOLD}
+        KEEP_ALIVE=${KEEP_ALIVE}
+        KEEP_ALIVE_TIMEOUT=${KEEP_ALIVE_TIMEOUT}
+        LIMIT_REQUEST_BODY=${LIMIT_REQUEST_BODY}
+        LIMIT_REQUEST_FIELDS=${LIMIT_REQUEST_FIELDS}
+        LIMIT_REQUEST_FILED_SIZE=${LIMIT_REQUEST_FILED_SIZE}
+        LIMIT_REQUEST_LINE=${LIMIT_REQUEST_LINE}
+        LOG_LEVEL=${LOG_LEVEL}
+        MAX_KEEP_ALIVE_REQUESTS=${MAX_KEEP_ALIVE_REQUESTS}
+        MAX_RANGE_OVERLAPS=${MAX_RANGE_OVERLAPS}
+        MAX_RANGE_REVERSALS=${MAX_RANGE_REVERSALS}
+        MAX_RANGES=${MAX_RANGES}
+        MUTEX=${MUTEX}
+        READ_BUFFER_SIZE=${READ_BUFFER_SIZE}
+        SERVER_TOKENS=${SERVER_TOKENS}
+        TIME_OUT=${TIME_OUT}
         init=/guest_start.sh
       cores: 1
     benchtool:
