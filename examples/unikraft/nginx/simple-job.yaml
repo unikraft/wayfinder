@@ -1,128 +1,120 @@
-name: unikraft-nginx-standard
+name: unikraft-nginx-simple
 params:
   # Unikraft-specific
-  - name:    LWIP_NUM_TCPCON
+  - name: LWIP_NUM_TCPCON
     description: |
       The number of simultaneous TCP connections.
-    type:    int
+    type: int
     default: 64
-    only:    [8, 16, 32, 64]
-    when:    build
+    only: [8, 16, 32, 64]
+    when: build
 
-  - name:    LWIP_NUM_TCPLISTENERS
+  - name: LWIP_NUM_TCPLISTENERS
     description: |
       The number of simultaneous TCP listeners.
-    type:    int
+    type: int
     default: 64
-    only:    [8, 16, 32, 64]
-    when:    build
-  
-  - name:    LWIP_UKNETDEV_POLLONLY
+    only: [8, 16, 32, 64]
+    when: build
+
+  - name: LWIP_UKNETDEV_POLLONLY
     description: |
       If enabled, the network interface will continuosly poll for new packets.
-    type:    string
-    default: "n"
-    only:    ["y", "n"]
-    when:    build
-  
-  - name:    LWIP_POOLS
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+
+  - name: LWIP_POOLS
     description: |
       If enabled, the memory will be allocated in pools and used like that.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
-
-  #! - name: LWIP_POOLS_TRY_BIGGER_POOL
-  #!   type: string
-  #!   only: ["y", "n"]
-
-  #! - name: MEMP_USE_CUSTOM_POOLS
-  #!   type: string
-  #!   only: ["y", "n"]
+    only: ["y", "n"]
+    when: build
 
   # Nginx-specific
-  - name:    ACCESS_LOG
+  - name: ACCESS_LOG
     description: |
       If enabled, logs will be kept for nginx.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y" , "n"]
-    when:    build
+    only: ["n"]
+    when: build
 
-  - name:    KEEPALIVE_TIMEOUT
+  - name: KEEPALIVE_TIMEOUT
     description: |
       The time to wait for a connection until dropping it.
-    type:    int
+    type: int
     default: 60
-    only:    [0, 60]
-    when:    build
+    only: [0, 60]
+    when: build
 
-  - name:    OPEN_FILE_CACHE
+  - name: OPEN_FILE_CACHE
     description: |
       If enabled, nginx will cache the file content.
-    type:    string
+    type: string
     default: "nocaching"
-    only:    ["caching", "nocaching"]
-    when:    build
+    only: ["nocaching"]
+    when: build
 
-  - name:    WORKER_RLIMIT_NOFILE
+  - name: WORKER_RLIMIT_NOFILE
     description: |
       Changes the limit on the maximum number of open files.
-    type:    string
-    only:    [63, 126] # Should be double than WORKER_CONNECTIONS
+    type: string
+    only: [63, 126] # Should be double than WORKER_CONNECTIONS
     default: 63
-    when:    build
+    when: build
 
-  - name:    SERVER_TOKENS
+  - name: SERVER_TOKENS
     description: |
       If enabled, it will send te server token together with the response.
-    type:    string
-    only:    ["on", "off"]
+    type: string
+    only: ["on", "off"]
     default: "off"
-    when:    build
+    when: build
 
-  - name:    SENDFILE
+  - name: SENDFILE
     description: |
       If enabled, it will use the sendfile function family from the kernel.
       Currently disabled for Unikraft, as it does not have support.
-    type:    string
-    only:    ["off"]
+    type: string
+    only: ["off"]
     default: "off"
-    when:    build
+    when: build
 
-  - name:    TCP_NOPUSH
+  - name: TCP_NOPUSH
     description: |
       If on, blocks the data until the packet reaches the MSS.
-    type:    string
+    type: string
     default: "off"
-    only:    ["on", "off"]
-    when:    build
+    only: ["on", "off"]
+    when: build
 
   # Client-specific
-  - name:    WORKER_CONNECTIONS
+  - name: WORKER_CONNECTIONS
     description: |
       The number of wrk connections.
-    type:    int
+    type: int
     default: 63
-    only:    [63]
-    when:    build
+    only: [63]
+    when: build
 
-  - name:    PAYLOAD_SIZE
+  - name: PAYLOAD_SIZE
     description: |
       The size of the payload in bytes.
-    type:    int
+    type: int
     default: 612
-    only:    [612] # bytes
-    when:    build
-  
-  - name:    NUM_PARALLEL_CONNS
+    only: [612] # bytes
+    when: build
+
+  - name: NUM_PARALLEL_CONNS
     description: |
       The number of simultaneous TCP connections.
-    type:    int
+    type: int
     default: 30
-    only:    [30]
-    when:    test
+    only: [30]
+    when: test
 
 build:
   image: ghcr.io/unikraft/wayfinder/unikraft-nginx:latest
@@ -136,8 +128,7 @@ build:
   capabilities:
     - CAP_NET_ADMIN
   cores: 2
-  commands:
-    |
+  commands: |
     set -ex
     env
 
@@ -211,7 +202,7 @@ test:
       commands: /test.sh
       monitors:
         - name: power
-          commands: ./examples/unikraft-nginx/power-monitor.sh http://192.168.0.225/meter/0
+          commands: ./scripts/power-monitor.sh http://192.168.0.225/meter/0
       cores: 1
       start_delay: 5
       duration: 30

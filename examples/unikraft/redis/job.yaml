@@ -1,202 +1,202 @@
 name: unikraft-redis
 params:
   # Unikraft-specific:
-  - name:    LWIP_NUM_TCPCON
+  - name: LWIP_NUM_TCPCON
     description: |
       The number of simultaneous TCP connections.
-    type:    int
+    type: int
     default: 64
-    only:    [8, 16, 32, 64]
-    when:    build
+    only: [8, 16, 32, 64]
+    when: build
 
-  - name:    LWIP_NUM_TCPLISTENERS
+  - name: LWIP_NUM_TCPLISTENERS
     description: |
       The number of simultaneous TCP listeners.
-    type:    int
+    type: int
     default: 64
-    only:    [8, 16, 32, 64]
-    when:    build
-  
-  - name:    LWIP_UKNETDEV_POLLONLY
+    only: [8, 16, 32, 64]
+    when: build
+
+  - name: LWIP_UKNETDEV_POLLONLY
     description: |
       If enabled, the network interface will continuosly poll for new packets.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
-  
-  - name:    LWIP_POOLS
+    only: ["y", "n"]
+    when: build
+
+  - name: LWIP_POOLS
     description: |
       If enabled, the memory will be allocated in pools and used like that.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
   # Platform options:
   # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
-  - name:    HZ
+  - name: HZ
     description: |
       The timer frequency.
-    type:    int
+    type: int
     default: 100
-    only:    [100, 250, 300, 1000]
-    when:    build
+    only: [100, 250, 300, 1000]
+    when: build
 
   # Allocator options:
-  - name:    ALLOCATOR
+  - name: ALLOCATOR
     description: |
       The allocator type to use inside the image.
-    type:    string
+    type: string
     default: "bbuddy"
-    only:    ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"]
-    when:    build
+    only: ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"]
+    when: build
 
-  - name:    LIBTINYALLOC_DISABLE_SPLIT
+  - name: LIBTINYALLOC_DISABLE_SPLIT
     description: |
       Disable the splitting of memory.
-    type:    string
+    type: string
     default: "n"
-    only:    ["n", "y"]
-    if:      ALLOCATOR=='tinyalloc'
-    when:    build
+    only: ["n", "y"]
+    if: ALLOCATOR=='tinyalloc'
+    when: build
 
-  - name:    LIBTINYALLOC_SPLIT_THRESH
+  - name: LIBTINYALLOC_SPLIT_THRESH
     description: |
       The threshold at which to split the memory
-    type:    int
+    type: int
     default: 16
-    only:    [8, 16, 24, 32]
-    if:      ALLOCATOR=='tinyalloc'
-    when:    build
+    only: [8, 16, 24, 32]
+    if: ALLOCATOR=='tinyalloc'
+    when: build
 
-  - name:    LIBTINYALLOC_DISABLE_COMPACT
+  - name: LIBTINYALLOC_DISABLE_COMPACT
     description: |
       If enabled, it disables the compacting of memory.
-    type:    string
+    type: string
     default: "n"
-    only:    ["n", "y"]
-    if:      ALLOCATOR=='tinyalloc'
-    when:    build
+    only: ["n", "y"]
+    if: ALLOCATOR=='tinyalloc'
+    when: build
 
-  - name:    LIBTINYALLOC_ALIGNMENT
+  - name: LIBTINYALLOC_ALIGNMENT
     description: |
       The number to align the memory to.
-    type:    int
+    type: int
     default: 8
-    only:    [8, 16, 32, 64, 128]
-    if:      ALLOCATOR=='tinyalloc'
-    when:    build
-  
+    only: [8, 16, 32, 64, 128]
+    if: ALLOCATOR=='tinyalloc'
+    when: build
+
   # Mimalloc options:
-  - name:    LIBMIMALLOC_MIMALLOC_DEBUG
+  - name: LIBMIMALLOC_MIMALLOC_DEBUG
     description: |
       The debug level of the allocator.
-    type:    int
+    type: int
     default: 0
-    only:    [0, 1, 2]
-    if:      ALLOCATOR=='mimalloc'
-    when:    build
+    only: [0, 1, 2]
+    if: ALLOCATOR=='mimalloc'
+    when: build
 
-  - name:    LIBMIMALLOC_ASSERT
+  - name: LIBMIMALLOC_ASSERT
     description: |
       If assertions are to be evaluated.
-    type:    string
+    type: string
     default: "n"
-    only:    ["n", "y"]
-    if:      ALLOCATOR=='mimalloc'
-    when:    build
+    only: ["n", "y"]
+    if: ALLOCATOR=='mimalloc'
+    when: build
 
   # TLSF specific options:
-  - name:    LIBTLSF_TLSF_LOG2_SLI
+  - name: LIBTLSF_TLSF_LOG2_SLI
     description: |
       Option to allocate memory based upon.
-    type:    int
+    type: int
     default: 5
-    only:    [4, 5, 6, 7]
-    if:      ALLOCATOR=='tlsf'
-    when:    build
+    only: [4, 5, 6, 7]
+    if: ALLOCATOR=='tlsf'
+    when: build
 
   # LWIP options:
-  - name:    LWIP_TCP_QUEUE_OOSEQ
+  - name: LWIP_TCP_QUEUE_OOSEQ
     description: |
       TCP will queue segments that arrive out of order.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
-  - name:    LWIP_TCPIP_THREAD_STACKSIZE
+  - name: LWIP_TCPIP_THREAD_STACKSIZE
     description: |
       The size of the stack for each TCP thread.
-    type:    int
+    type: int
     default: 0
-    only:    [0, 256, 512, 1024, 2048, 4096, 8192, 16384]
-    when:    build
+    only: [0, 256, 512, 1024, 2048, 4096, 8192, 16384]
+    when: build
 
-  - name:    LWIP_TCP_SND_BUF
+  - name: LWIP_TCP_SND_BUF
     description: |
       The send buffer size.
-    type:    int
-    default: 1048576 
-    only:    [1048576, 256000, 524288, 1048576, 1572864, 2097152]
-    when:    build
-  
-  - name:    LWIP_DNS_MAX_SERVERS
+    type: int
+    default: 1048576
+    only: [1048576, 256000, 524288, 1048576, 1572864, 2097152]
+    when: build
+
+  - name: LWIP_DNS_MAX_SERVERS
     description: |
       Number of DNS servers to have space for.
-    type:    int
+    type: int
     default: 2
-    only:    [1, 2, 5, 10]
-    when:    build
+    only: [1, 2, 5, 10]
+    when: build
 
-  - name:    LWIP_DNS_LOCAL_HOST_LIST
+  - name: LWIP_DNS_LOCAL_HOST_LIST
     description: |
       Use localhost list for DNS.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
-  - name:    LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC
+  - name: LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC
     description: |
       If the list on localhost is dynamic.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
-  - name:    LIBUKDEBUG_TRACEPOINTS
+  - name: LIBUKDEBUG_TRACEPOINTS
     description: |
       If enabled, tracepoints are activated.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
-  - name:    LIBUKDEBUG_ALL_TRACEPOINTS
+  - name: LIBUKDEBUG_ALL_TRACEPOINTS
     description: |
       If enabled, no tracepoints are missed.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
-  - name:    LWIP_POOLS_TRY_BIGGER_POOL
+  - name: LWIP_POOLS_TRY_BIGGER_POOL
     description: |
       If enabled, lwip will try to increase the size of the pools.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
-  - name:    MEMP_USE_CUSTOM_POOLS
+  - name: MEMP_USE_CUSTOM_POOLS
     description: |
       If enabled, lwip will not use standard pools.
-    type:    string
+    type: string
     default: "n"
-    only:    ["y", "n"]
-    when:    build
+    only: ["y", "n"]
+    when: build
 
   # Redis-specific
   - name: REDIS_TCP_BACKLOG
@@ -378,7 +378,6 @@ params:
     only: ["yes", "no"]
     when: build
 
-
 build:
   image: ghcr.io/unikraft/wayfinder/unikraft-redis:latest
   outputs:
@@ -391,8 +390,7 @@ build:
   capabilities:
     - CAP_NET_ADMIN
   cores: 2
-  commands:
-    |
+  commands: |
     set -ex
     env
 
@@ -570,7 +568,7 @@ test:
       commands: /test.sh
       monitors:
         - name: power
-          commands: ./examples/unikraft-redis/power-monitor.sh http://192.168.0.225/meter/0
+          commands: ./scripts/power-monitor.sh http://192.168.0.225/meter/0
       cores: 1
       start_delay: 10
       duration: 30
