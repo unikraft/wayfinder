@@ -1,0 +1,3224 @@
+params:
+  # Linux-specific
+  # Compile-time options
+  - name: CONFIG_NETWORK_SECMARK
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_CC_OPTIMIZE_FOR_SIZE
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_SECURITY_SELINUX
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_CPU_FREQ_STAT
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_CROSS_MEMORY_ATTACH
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_HIGH_RES_TIMERS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  # # RCU-related configs are disabled currently
+  # # because we don't know which option depends on which
+  # - name:    CONFIG_TASKS_RCU
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  # - name:    CONFIG_RCU_USER_QS
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  # - name:    CONFIG_RCU_FANOUT
+  #   type:    int
+  #   only:    [2, 64]
+  #   when:    build
+
+  # - name:    CONFIG_RCU_FANOUT_LEAF
+  #   type:    int
+  #   only:    [2, 4, 8, 16, 32, 64]
+  #   when:    build
+
+  # - name:    CONFIG_RCU_FANOUT_EXACT
+  #   type:    string
+  #   default: "n"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  # - name:    CONFIG_RCU_FAST_NO_HZ
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  # - name:    CONFIG_RCU_KTHREAD_PRIO
+  #   type:    int
+  #   default: 0
+  #   only:    [0, 1, 2, 4, 8, 16, 32, 64, 99]
+  #   when:    build
+
+  # - name:    CONFIG_RCU_NOCB_CPU
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  # # NUMA options are disabled because of dependency problems
+  # - name:    CONFIG_NUMA
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  # - name:    CONFIG_NUMA_BALANCING
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  # - name:    CONFIG_NUMA_BALANCING_DEFAULT_ENABLED
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y", "n"]
+  #   when:    build
+
+  - name: CONFIG_SCHED_AUTOGROUP
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_PRINTK
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_BASE_FULL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_FUTEX
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_EPOLL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_AIO
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_ADVISE_SYSCALLS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_SLUB_CPU_PARTIAL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_JUMP_LABEL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_DEFAULT_IOSCHED
+    type: string
+    default: "cfq"
+    only: ["cfq", "deadline", "noop"]
+    when: build
+
+  - name: CONFIG_SCHED_OMIT_FRAME_POINTER
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_SMP
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_SCHED_SMT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_DIRECT_GBPAGES
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_SPARSEMEM_VMEMMAP
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_TRANSPARENT_HUGEPAGE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_X86_SMAP
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_WQ_POWER_EFFICIENT_DEFAULT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_SUSPEND
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_HIBERNATION
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+  # - name:    CONFIG_PM_AUTOSLEEP
+  #   type:    string
+  #   default: "y"
+  #   only:    ["y"] # Gives redefinition errors
+  #   when:    build
+
+  - name: CONFIG_DEBUG_TLBFLUSH
+    type: string
+    default: "n"
+    only: ["n", "y"]
+    when: build
+
+  - name: CPU_FREQ_GOVERNOR
+    type: string
+    default: "performance"
+    only: ["performance", "powersave", "userspace", "ondemand", "conservative"]
+    when: build
+
+  - name: CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: CPU_FREQ_GOVERNOR=='performance'
+
+  - name: CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: CPU_FREQ_GOVERNOR=='powersave'
+
+  - name: CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: CPU_FREQ_GOVERNOR=='userspace'
+
+  - name: CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: CPU_FREQ_GOVERNOR=='ondemand'
+
+  - name: CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: CPU_FREQ_GOVERNOR=='conservative'
+
+  - name: TIMER_FREQUENCY
+    type: string
+    default: "hz_250"
+    only: ["hz_100", "hz_250", "hz_300", "hz_1000"]
+    when: build
+
+  - name: CONFIG_HZ_100
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: TIMER_FREQUENCY=='hz_100'
+
+  - name: CONFIG_HZ_250
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: TIMER_FREQUENCY=='hz_250'
+
+  - name: CONFIG_HZ_300
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: TIMER_FREQUENCY=='hz_300'
+
+  - name: CONFIG_HZ_1000
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: TIMER_FREQUENCY=='hz_1000'
+
+  - name: TIMER_TICK_HANDLING
+    type: string
+    default: "no_hz_full"
+    only: ["hz_periodic", "no_hz_idle", "no_hz_full"]
+    when: build
+
+  - name: CONFIG_HZ_PERIODIC
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: TIMER_TICK_HANDLING=='hz_periodic'
+
+  - name: CONFIG_NO_HZ_IDLE
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: TIMER_TICK_HANDLING=='no_hz_idle'
+
+  - name: CONFIG_NO_HZ_FULL
+    type: string
+    default: "y"
+    only: ["y"]
+    when: build
+    if: TIMER_TICK_HANDLING=='no_hz_full'
+
+  # Runtime Parameters
+  # /proc/sys/fs
+  - name: AIO_MAX_NR
+    type: int
+    min: 0
+    max: 6553600000
+    default: 65536
+    only: [65536]
+    when: test
+
+  - name: DIR_NOTIFY_ENABLE
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  - name: FILE_MAX
+    type: int
+    min: 0
+    max: 3979910000
+    default: 816968
+    only: [816968]
+    when: test
+
+  - name: LEASE_BREAK_TIME
+    type: int
+    min: 0
+    max: 450000000
+    default: 45
+    only: [45]
+    when: test
+
+  - name: LEASES_ENABLE
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  - name: NR_OPEN
+    type: int
+    min: 100
+    max: 10485760000
+    default: 1048576
+    only: [1048576]
+    when: test
+
+  - name: OVERFLOWGID
+    type: int
+    min: 0
+    max: 65534
+    default: 65534
+    only: [65534]
+    when: test
+
+  - name: OVERFLOWUID
+    type: int
+    min: 0
+    max: 65534
+    default: 65534
+    only: [65534]
+    when: test
+
+  - name: PIPE_MAX_SIZE
+    type: int
+    min: 10480
+    max: 10485760000
+    default: 1048576
+    only: [1048576]
+    when: test
+
+  - name: PROTECTED_HARDLINKS
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  - name: PROTECTED_SYMLINKS
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  - name: SUID_DUMPABLE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  # /proc/sys/kernel
+  - name: ACPI_VIDEO_FLAGS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: AUTO_MSGMNI
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: CAD_PID
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  - name: COMPAT_LOG
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  - name: CORE_PIPE_LIMIT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: CORE_USES_PID
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: CTRL_ALT_DEL
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: DMESG_RESTRICT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: FTRACE_DUMP_ON_OOPS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: FTRACE_ENABLED
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: HUNG_TASK_CHECK_COUNT
+    type: int
+    min: 0
+    max: 419430400
+    default: 4194304
+    only: [4194304]
+    when: test
+
+  - name: HUNG_TASK_PANIC
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: HUNG_TASK_TIMEOUT_SECS
+    type: int
+    min: 0
+    max: 12000000000
+    default: 120
+    only: [120]
+    when: test
+
+  - name: HUNG_TASK_WARNINGS
+    type: int
+    min: 0
+    max: 10000000000
+    default: 10
+    only: [10]
+    when: test
+
+  - name: IO_DELAY_TYPE
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: KEXEC_LOAD_DISABLED
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: KPTR_RESTRICT
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: KSTACK_DEPTH_TO_PRINT
+    type: int
+    min: 0
+    max: 1200000000
+    default: 12
+    only: [12]
+    when: test
+
+  - name: LATENCYTOP
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: MAX_LOCK_DEPTH
+    type: int
+    min: 0
+    max: 1024000000
+    default: 1024
+    only: [1024]
+    when: test
+
+  # Crashes run
+  # - name:    MODULES_DISABLED
+  #   type:    string
+  #   default: "0"
+  #   only:    ["0", "1"]
+  #   when:    test
+
+  - name: MSGMAX
+    type: int
+    min: 0
+    max: 819200000
+    default: 8192
+    only: [8192]
+    when: test
+
+  - name: MSGMNB
+    type: int
+    min: 0
+    max: 1638400000
+    default: 16384
+    only: [16384]
+    when: test
+
+  - name: MSGMNI
+    type: int
+    min: 0
+    max: 320000000
+    default: 32000
+    only: [32000]
+    when: test
+
+  - name: NMI_WATCHDOG
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: NS_LAST_PID
+    type: int
+    min: 0
+    max: 26230
+    default: 2793
+    only: [2793]
+    when: test
+
+  - name: NUMA_BALANCING_SCAN_DELAY_MS
+    type: int
+    min: 0
+    max: 1000000000
+    default: 1000
+    only: [1000]
+    when: test
+
+  - name: NUMA_BALANCING_SCAN_PERIOD_MAX_MS
+    type: int
+    min: 0
+    max: 600000000
+    default: 60000
+    only: [60000]
+    when: test
+
+  - name: NUMA_BALANCING_SCAN_PERIOD_MIN_MS
+    type: int
+    min: 0
+    max: 1000000000
+    default: 1000
+    only: [1000]
+    when: test
+
+  - name: NUMA_BALANCING_SCAN_SIZE_MB
+    type: int
+    min: 10
+    max: 256000000
+    default: 256
+    only: [256]
+    when: test
+
+  - name: PANIC
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PANIC_ON_IO_NMI
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PANIC_ON_OOPS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PANIC_ON_UNRECOVERED_NMI
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PANIC_ON_WARN
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PERF_CPU_TIME_MAX_PERCENT
+    type: int
+    min: 0
+    max: 250000000
+    default: 25
+    only: [25]
+    when: test
+
+  - name: PERF_EVENT_MAX_SAMPLE_RATE
+    type: int
+    min: 10
+    max: 10000000000
+    default: 100000
+    only: [100000]
+    when: test
+
+  - name: PERF_EVENT_MLOCK_KB
+    type: int
+    min: 0
+    max: 516000000
+    default: 516
+    only: [516]
+    when: test
+
+  - name: PERF_EVENT_PARANOID
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: PID_MAX
+    type: int
+    min: 1310
+    max: 1310720
+    default: 32768
+    only: [32768]
+    when: test
+
+  - name: PRINT_FATAL_SIGNALS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PRINTK
+    type: int
+    default: 4
+    only: [1, 2, 3, 4, 5, 6, 7, 8]
+    when: test
+
+  - name: PRINTK_DELAY
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PRINTK_RATELIMIT
+    type: int
+    min: 0
+    max: 5000000000
+    default: 5
+    only: [5]
+    when: test
+
+  - name: PRINTK_RATELIMIT_BURST
+    type: int
+    min: 0
+    max: 1000000000
+    default: 10
+    only: [10]
+    when: test
+
+  - name: RANDOMIZE_VA_SPACE
+    type: int
+    min: 0
+    max: 2000000000
+    default: 2
+    only: [2]
+    when: test
+
+  - name: REAL_ROOT_DEV
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: SCHED_AUTOGROUP_ENABLED
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: SCHED_CFS_BANDWIDTH_SLICE_US
+    type: int
+    min: 10
+    max: 5000000000
+    default: 5000
+    only: [5000]
+    when: test
+
+  - name: SCHED_CHILD_RUNS_FIRST
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: SCHED_LATENCY_NS
+    type: int
+    min: 120000
+    max: 120000000
+    default: 12000000
+    only: [12000000]
+    when: test
+
+  - name: SCHED_MIGRATION_COST_NS
+    type: int
+    min: 0
+    max: 500000000
+    default: 500000
+    only: [500000]
+    when: test
+
+  - name: SCHED_MIN_GRANULARITY_NS
+    type: int
+    min: 150000
+    max: 150000000
+    default: 1500000
+    only: [1500000]
+    when: test
+
+  - name: SCHED_NR_MIGRATE
+    type: int
+    min: 0
+    max: 320000000
+    default: 32
+    only: [32]
+    when: test
+
+  - name: SCHED_RR_TIMESLICE_MS
+    type: int
+    min: 0
+    max: 250000000
+    default: 25
+    only: [25]
+    when: test
+
+  - name: SCHED_RT_PERIOD_US
+    type: int
+    min: 1000000
+    max: 1000000000
+    default: 1000000
+    only: [1000000]
+    when: test
+
+  - name: SCHED_RT_RUNTIME_US
+    type: int
+    min: 0
+    max: 950000
+    default: 950000
+    only: [950000]
+    when: test
+
+  - name: SCHED_SHARES_WINDOW_NS
+    type: int
+    min: 0
+    max: 1000000000
+    default: 10000000
+    only: [10000000]
+    when: test
+
+  - name: SCHED_TIME_AVG_MS
+    type: int
+    min: 0
+    max: 1000000000
+    default: 1000
+    only: [1000]
+    when: test
+
+  - name: SCHED_TUNABLE_SCALING
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: SCHED_WAKEUP_GRANULARITY_NS
+    type: int
+    min: 0
+    max: 200000000
+    default: 2000000
+    only: [2000000]
+    when: test
+
+  - name: SEM
+    type: string
+    default: "32000 1024000000 500 32000"
+    only: ["32000 1024000000 500 32000", "3200 102400000 50 3200", "320000 10240000000 5000 320000"]
+    when: test
+
+  - name: SHM_RMID_FORCED
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: SHMALL
+    type: string
+    default: "18446744073692774399"
+    only: ["18446744073692774399"]
+    when: test
+
+  - name: SHMMAX
+    type: string
+    default: "18446744073692774399"
+    only: ["18446744073692774399"]
+    when: test
+
+  - name: SHMMNI
+    type: int
+    min: 0
+    max: 409600000
+    default: 4096
+    only: [4096]
+    when: test
+
+  - name: SOFTLOCKUP_ALL_CPU_BACKTRACE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: SOFTLOCKUP_PANIC
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: STACK_TRACER_ENABLED
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: SYSCTL_WRITES_STRICT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: SYSRQ
+    type: int
+    min: 0
+    max: 1760000000
+    default: 176
+    only: [176]
+    when: test
+
+  - name: TAINTED
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: THREADS_MAX
+    type: int
+    min: 30
+    max: 312070000
+    default: 63834
+    only: [63834]
+    when: test
+
+  - name: TIMER_MIGRATION
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TRACEOFF_ON_WARNING
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TRACEPOINT_PRINTK
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: UNKNOWN_NMI_PANIC
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: WATCHDOG
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: WATCHDOG_THRESH
+    type: int
+    min: 0
+    max: 10
+    default: 10
+    only: [10]
+    when: test
+
+  # /proc/sys/net/core
+  - name: BPF_JIT_ENABLE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  # these are high importance probably.
+  - name: BUSY_POLL
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: BUSY_READ
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  # This is only relevant if you perform some form of priority queueing.
+  - name: DEFAULT_QDISC
+    type: string
+    default: "pfifo_fast"
+    only: ["pfifo", "bfifo", "pfifo_fast", "red", "sfq", "tbf"]
+    when: test
+
+  #  maximum number of packets that kernel can handle on a NAPI interrupt
+  - name: DEV_WEIGHT
+    type: int
+    min: 0
+    max: 640000000
+    default: 64
+    only: [64]
+    when: test
+
+  # These option requires rps to be enabled on option
+  # /sys/class/net/<dev>/queues/rx-<n>/rps_cpus also it doesn't make much sense
+  # if single core (spreads interrupt management to multiple CPUs])
+  # if testing multicre worth checking: XPS (Transmit packet steering),
+  # RFS (Receive Flow Steering)
+  - name: FLOW_LIMIT_CPU_BITMAP
+    type: string
+    default: "00"
+    only: ["00"]
+    when: test
+
+  - name: FLOW_LIMIT_TABLE_LEN
+    type: int
+    min: 4090
+    max: 4096
+    default: 4096
+    only: [4096]
+    when: test
+
+  # Logging infromation limits from the network. Probably should be turned off.
+  - name: MESSAGE_BURST
+    type: int
+    min: 0
+    max: 1000000000
+    default: 10
+    only: [10]
+    when: test
+
+  - name: MESSAGE_COST
+    type: int
+    min: 0
+    max: 5000000000
+    default: 5
+    only: [5]
+    when: test
+
+  # threshold of packet processed on every NAPI poll cycle (Probably interesting,
+  # although since backpressure will occur naturally, not that important)
+  - name: NETDEV_BUDGET
+    type: int
+    min: 0
+    max: 300000000
+    default: 300
+    only: [300]
+    when: test
+
+  # size of receive queue between netdev and ip kernel layers
+  - name: NETDEV_MAX_BACKLOG
+    type: int
+    min: 0
+    max: 1000000000
+    default: 1000
+    only: [1000]
+    when: test
+
+  # control when timestamps are added, better set to 0 and not relevant for
+  # single CPU config.
+  - name: NETDEV_TSTAMP_PREQUEUE
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  # Memory limit for per packet metadata. probably exponentially increasing.
+  - name: OPTMEM_MAX
+    type: int
+    min: 0
+    max: 2048000000
+    default: 20480
+    only: [20480]
+    when: test
+
+  # read mem limits
+  - name: RMEM_DEFAULT
+    type: int
+    min: 21290
+    max: 2129920000
+    default: 212992
+    only: [212992]
+    when: test
+
+  - name: RMEM_MAX
+    type: int
+    min: 21290
+    max: 2129920000
+    default: 212992
+    only: [212992]
+    when: test
+
+  # mumber of maximum concurent flows for rps. power of 2
+  - name: RPS_SOCK_FLOW_ENTRIES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  # listen socket backlog limit - also related: tcp_max_syn_backlog
+  - name: SOMAXCONN
+    type: int
+    min: 0
+    max: 1280000000
+    default: 128
+    only: [128]
+    when: test
+
+  - name: TSTAMP_ALLOW_DATA
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  # write mem limits
+  - name: WMEM_DEFAULT
+    type: int
+    min: 21290
+    max: 2129920000
+    default: 212992
+    only: [212992]
+    when: test
+
+  - name: WMEM_MAX
+    type: int
+    min: 21290
+    max: 2129920000
+    default: 212992
+    only: [212992]
+    when: test
+
+  # /sys/class/net/<dev>/queues/rx-<n>/rps_cpus
+  - name: RPS_FLOW_CNT
+    type: int
+    default: "0"
+    only: ["0"]
+    when: test
+
+  - name: RPS_CPUS
+    type: string
+    default: "00"
+    only: ["00"]
+    when: test
+
+  - name: FWMARK_REFLECT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  # Control how the host reacts to icmp messages. These probabvly are irrelevant
+  # for our workload.
+  # "1" breaks the run
+  - name: ICMP_ECHO_IGNORE_ALL
+    type: string
+    default: "0"
+    only: ["0"]
+    when: test
+
+  - name: ICMP_ECHO_IGNORE_BROADCASTS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ICMP_ERRORS_USE_INBOUND_IFADDR
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ICMP_IGNORE_BOGUS_ERROR_RESPONSES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ICMP_MSGS_BURST
+    type: int
+    min: 0
+    max: 5000000000
+    default: 50
+    only: [50]
+    when: test
+
+  - name: ICMP_MSGS_PER_SEC
+    type: int
+    min: 0
+    max: 10000000000
+    default: 1000
+    only: [1000]
+    when: test
+
+  - name: ICMP_RATELIMIT
+    type: int
+    min: 0
+    max: 10000000000
+    default: 1000
+    only: [1000]
+    when: test
+
+  - name: ICMP_RATEMASK
+    type: int
+    min: 0
+    max: 616800000
+    default: 6168
+    only: [6168]
+    when: test
+
+  - name: IGMP_MAX_MEMBERSHIPS
+    type: int
+    min: 0
+    max: 2000000000
+    default: 20
+    only: [20]
+    when: test
+
+  # Multicast param. control max addresses in a multicast group and max groups
+  # that the host can subscribe to - probably useless
+  - name: IGMP_MAX_MSF
+    type: int
+    min: 0
+    max: 1000000000
+    default: 10
+    only: [10]
+    when: test
+
+  - name: IGMP_QRV
+    type: int
+    min: 2
+    max: 2000000000
+    default: 2
+    only: [2]
+    when: test
+
+  # temp storage per-ip information - probable useless.
+  - name: INET_PEER_MAXTTL
+    type: int
+    min: 0
+    max: 6000000000
+    default: 600
+    only: [600]
+    when: test
+
+  - name: INET_PEER_MINTTL
+    type: int
+    min: 0
+    max: 12000000000
+    default: 120
+    only: [120]
+    when: test
+
+  - name: INET_PEER_THRESHOLD
+    type: int
+    min: 0
+    max: 656640000
+    default: 65664
+    only: [65664]
+    when: test
+
+  - name: IP_DEFAULT_TTL
+    type: int
+    min: 10
+    max: 64
+    default: 64
+    only: [64]
+    when: test
+
+  - name: IP_DYNADDR
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: IP_EARLY_DEMUX
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: IP_FORWARD
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: IP_FORWARD_USE_PMTU
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: IP_NO_PMTU_DISC
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: IP_NONLOCAL_BIND
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: IPFRAG_HIGH_THRESH
+    type: int
+    min: 4194300
+    max: 419430400
+    default: 4194304
+    only: [4194304]
+    when: test
+
+  - name: IPFRAG_LOW_THRESH
+    type: int
+    min: 0
+    max: 3145728
+    default: 3145728
+    only: [3145728]
+    when: test
+
+  - name: IPFRAG_MAX_DIST
+    type: int
+    min: 0
+    max: 6400000000
+    default: 64
+    only: [64]
+    when: test
+
+  - name: IPFRAG_SECRET_INTERVAL
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: IPFRAG_TIME
+    type: int
+    min: 0
+    max: 3000000000
+    default: 30
+    only: [30]
+    when: test
+
+  # reset when too many requests on listen queue, probably irrelevant if number
+  # of concurrent flows is small.
+  - name: TCP_ABORT_ON_OVERFLOW
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_ADV_WIN_SCALE
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_APP_WIN
+    type: int
+    min: 0
+    max: 310000000
+    default: 31
+    only: [31]
+    when: test
+
+  - name: TCP_AUTOCORKING
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  # This can be up to 9000 (jumbo frame size).
+  # Jumbo frames are not realistic in the Internet.
+  - name: TCP_BASE_MSS
+    type: int
+    min: 0
+    max: 1024000000
+    default: 1024
+    only: [1024]
+    when: test
+
+  # Side-channel atack to infer seq number. Probably irrelevant.
+  - name: TCP_CHALLENGE_ACK_LIMIT
+    type: int
+    min: 0
+    max: 1000000000
+    default: 100
+    only: [100]
+    when: test
+
+  #   VERY IMPORTANT: TCP congestion algorithm default choice.
+  #   DCTCP is an interesting option, but need ECN support.
+  #   TODO: need to enable compile option to allow it to work.
+  - name: TCP_CONGESTION_CONTROL
+    type: string
+    default: "cubic"
+    only: ["cubic", "reno", "htcp", "vegas", "bbr", "cdg"]
+    when: test
+
+  # TCP selective ACK, duplicate SACK, Forward SACK, can affect processing
+  # performance, probably no impact if no packet loss.
+  - name: TCP_DSACK
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  # recovery mechanism for short connections. Probably useful and boolean. off is 0, on is 3.
+  - name: TCP_EARLY_RETRANS
+    type: int
+    min: 0
+    max: 3
+    default: 3
+    only: [3]
+    when: test
+
+  # This requires support from the network. Disable is no support - probably
+  # irrelevant.
+  - name: TCP_ECN
+    type: int
+    min: 0
+    max: 2000000000
+    default: 2
+    only: [2]
+    when: test
+
+  - name: TCP_FACK
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  # needs application support
+  - name: TCP_FASTOPEN
+    type: string
+    default: "1"
+    only: ["1", "0"]
+    when: test
+
+  # random seed to generate random tcp cookies for fastopen. Probably irrelevant.
+  - name: TCP_FIN_TIMEOUT
+    type: int
+    min: 0
+    max: 6000000000
+    default: 60
+    only: [60]
+    when: test
+
+  - name: TCP_FRTO
+    type: int
+    min: 0
+    max: 2000000000
+    default: 2
+    only: [2]
+    when: test
+
+  - name: TCP_FWMARK_ACCEPT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_INVALID_RATELIMIT
+    type: int
+    min: 0
+    max: 5000000000
+    default: 500
+    only: [500]
+    when: test
+
+  - name: TCP_KEEPALIVE_INTVL
+    type: int
+    min: 0
+    max: 7500000000
+    default: 75
+    only: [75]
+    when: test
+
+  - name: TCP_KEEPALIVE_PROBES
+    type: int
+    min: 0
+    max: 900000000
+    default: 9
+    only: [9]
+    when: test
+
+  - name: TCP_KEEPALIVE_TIME
+    type: int
+    min: 0
+    max: 7200000000
+    default: 7200
+    only: [7200]
+    when: test
+
+  - name: TCP_LIMIT_OUTPUT_BYTES
+    type: int
+    min: 0
+    max: 262144000
+    default: 262144
+    only: [262144]
+    when: test
+
+  - name: TCP_LOW_LATENCY
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_MAX_ORPHANS
+    type: int
+    min: 0
+    max: 1638400000
+    default: 16384
+    only: [16384]
+    when: test
+
+  - name: TCP_MAX_REORDERING
+    type: int
+    min: 0
+    max: 300000000
+    default: 300
+    only: [300]
+    when: test
+
+  - name: TCP_MAX_SYN_BACKLOG
+    type: int
+    min: 0
+    max: 1280000000
+    default: 128
+    only: [128]
+    when: test
+
+  - name: TCP_MAX_TW_BUCKETS
+    type: int
+    min: 0
+    max: 1638400000
+    default: 16384
+    only: [16384]
+    when: test
+
+  - name: TCP_MEM
+    type: string
+    default: "189126 252170 378252"
+    only: ["189126 252170 378252", "18912 25217 37825", "1891260 2521700 3782520"]
+    when: test
+
+  - name: TCP_MIN_TSO_SEGS
+    type: int
+    min: 2
+    max: 20000
+    default: 2
+    only: [2]
+    when: test
+
+  - name: TCP_MODERATE_RCVBUF
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_MTU_PROBING
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_NO_METRICS_SAVE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_NOTSENT_LOWAT
+    type: int
+    default: -1
+    only: [-1, 16384, 4096, 65536]
+    when: test
+
+  - name: TCP_ORPHAN_RETRIES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_REORDERING
+    type: int
+    default: 3
+    only: [3]
+    when: test
+
+  - name: TCP_RETRANS_COLLAPSE
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_RETRIES1
+    type: int
+    min: 0
+    max: 30
+    default: 3
+    only: [3]
+    when: test
+
+  - name: TCP_RETRIES2
+    type: int
+    min: 0
+    max: 1500000000
+    default: 15
+    only: [15]
+    when: test
+
+  - name: TCP_RFC1337
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  # socket read mem limits
+  - name: TCP_RMEM
+    type: string
+    default: "4096 87380 6291456"
+    only: ["4096 87380 6291456", "512 8738 629145", "40960 873800 62914560"]
+    when: test
+
+  - name: TCP_SACK
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_SLOW_START_AFTER_IDLE
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_STDURG
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_SYN_RETRIES
+    type: int
+    min: 6
+    max: 60
+    default: 6
+    only: [6]
+    when: test
+
+  - name: TCP_SYNACK_RETRIES
+    type: int
+    min: 0
+    max: 500000000
+    default: 5
+    only: [5]
+    when: test
+
+  - name: TCP_SYNCOOKIES
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_THIN_DUPACK
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_THIN_LINEAR_TIMEOUTS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_TIMESTAMPS
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_TSO_WIN_DIVISOR
+    type: int
+    min: 0
+    max: 300000000
+    default: 3
+    only: [3]
+    when: test
+
+  - name: TCP_TW_RECYCLE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_TW_REUSE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TCP_WINDOW_SCALING
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: TCP_WMEM
+    type: string
+    default: "4096 16384 4194304"
+    only: ["4096 16384 4194304", "512 1638 419430", "40960 163840 41943040"]
+    when: test
+
+  - name: TCP_WORKAROUND_SIGNED_WINDOWS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: UDP_MEM
+    type: string
+    default: "189126 252170 378252"
+    only: ["189126 252170 378252", "18912 25217 37825", "1891260 2521700 3782520"]
+    when: test
+
+  - name: UDP_RMEM_MIN
+    type: int
+    min: 10
+    max: 409600000
+    default: 4096
+    only: [4096]
+    when: test
+
+  - name: UDP_WMEM_MIN
+    type: int
+    min: 10
+    max: 409600000
+    default: 4096
+    only: [4096]
+    when: test
+
+  - name: XFRM4_GC_THRESH
+    type: int
+    default: 32768
+    only: [32768]
+    when: test
+
+  # /proc/sys/net/ipv4/route
+  - name: ERROR_BURST
+    type: int
+    min: 0
+    max: 1250000000
+    default: 1250
+    only: [1250]
+    when: test
+
+  - name: ERROR_COST
+    type: int
+    min: 0
+    max: 250000000
+    default: 250
+    only: [250]
+    when: test
+
+  - name: GC_ELASTICITY
+    type: int
+    min: 0
+    max: 800000000
+    default: 8
+    only: [8]
+    when: test
+
+  - name: GC_INTERVAL
+    type: int
+    min: 0
+    max: 6000000000
+    default: 60
+    only: [60]
+    when: test
+
+  - name: GC_MIN_INTERVAL
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: GC_MIN_INTERVAL_MS
+    type: int
+    min: 0
+    max: 5000000000
+    default: 500
+    only: [500]
+    when: test
+
+  - name: GC_THRESH
+    type: int
+    default: -1
+    only: [-1, 200000, 2000000, 20000000]
+    when: test
+
+  - name: GC_TIMEOUT
+    type: int
+    min: 0
+    max: 3000000000
+    default: 300
+    only: [300]
+    when: test
+
+  - name: MAX_SIZE
+    type: int
+    min: 0
+    max: 2147483647
+    default: 2147483647
+    only: [2147483647]
+    when: test
+
+  - name: MIN_ADV_MSS
+    type: int
+    min: 0
+    max: 256000000
+    default: 256
+    only: [256]
+    when: test
+
+  - name: MIN_PMTU
+    type: int
+    min: 0
+    max: 552000000
+    default: 552
+    only: [552]
+    when: test
+
+  # Probably irrelevant
+  - name: MTU_EXPIRES
+    type: int
+    min: 0
+    max: 6000000000
+    default: 600
+    only: [600]
+    when: test
+
+  - name: REDIRECT_LOAD
+    type: int
+    min: 0
+    max: 500000000
+    default: 5
+    only: [5]
+    when: test
+
+  - name: REDIRECT_NUMBER
+    type: int
+    min: 0
+    max: 900000000
+    default: 9
+    only: [9]
+    when: test
+
+  - name: REDIRECT_SILENCE
+    type: int
+    min: 0
+    max: 512000000
+    default: 5120
+    only: [5120]
+    when: test
+
+  # /proc/sys/net/ipv4/conf/all
+  - name: ACCEPT_LOCAL
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ACCEPT_REDIRECTS
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: ACCEPT_SOURCE_ROUTE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ARP_ACCEPT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ARP_ANNOUNCE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ARP_FILTER
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ARP_IGNORE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ARP_NOTIFY
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: BOOTP_RELAY
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: DISABLE_POLICY
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: DISABLE_XFRM
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: FORCE_IGMP_VERSION
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: FORWARDING
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: IGMPV2_UNSOLICITED_REPORT_INTERVAL
+    type: int
+    min: 0
+    max: 1000000000
+    default: 10000
+    only: [10000]
+    when: test
+
+  - name: IGMPV3_UNSOLICITED_REPORT_INTERVAL
+    type: int
+    min: 0
+    max: 1000000000
+    default: 1000
+    only: [1000]
+    when: test
+
+  - name: LOG_MARTIANS
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: MEDIUM_ID
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PROMOTE_SECONDARIES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PROXY_ARP
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PROXY_ARP_PVLAN
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: ROUTE_LOCALNET
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: RP_FILTER
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: SECURE_REDIRECTS
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: SEND_REDIRECTS
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: SHARED_MEDIA
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: SRC_VALID_MARK
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TAG
+    type: string
+    default: "0"
+    only: ["0"]
+    when: test
+
+  # /proc/sys/net/ipv4/neigh/eth0
+  - name: ANYCAST_DELAY
+    type: int
+    default: 100
+    only: [100]
+    when: test
+
+  - name: APP_SOLICIT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: BASE_REACHABLE_TIME
+    type: int
+    default: 30
+    only: [30]
+    when: test
+
+  - name: BASE_REACHABLE_TIME_MS
+    type: int
+    default: 30000
+    only: [30000]
+    when: test
+
+  - name: DELAY_FIRST_PROBE_TIME
+    type: int
+    default: 5
+    only: [5]
+    when: test
+
+  - name: GC_STALE_TIME
+    type: int
+    default: 60
+    only: [60]
+    when: test
+
+  - name: LOCKTIME
+    type: int
+    default: 100
+    only: [100]
+    when: test
+
+  - name: MCAST_SOLICIT
+    type: int
+    default: 3
+    only: [3]
+    when: test
+
+  - name: PROXY_DELAY
+    type: int
+    default: 80
+    only: [80]
+    when: test
+
+  - name: PROXY_QLEN
+    type: int
+    default: 64
+    only: [64]
+    when: test
+
+  - name: RETRANS_TIME
+    type: int
+    default: 100
+    only: [100]
+    when: test
+
+  - name: RETRANS_TIME_MS
+    type: int
+    default: 1000
+    only: [1000]
+    when: test
+
+  - name: UCAST_SOLICIT
+    type: int
+    default: 3
+    only: [3]
+    when: test
+
+  - name: UNRES_QLEN
+    type: int
+    default: 31
+    only: [31]
+    when: test
+
+  - name: UNRES_QLEN_BYTES
+    type: int
+    default: 65536
+    only: [65536]
+    when: test
+
+  # /proc/sys/net/unix
+  - name: MAX_DGRAM_QLEN
+    type: int
+    min: 0
+    max: 512000000
+    default: 10
+    only: [10]
+    when: test
+
+  # /proc/sys/vm
+  - name: ADMIN_RESERVE_KBYTES
+    type: int
+    default: 8192
+    only: [8192]
+    when: test
+
+  - name: BLOCK_DUMP
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: DIRTY_BACKGROUND_BYTES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: DIRTY_BACKGROUND_RATIO
+    type: int
+    default: 10
+    only: [10]
+    when: test
+
+  - name: DIRTY_BYTES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: DIRTY_EXPIRE_CENTISECS
+    type: int
+    default: 3000
+    only: [3000]
+    when: test
+
+  - name: DIRTY_RATIO
+    type: int
+    default: 20
+    only: [20]
+    when: test
+
+  - name: DIRTY_WRITEBACK_CENTISECS
+    type: int
+    default: 500
+    only: [500]
+    when: test
+
+  - name: DIRTYTIME_EXPIRE_SECONDS
+    type: int
+    default: 43200
+    only: [43200]
+    when: test
+
+  - name: DROP_CACHES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: EXTFRAG_THRESHOLD
+    type: int
+    default: 500
+    only: [500]
+    when: test
+
+  - name: HUGEPAGES_TREAT_AS_MOVABLE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: HUGETLB_SHM_GROUP
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: LAPTOP_MODE
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: LEGACY_VA_LAYOUT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: LOWMEM_RESERVE_RATIO
+    type: string
+    default: "256 256 32"
+    only: ["256 256 32", "25 25 3", "2560 2560 320"]
+    when: test
+
+  - name: MAX_MAP_COUNT
+    type: int
+    default: 65530
+    only: [65530]
+    when: test
+
+  - name: MEMORY_FAILURE_EARLY_KILL
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: MEMORY_FAILURE_RECOVERY
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: MIN_FREE_KBYTES
+    type: int
+    default: 67584
+    only: [67584]
+    when: test
+
+  # # Crashes runs
+  # - name:    MIN_SLAB_RATIO
+  #   type:    int
+  #   default: 5
+  #   only:    [5]
+  #   when:    test
+
+  # - name:    MIN_UNMAPPED_RATIO
+  #   type:    string
+  #   default: "0"
+  #   only:    ["1", "0"]
+  #   when:    test
+
+  # - name:    MMAP_MIN_ADDR
+  #   type:    int
+  #   default: 65536
+  #   only:    [65536]
+  #   when:    test
+
+  - name: NUMA_ZONELIST_ORDER
+    type: string
+    default: "default"
+    only: ["default", "node", "zone"]
+    when: test
+
+  - name: OOM_DUMP_TASKS
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: OOM_KILL_ALLOCATING_TASK
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: OVERCOMMIT_KBYTES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: OVERCOMMIT_MEMORY
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: OVERCOMMIT_RATIO
+    type: int
+    default: 50
+    only: [50]
+    when: test
+
+  - name: PAGE_CLUSTER
+    type: int
+    default: 3
+    only: [3]
+    when: test
+
+  - name: PANIC_ON_OOM
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: PERCPU_PAGELIST_FRACTION
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: STAT_INTERVAL
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: SWAPPINESS
+    type: int
+    default: 60
+    only: [60]
+    when: test
+
+  - name: USER_RESERVE_KBYTES
+    type: int
+    default: 131072
+    only: [131072]
+    when: test
+
+  - name: VFS_CACHE_PRESSURE
+    type: int
+    default: 100
+    only: [100]
+    when: test
+
+  - name: ZONE_RECLAIM_MODE
+    type: string
+    default: "0"
+    only: ["0"]
+    when: test
+
+  # /sys/fs/ext2/vda
+  - name: INODE_READAHEAD_BLKS
+    type: int
+    default: 32
+    only: [32]
+    when: test
+
+  - name: MB_MAX_TO_SCAN
+    type: int
+    default: 200
+    only: [200]
+    when: test
+
+  - name: MSG_RATELIMIT_BURST
+    type: int
+    default: 10
+    only: [10]
+    when: test
+
+  - name: MB_STREAM_REQ
+    type: int
+    default: 16
+    only: [16]
+    when: test
+
+  - name: MB_MIN_TO_SCAN
+    type: int
+    default: 10
+    only: [10]
+    when: test
+
+  - name: MB_STATS
+    type: string
+    default: "0"
+    only: ["0"]
+    when: test
+
+  #- trigger_fs_error:
+  - name: ERR_RATELIMIT_BURST
+    type: int
+    default: 10
+    only: [10]
+    when: test
+
+  - name: MB_GROUP_PREALLOC
+    type: int
+    default: 512
+    only: [512]
+    when: test
+
+  - name: INODE_GOAL
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: RESERVED_CLUSTERS
+    type: int
+    default: 4096
+    only: [4096]
+    when: test
+
+  - name: EXTENT_MAX_ZEROOUT_KB
+    type: int
+    default: 32
+    only: [32]
+    when: test
+
+  - name: ERR_RATELIMIT_INTERVAL_MS
+    type: int
+    default: 1250
+    only: [1250]
+    when: test
+
+  - name: WARNING_RATELIMIT_BURST
+    type: int
+    default: 10
+    only: [10]
+    when: test
+
+  - name: WARNING_RATELIMIT_INTERVAL_MS
+    type: int
+    default: 1250
+    only: [1250]
+    when: test
+
+  - name: MB_ORDER2_REQ
+    type: int
+    default: 2
+    only: [2]
+    when: test
+
+  - name: MSG_RATELIMIT_INTERVAL_MS
+    type: int
+    default: 1250
+    only: [1250]
+    when: test
+
+  # /sys/kernel/mm/hugepages/hugepages-2048kB
+  - name: NR_OVERCOMMIT_HUGEPAGES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: NR_HUGEPAGES
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: NR_HUGEPAGES_MEMPOLICY
+    type: string
+    default: "0"
+    only: ["0"]
+    when: test
+
+  # /sys/kernel/mm/transparent_hugepage
+  - name: ENABLED
+    type: string
+    default: "always"
+    only: ["always", "madvise", "never"]
+    when: test
+
+  - name: USE_ZERO_PAGE
+    type: string
+    default: "0"
+    only: ["1", "0"]
+    when: test
+
+  - name: DEFRAG
+    type: string
+    default: "always"
+    only: ["always", "madvise", "never"]
+    when: test
+
+  # /sys/class/net
+  - name: MTU
+    type: int
+    default: 1500
+    only: [1500]
+    when: test
+
+  - name: NETDEV_GROUP
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: FLAGS
+    type: string
+    default: "0x1003"
+    only: ["0x1003"]
+    when: test
+
+  - name: GRO_FLUSH_TIMEOUT
+    type: string
+    default: "0"
+    only: ["0", "1"]
+    when: test
+
+  - name: TX_QUEUE_LEN
+    type: int
+    default: 1000
+    only: [1000]
+    when: test
+
+  # Boot-time parameters
+  - name: ACPI
+    type: string
+    only: ["on", "off", "noirq", "strict", "rsdt", "copy_dsdt"]
+    when: test
+
+  - name: ACPI_APIC_INSTANCE
+    type: string
+    only: ["0", "1", "2"]
+    when: test
+
+  - name: ACPI_IRQ_BALANCE
+    type: string
+    only: ["acpi_irq_balance", "acpi_irq_nobalance"]
+    when: test
+
+  - name: ALIGN_VA_ADDR
+    type: string
+    only: ["on", "off"]
+    when: test
+
+  - name: APIC_EXTNMI
+    type: string
+    only: ["bsp", "all", "none"]
+    when: test
+
+  - name: CLOCKSOURCE
+    type: string
+    only: ["hpet", "tsc"]
+    when: test
+
+  - name: CPUIDLE_OFF
+    type: string
+    only: ["0", "1"]
+    when: test
+
+  - name: NOMPX
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NOPKU
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: HASHDIST
+    type: string
+    only: ["0", "1"]
+    when: test
+
+  - name: IDLE
+    type: string
+    only: ["poll", "halt", "nomwait"]
+    when: test
+
+  - name: IHASH_ENTRIES
+    type: string
+    only: ["131072", "262144", "524288", "1048576"]
+    when: test
+
+  - name: INTEL_IOMMU
+    type: string
+    only: ["on", "off"]
+    when: test
+
+  - name: INTEL_IDLE_MAX_CSTATE
+    type: string
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    when: test
+
+  - name: INTEL_PSTATE
+    type: string
+    only: ["disable", "passive", "force", "no_hwp"]
+    when: test
+
+  - name: IO_DELAY
+    type: string
+    only: ["0x80", "0xed", "udelay", "none"]
+    when: test
+
+  - name: NOKASLR
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NOSMAP
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NOSMEP
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NOXSAVEOPT
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NOXSAVES
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NOHZ
+    type: string
+    only: ["on", "off"]
+    when: test
+
+  - name: NO_TIMER_CHECK
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NORANDMAPS
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NORDRAND
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  # 100 means yes, 1 means no
+  - name: NOSMP
+    type: string
+    only: ["100", "1"]
+    when: test
+
+  - name: NOWATCHDOG
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: NUMA_BALANCING
+    type: string
+    only: ["enabled", "disable"]
+    when: test
+
+  - name: PERCPU_ALLOC
+    type: string
+    only: ["embed", "page"]
+    when: test
+
+  - name: PROCESSOR_MAX_CSTATE
+    type: string
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    when: test
+
+  - name: PROCESSOR_NOCST
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: QUIET
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: SKEW_TICK
+    type: string
+    only: ["0", "1"]
+    when: test
+
+  - name: SLAB_NOMERGE
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  - name: SLAB_MAX_ORDER
+    type: string
+    only: ["0", "1"]
+    when: test
+
+  - name: SLUB_MAX_ORDER
+    type: string
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    when: test
+
+  - name: SLUB_MIN_OBJECTS
+    type: string
+    only: ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    when: test
+
+  - name: SLUB_MIN_ORDER
+    type: string
+    only: ["0", "1", "2", "3", "4"]
+    when: test
+
+  - name: THASH_ENTRIES
+    type: string
+    only: ["32768", "2097152"]
+    when: test
+
+  - name: TSC
+    type: string
+    only: ["reliable", "noirqtime"]
+    when: test
+
+  - name: UHASH_ENTRIES
+    type: string
+    only: ["2048", "8192", "32768", "131072"]
+    when: test
+
+  - name: VDSO
+    type: string
+    only: ["0", "1"]
+    when: test
+
+  - name: VSYSCALL
+    type: string
+    only: ["native", "emulate", "none"]
+    when: test
+
+  - name: WORKQUEUE_POWER_EFFICIENT
+    type: string
+    only: ["y", "n"]
+    when: test
+
+  # Benchmark-specific
+  - name: BENCHMARK
+    type: string
+    only: ["openmp"] #, "serial"] # enable by hand
+    when: test
+
+build:
+  image: ghcr.io/unikraft/wayfinder/linux-hpc:latest
+  outputs:
+    kernel: /root/workspace/kernelbuild/microvm++redis/vmlinuz-4.0.0+
+    disks:
+      - name: vda
+        type: raw
+        path: /root/workspace/hpc.ext3
+  devices:
+    - /dev/urandom
+    - /dev/loop-control
+  capabilities:
+    - CAP_NET_ADMIN
+    - CAP_SYS_ADMIN
+  cores: 6
+  workdir: /root/workspace
+  commands: |
+    set -xe
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+    # Configure Linux
+    echo "Configuring Linux"
+    set-kernel-build.sh
+
+    # Build the image
+    echo "Building the image"
+    ./scripts/build-with-configs.sh patch ${MICROVM_CFG} ${REDIS_CFG}
+
+    # Generate filesystem image
+    echo "Generating filesystem image"
+    image2rootfs.sh hpc.tar
+    mkdir -p /tmp/hpc-ext3
+    mount -o loop ./hpc.ext3 /tmp/hpc-ext3
+
+    # Install runtime option and network setup script here 
+    # as we cannot run `u`/`mount` during the container's build.
+    cp -v ./scripts/set-kernel-runtime.sh /tmp/hpc-ext3
+    cp -v ./scripts/busybox-x86_64 /tmp/hpc-ext3
+    cp -v ./scripts/guest* /tmp/hpc-ext3
+    cp -v ./load_entropy/load_entropy /tmp/hpc-ext3
+
+    mkdir -p bench
+    unzip ./benchmark_omp.zip -d ./bench
+    mkdir -p /tmp/hpc-ext3/bench-omp
+    cp -v ./bench/bin/* /tmp/hpc-ext3/bench-omp
+    cp -v ./run-bench-omp.sh /tmp/hpc-ext3/bench-omp/run-bench.sh
+    rm -rf ./bench
+
+    mkdir -p bench
+    unzip ./benchmark_ser.zip -d ./bench
+    mkdir -p /tmp/hpc-ext3/bench-ser
+    cp -v ./bench/bin/* /tmp/hpc-ext3/bench-ser
+    cp -v ./run-bench-ser.sh /tmp/hpc-ext3/bench-ser/run-bench.sh
+    rm -rf ./bench
+
+    # Install musl libc
+    mkdir -p /tmp/hpc-ext3/trusted
+    cp -v ./scripts/libc.so /tmp/hpc-ext3/trusted/libc.so
+
+    # Install libgomp
+    cp -v /usr/lib/x86_64-linux-gnu/libgomp.so.1 /tmp/hpc-ext3/trusted/libgomp.so.1
+    mkdir -p /tmp/hpc-ext3/lib/x86_64-linux-gnu/
+    cp -v /usr/lib/x86_64-linux-gnu/libgomp.so.1 /tmp/hpc-ext3/lib/x86_64-linux-gnu/libgomp.so.1
+
+    # Unmounting seals the filesystem archive
+    umount /tmp/hpc-ext3
+
+    echo "Build Done!"
+
+test:
+  - name: throughput
+    kernel:
+      memory: 1024M
+      args: >
+        root=/dev/vda
+        rw
+        WAYFINDER_DOMAIN_IP_ADDR=$WAYFINDER_DOMAIN_IP_ADDR
+        WAYFINDER_DOMAIN_IP_GW_ADDR=$WAYFINDER_DOMAIN_IP_GW_ADDR
+        console=ttyS0
+        acpi=${ACPI}
+        acpi_apic_instance=${ACPI_APIC_INSTANCE}
+        acpi_irq_balance=${ACPI_IRQ_BALANCE}
+        align_va_addr=${ALIGN_VA_ADDR}
+        apic_extnmi=${APIC_EXTNMI}
+        clocksource=${CLOCKSOURCE}
+        cpuidle.off=${CPUIDLE_OFF}
+        nompx=${NOMPX}
+        nopku=${NOPKU}
+        hashdist=${HASHDIST}
+        idle=${IDLE}
+        intel_idle.max_cstate=${INTEL_IDLE_MAX_CSTATE}
+        intel_iommu=${INTEL_IOMMU}
+        intel_pstate=${INTEL_PSTATE}
+        io_delay=${IO_DELAY}
+        nokaslr=${NOKASLR}
+        nosmap=${NOSMAP}
+        nosmep=${NOSMEP}
+        noxsaveopt=${NOXSAVEOPT}
+        noxsaves=${NOXSAVES}
+        nohz=${NOHZ}
+        no_timer_check=${NO_TIMER_CHECK}
+        norandmaps=${NORANDMAPS}
+        nordrand=${NORDRAND}
+        maxcpus=${NOSMP}
+        nowatchdog=${NOWATCHDOG}
+        numa_balancing=${NUMA_BALANCING}
+        percpu_alloc=${PERCPU_ALLOC}
+        processor.max_cstate=${PROCESSOR_MAX_CSTATE}
+        processor.nocst=${PROCESSOR_NOCST}
+        quiet=${QUIET}
+        skew_tick=${SKEW_TICK}
+        slab_nomerge=${SLAB_NOMERGE}
+        slab_max_order=${SLAB_MAX_ORDER}
+        slub_max_order=${SLUB_MAX_ORDER}
+        slub_min_objects=${SLUB_MIN_OBJECTS}
+        slub_min_order=${SLUB_MIN_ORDER}
+        thash_entries=${THASH_ENTRIES}
+        tsc=${TSC}
+        uhash_entries=${UHASH_ENTRIES}
+        vdso=${VDSO}
+        vsyscall=${VSYSCALL}
+        workqueue.power_efficient=${WORKQUEUE_POWER_EFFICIENT}
+        AIO_MAX_NR=${AIO_MAX_NR}
+        DIR_NOTIFY_ENABLE=${DIR_NOTIFY_ENABLE}
+        FILE_MAX=${FILE_MAX}
+        LEASE_BREAK_TIME=${LEASE_BREAK_TIME}
+        LEASES_ENABLE=${LEASES_ENABLE}
+        NR_OPEN=${NR_OPEN}
+        OVERFLOWGID=${OVERFLOWGID}
+        OVERFLOWUID=${OVERFLOWUID}
+        PIPE_MAX_SIZE=${PIPE_MAX_SIZE}
+        PROTECTED_HARDLINKS=${PROTECTED_HARDLINKS}
+        PROTECTED_SYMLINKS=${PROTECTED_SYMLINKS}
+        SUID_DUMPABLE=${SUID_DUMPABLE}
+        ACPI_VIDEO_FLAGS=${ACPI_VIDEO_FLAGS}
+        AUTO_MSGMNI=${AUTO_MSGMNI}
+        CAD_PID=${CAD_PID}
+        COMPAT_LOG=${COMPAT_LOG}
+        CORE_PIPE_LIMIT=${CORE_PIPE_LIMIT}
+        CORE_USES_PID=${CORE_USES_PID}
+        CTRL_ALT_DEL=${CTRL_ALT_DEL}
+        DMESG_RESTRICT=${DMESG_RESTRICT}
+        FTRACE_DUMP_ON_OOPS=${FTRACE_DUMP_ON_OOPS}
+        FTRACE_ENABLED=${FTRACE_ENABLED}
+        HUNG_TASK_CHECK_COUNT=${HUNG_TASK_CHECK_COUNT}
+        HUNG_TASK_PANIC=${HUNG_TASK_PANIC}
+        HUNG_TASK_TIMEOUT_SECS=${HUNG_TASK_TIMEOUT_SECS}
+        HUNG_TASK_WARNINGS=${HUNG_TASK_WARNINGS}
+        IO_DELAY_TYPE=${IO_DELAY_TYPE}
+        KEXEC_LOAD_DISABLED=${KEXEC_LOAD_DISABLED}
+        KPTR_RESTRICT=${KPTR_RESTRICT}
+        KSTACK_DEPTH_TO_PRINT=${KSTACK_DEPTH_TO_PRINT}
+        LATENCYTOP=${LATENCYTOP}
+        MAX_LOCK_DEPTH=${MAX_LOCK_DEPTH}
+        MSGMAX=${MSGMAX}
+        MSGMNB=${MSGMNB}
+        MSGMNI=${MSGMNI}
+        NMI_WATCHDOG=${NMI_WATCHDOG}
+        NS_LAST_PID=${NS_LAST_PID}
+        NUMA_BALANCING_SCAN_DELAY_MS=${NUMA_BALANCING_SCAN_DELAY_MS}
+        NUMA_BALANCING_SCAN_PERIOD_MAX_MS=${NUMA_BALANCING_SCAN_PERIOD_MAX_MS}
+        NUMA_BALANCING_SCAN_PERIOD_MIN_MS=${NUMA_BALANCING_SCAN_PERIOD_MIN_MS}
+        NUMA_BALANCING_SCAN_SIZE_MB=${NUMA_BALANCING_SCAN_SIZE_MB}
+        PANIC=${PANIC}
+        PANIC_ON_IO_NMI=${PANIC_ON_IO_NMI}
+        PANIC_ON_OOPS=${PANIC_ON_OOPS}
+        PANIC_ON_UNRECOVERED_NMI=${PANIC_ON_UNRECOVERED_NMI}
+        PANIC_ON_WARN=${PANIC_ON_WARN}
+        PERF_CPU_TIME_MAX_PERCENT=${PERF_CPU_TIME_MAX_PERCENT}
+        PERF_EVENT_MAX_SAMPLE_RATE=${PERF_EVENT_MAX_SAMPLE_RATE}
+        PERF_EVENT_MLOCK_KB=${PERF_EVENT_MLOCK_KB}
+        PERF_EVENT_PARANOID=${PERF_EVENT_PARANOID}
+        PID_MAX=${PID_MAX}
+        PRINT_FATAL_SIGNALS=${PRINT_FATAL_SIGNALS}
+        PRINTK=${PRINTK}
+        PRINTK_DELAY=${PRINTK_DELAY}
+        PRINTK_RATELIMIT=${PRINTK_RATELIMIT}
+        PRINTK_RATELIMIT_BURST=${PRINTK_RATELIMIT_BURST}
+        RANDOMIZE_VA_SPACE=${RANDOMIZE_VA_SPACE}
+        REAL_ROOT_DEV=${REAL_ROOT_DEV}
+        SCHED_AUTOGROUP_ENABLED=${SCHED_AUTOGROUP_ENABLED}
+        SCHED_CFS_BANDWIDTH_SLICE_US=${SCHED_CFS_BANDWIDTH_SLICE_US}
+        SCHED_CHILD_RUNS_FIRST=${SCHED_CHILD_RUNS_FIRST}
+        SCHED_LATENCY_NS=${SCHED_LATENCY_NS}
+        SCHED_MIGRATION_COST_NS=${SCHED_MIGRATION_COST_NS}
+        SCHED_MIN_GRANULARITY_NS=${SCHED_MIN_GRANULARITY_NS}
+        SCHED_NR_MIGRATE=${SCHED_NR_MIGRATE}
+        SCHED_RR_TIMESLICE_MS=${SCHED_RR_TIMESLICE_MS}
+        SCHED_RT_PERIOD_US=${SCHED_RT_PERIOD_US}
+        SCHED_RT_RUNTIME_US=${SCHED_RT_RUNTIME_US}
+        SCHED_SHARES_WINDOW_NS=${SCHED_SHARES_WINDOW_NS}
+        SCHED_TIME_AVG_MS=${SCHED_TIME_AVG_MS}
+        SCHED_TUNABLE_SCALING=${SCHED_TUNABLE_SCALING}
+        SCHED_WAKEUP_GRANULARITY_NS=${SCHED_WAKEUP_GRANULARITY_NS}
+        SEM="${SEM}"
+        SHM_RMID_FORCED=${SHM_RMID_FORCED}
+        SHMALL=${SHMALL}
+        SHMMAX=${SHMMAX}
+        SHMMNI=${SHMMNI}
+        SOFTLOCKUP_ALL_CPU_BACKTRACE=${SOFTLOCKUP_ALL_CPU_BACKTRACE}
+        SOFTLOCKUP_PANIC=${SOFTLOCKUP_PANIC}
+        STACK_TRACER_ENABLED=${STACK_TRACER_ENABLED}
+        SYSCTL_WRITES_STRICT=${SYSCTL_WRITES_STRICT}
+        SYSRQ=${SYSRQ}
+        TAINTED=${TAINTED}
+        THREADS_MAX=${THREADS_MAX}
+        TIMER_MIGRATION=${TIMER_MIGRATION}
+        TRACEOFF_ON_WARNING=${TRACEOFF_ON_WARNING}
+        TRACEPOINT_PRINTK=${TRACEPOINT_PRINTK}
+        UNKNOWN_NMI_PANIC=${UNKNOWN_NMI_PANIC}
+        WATCHDOG=${WATCHDOG}
+        WATCHDOG_THRESH=${WATCHDOG_THRESH}
+        BPF_JIT_ENABLE=${BPF_JIT_ENABLE}
+        BUSY_POLL=${BUSY_POLL}
+        BUSY_READ=${BUSY_READ}
+        DEFAULT_QDISC=${DEFAULT_QDISC}
+        DEV_WEIGHT=${DEV_WEIGHT}
+        FLOW_LIMIT_CPU_BITMAP="${FLOW_LIMIT_CPU_BITMAP}"
+        FLOW_LIMIT_TABLE_LEN=${FLOW_LIMIT_TABLE_LEN}
+        MESSAGE_BURST=${MESSAGE_BURST}
+        MESSAGE_COST=${MESSAGE_COST}
+        NETDEV_BUDGET=${NETDEV_BUDGET}
+        NETDEV_MAX_BACKLOG=${NETDEV_MAX_BACKLOG}
+        NETDEV_TSTAMP_PREQUEUE=${NETDEV_TSTAMP_PREQUEUE}
+        OPTMEM_MAX=${OPTMEM_MAX}
+        RMEM_DEFAULT=${RMEM_DEFAULT}
+        RMEM_MAX=${RMEM_MAX}
+        RPS_SOCK_FLOW_ENTRIES=${RPS_SOCK_FLOW_ENTRIES}
+        SOMAXCONN=${SOMAXCONN}
+        TSTAMP_ALLOW_DATA=${TSTAMP_ALLOW_DATA}
+        WMEM_DEFAULT=${WMEM_DEFAULT}
+        WMEM_MAX=${WMEM_MAX}
+        RPS_FLOW_CNT=${RPS_FLOW_CNT}
+        RPS_CPUS="${RPS_CPUS}"
+        FWMARK_REFLECT=${FWMARK_REFLECT}
+        ICMP_ECHO_IGNORE_ALL=${ICMP_ECHO_IGNORE_ALL}
+        ICMP_ECHO_IGNORE_BROADCASTS=${ICMP_ECHO_IGNORE_BROADCASTS}
+        ICMP_ERRORS_USE_INBOUND_IFADDR=${ICMP_ERRORS_USE_INBOUND_IFADDR}
+        ICMP_IGNORE_BOGUS_ERROR_RESPONSES=${ICMP_IGNORE_BOGUS_ERROR_RESPONSES}
+        ICMP_MSGS_BURST=${ICMP_MSGS_BURST}
+        ICMP_MSGS_PER_SEC=${ICMP_MSGS_PER_SEC}
+        ICMP_RATELIMIT=${ICMP_RATELIMIT}
+        ICMP_RATEMASK=${ICMP_RATEMASK}
+        IGMP_MAX_MEMBERSHIPS=${IGMP_MAX_MEMBERSHIPS}
+        IGMP_MAX_MSF=${IGMP_MAX_MSF}
+        IGMP_QRV=${IGMP_QRV}
+        INET_PEER_MAXTTL=${INET_PEER_MAXTTL}
+        INET_PEER_MINTTL=${INET_PEER_MINTTL}
+        INET_PEER_THRESHOLD=${INET_PEER_THRESHOLD}
+        IP_DEFAULT_TTL=${IP_DEFAULT_TTL}
+        IP_DYNADDR=${IP_DYNADDR}
+        IP_EARLY_DEMUX=${IP_EARLY_DEMUX}
+        IP_FORWARD=${IP_FORWARD}
+        IP_FORWARD_USE_PMTU=${IP_FORWARD_USE_PMTU}
+        IP_NO_PMTU_DISC=${IP_NO_PMTU_DISC}
+        IP_NONLOCAL_BIND=${IP_NONLOCAL_BIND}
+        IPFRAG_HIGH_THRESH=${IPFRAG_HIGH_THRESH}
+        IPFRAG_LOW_THRESH=${IPFRAG_LOW_THRESH}
+        IPFRAG_MAX_DIST=${IPFRAG_MAX_DIST}
+        IPFRAG_SECRET_INTERVAL=${IPFRAG_SECRET_INTERVAL}
+        IPFRAG_TIME=${IPFRAG_TIME}
+        TCP_ABORT_ON_OVERFLOW=${TCP_ABORT_ON_OVERFLOW}
+        TCP_ADV_WIN_SCALE=${TCP_ADV_WIN_SCALE}
+        TCP_APP_WIN=${TCP_APP_WIN}
+        TCP_AUTOCORKING=${TCP_AUTOCORKING}
+        TCP_BASE_MSS=${TCP_BASE_MSS}
+        TCP_CHALLENGE_ACK_LIMIT=${TCP_CHALLENGE_ACK_LIMIT}
+        TCP_CONGESTION_CONTROL=${TCP_CONGESTION_CONTROL}
+        TCP_DSACK=${TCP_DSACK}
+        TCP_EARLY_RETRANS=${TCP_EARLY_RETRANS}
+        TCP_ECN=${TCP_ECN}
+        TCP_FACK=${TCP_FACK}
+        TCP_FASTOPEN=${TCP_FASTOPEN}
+        TCP_FIN_TIMEOUT=${TCP_FIN_TIMEOUT}
+        TCP_FRTO=${TCP_FRTO}
+        TCP_FWMARK_ACCEPT=${TCP_FWMARK_ACCEPT}
+        TCP_INVALID_RATELIMIT=${TCP_INVALID_RATELIMIT}
+        TCP_KEEPALIVE_INTVL=${TCP_KEEPALIVE_INTVL}
+        TCP_KEEPALIVE_PROBES=${TCP_KEEPALIVE_PROBES}
+        TCP_KEEPALIVE_TIME=${TCP_KEEPALIVE_TIME}
+        TCP_LIMIT_OUTPUT_BYTES=${TCP_LIMIT_OUTPUT_BYTES}
+        TCP_LOW_LATENCY=${TCP_LOW_LATENCY}
+        TCP_MAX_ORPHANS=${TCP_MAX_ORPHANS}
+        TCP_MAX_REORDERING=${TCP_MAX_REORDERING}
+        TCP_MAX_SYN_BACKLOG=${TCP_MAX_SYN_BACKLOG}
+        TCP_MAX_TW_BUCKETS=${TCP_MAX_TW_BUCKETS}
+        TCP_MEM="${TCP_MEM}"
+        TCP_MIN_TSO_SEGS=${TCP_MIN_TSO_SEGS}
+        TCP_MODERATE_RCVBUF=${TCP_MODERATE_RCVBUF}
+        TCP_MTU_PROBING=${TCP_MTU_PROBING}
+        TCP_NO_METRICS_SAVE=${TCP_NO_METRICS_SAVE}
+        TCP_NOTSENT_LOWAT=${TCP_NOTSENT_LOWAT}
+        TCP_ORPHAN_RETRIES=${TCP_ORPHAN_RETRIES}
+        TCP_REORDERING=${TCP_REORDERING}
+        TCP_RETRANS_COLLAPSE=${TCP_RETRANS_COLLAPSE}
+        TCP_RETRIES1=${TCP_RETRIES1}
+        TCP_RETRIES2=${TCP_RETRIES2}
+        TCP_RFC=${TCP_RFC}
+        TCP_RMEM=${TCP_RMEM}
+        TCP_SACK=${TCP_SACK}
+        TCP_SLOW_START_AFTER_IDLE=${TCP_SLOW_START_AFTER_IDLE}
+        TCP_STDURG=${TCP_STDURG}
+        TCP_SYN_RETRIES=${TCP_SYN_RETRIES}
+        TCP_SYNACK_RETRIES=${TCP_SYNACK_RETRIES}
+        TCP_SYNCOOKIES=${TCP_SYNCOOKIES}
+        TCP_THIN_DUPACK=${TCP_THIN_DUPACK}
+        TCP_THIN_LINEAR_TIMEOUTS=${TCP_THIN_LINEAR_TIMEOUTS}
+        TCP_TIMESTAMPS=${TCP_TIMESTAMPS}
+        TCP_TSO_WIN_DIVISOR=${TCP_TSO_WIN_DIVISOR}
+        TCP_TW_RECYCLE=${TCP_TW_RECYCLE}
+        TCP_TW_REUSE=${TCP_TW_REUSE}
+        TCP_WINDOW_SCALING=${TCP_WINDOW_SCALING}
+        TCP_WMEM=${TCP_WMEM}
+        TCP_WORKAROUND_SIGNED_WINDOWS=${TCP_WORKAROUND_SIGNED_WINDOWS}
+        UDP_MEM="${UDP_MEM}"
+        UDP_RMEM_MIN=${UDP_RMEM_MIN}
+        UDP_WMEM_MIN=${UDP_WMEM_MIN}
+        XFRM4_GC_THRESH=${XFRM4_GC_THRESH}
+        ERROR_BURST=${ERROR_BURST}
+        ERROR_COST=${ERROR_COST}
+        GC_ELASTICITY=${GC_ELASTICITY}
+        GC_INTERVAL=${GC_INTERVAL}
+        GC_MIN_INTERVAL=${GC_MIN_INTERVAL}
+        GC_MIN_INTERVAL_MS=${GC_MIN_INTERVAL_MS}
+        GC_THRESH=${GC_THRESH}
+        GC_TIMEOUT=${GC_TIMEOUT}
+        MAX_SIZE=${MAX_SIZE}
+        MIN_ADV_MSS=${MIN_ADV_MSS}
+        MIN_PMTU=${MIN_PMTU}
+        MTU_EXPIRES=${MTU_EXPIRES}
+        REDIRECT_LOAD=${REDIRECT_LOAD}
+        REDIRECT_NUMBER=${REDIRECT_NUMBER}
+        REDIRECT_SILENCE=${REDIRECT_SILENCE}
+        ACCEPT_LOCAL=${ACCEPT_LOCAL}
+        ACCEPT_REDIRECTS=${ACCEPT_REDIRECTS}
+        ACCEPT_SOURCE_ROUTE=${ACCEPT_SOURCE_ROUTE}
+        ARP_ACCEPT=${ARP_ACCEPT}
+        ARP_ANNOUNCE=${ARP_ANNOUNCE}
+        ARP_FILTER=${ARP_FILTER}
+        ARP_IGNORE=${ARP_IGNORE}
+        ARP_NOTIFY=${ARP_NOTIFY}
+        BOOTP_RELAY=${BOOTP_RELAY}
+        DISABLE_POLICY=${DISABLE_POLICY}
+        DISABLE_XFRM=${DISABLE_XFRM}
+        FORCE_IGMP_VERSION=${FORCE_IGMP_VERSION}
+        FORWARDING=${FORWARDING}
+        IGMPV2_UNSOLICITED_REPORT_INTERVAL=${IGMPV2_UNSOLICITED_REPORT_INTERVAL}
+        IGMPV3_UNSOLICITED_REPORT_INTERVAL=${IGMPV3_UNSOLICITED_REPORT_INTERVAL}
+        LOG_MARTIANS=${LOG_MARTIANS}
+        MEDIUM_ID=${MEDIUM_ID}
+        PROMOTE_SECONDARIES=${PROMOTE_SECONDARIES}
+        PROXY_ARP=${PROXY_ARP}
+        PROXY_ARP_PVLAN=${PROXY_ARP_PVLAN}
+        ROUTE_LOCALNET=${ROUTE_LOCALNET}
+        RP_FILTER=${RP_FILTER}
+        SECURE_REDIRECTS=${SECURE_REDIRECTS}
+        SEND_REDIRECTS=${SEND_REDIRECTS}
+        SHARED_MEDIA=${SHARED_MEDIA}
+        SRC_VALID_MARK=${SRC_VALID_MARK}
+        TAG=${TAG}
+        ANYCAST_DELAY=${ANYCAST_DELAY}
+        APP_SOLICIT=${APP_SOLICIT}
+        BASE_REACHABLE_TIME=${BASE_REACHABLE_TIME}
+        BASE_REACHABLE_TIME_MS=${BASE_REACHABLE_TIME_MS}
+        DELAY_FIRST_PROBE_TIME=${DELAY_FIRST_PROBE_TIME}
+        GC_STALE_TIME=${GC_STALE_TIME}
+        LOCKTIME=${LOCKTIME}
+        MCAST_SOLICIT=${MCAST_SOLICIT}
+        PROXY_DELAY=${PROXY_DELAY}
+        PROXY_QLEN=${PROXY_QLEN}
+        RETRANS_TIME=${RETRANS_TIME}
+        RETRANS_TIME_MS=${RETRANS_TIME_MS}
+        UCAST_SOLICIT=${UCAST_SOLICIT}
+        UNRES_QLEN=${UNRES_QLEN}
+        UNRES_QLEN_BYTES=${UNRES_QLEN_BYTES}
+        MAX_DGRAM_QLEN=${MAX_DGRAM_QLEN}
+        ADMIN_RESERVE_KBYTES=${ADMIN_RESERVE_KBYTES}
+        BLOCK_DUMP=${BLOCK_DUMP}
+        DIRTY_BACKGROUND_BYTES=${DIRTY_BACKGROUND_BYTES}
+        DIRTY_BACKGROUND_RATIO=${DIRTY_BACKGROUND_RATIO}
+        DIRTY_BYTES=${DIRTY_BYTES}
+        DIRTY_EXPIRE_CENTISECS=${DIRTY_EXPIRE_CENTISECS}
+        DIRTY_RATIO=${DIRTY_RATIO}
+        DIRTY_WRITEBACK_CENTISECS=${DIRTY_WRITEBACK_CENTISECS}
+        DIRTYTIME_EXPIRE_SECONDS=${DIRTYTIME_EXPIRE_SECONDS}
+        DROP_CACHES=${DROP_CACHES}
+        EXTFRAG_THRESHOLD=${EXTFRAG_THRESHOLD}
+        HUGEPAGES_TREAT_AS_MOVABLE=${HUGEPAGES_TREAT_AS_MOVABLE}
+        HUGETLB_SHM_GROUP=${HUGETLB_SHM_GROUP}
+        LAPTOP_MODE=${LAPTOP_MODE}
+        LEGACY_VA_LAYOUT=${LEGACY_VA_LAYOUT}
+        LOWMEM_RESERVE_RATIO=${LOWMEM_RESERVE_RATIO}
+        MAX_MAP_COUNT=${MAX_MAP_COUNT}
+        MEMORY_FAILURE_EARLY_KILL=${MEMORY_FAILURE_EARLY_KILL}
+        MEMORY_FAILURE_RECOVERY=${MEMORY_FAILURE_RECOVERY}
+        NUMA_ZONELIST_ORDER=${NUMA_ZONELIST_ORDER}
+        OOM_DUMP_TASKS=${OOM_DUMP_TASKS}
+        OOM_KILL_ALLOCATING_TASK=${OOM_KILL_ALLOCATING_TASK}
+        OVERCOMMIT_KBYTES=${OVERCOMMIT_KBYTES}
+        OVERCOMMIT_MEMORY=${OVERCOMMIT_MEMORY}
+        OVERCOMMIT_RATIO=${OVERCOMMIT_RATIO}
+        PAGE_CLUSTER=${PAGE_CLUSTER}
+        PANIC_ON_OOM=${PANIC_ON_OOM}
+        PERCPU_PAGELIST_FRACTION=${PERCPU_PAGELIST_FRACTION}
+        STAT_INTERVAL=${STAT_INTERVAL}
+        SWAPPINESS=${SWAPPINESS}
+        USER_RESERVE_KBYTES=${USER_RESERVE_KBYTES}
+        VFS_CACHE_PRESSURE=${VFS_CACHE_PRESSURE}
+        ZONE_RECLAIM_MODE=${ZONE_RECLAIM_MODE}
+        INODE_READAHEAD_BLKS=${INODE_READAHEAD_BLKS}
+        MB_MAX_TO_SCAN=${MB_MAX_TO_SCAN}
+        MSG_RATELIMIT_BURST=${MSG_RATELIMIT_BURST}
+        MB_STREAM_REQ=${MB_STREAM_REQ}
+        MB_MIN_TO_SCAN=${MB_MIN_TO_SCAN}
+        MB_STATS=${MB_STATS}
+        ERR_RATELIMIT_BURST=${ERR_RATELIMIT_BURST}
+        MB_GROUP_PREALLOC=${MB_GROUP_PREALLOC}
+        INODE_GOAL=${INODE_GOAL}
+        RESERVED_CLUSTERS=${RESERVED_CLUSTERS}
+        EXTENT_MAX_ZEROOUT_KB=${EXTENT_MAX_ZEROOUT_KB}
+        ERR_RATELIMIT_INTERVAL_MS=${ERR_RATELIMIT_INTERVAL_MS}
+        WARNING_RATELIMIT_BURST=${WARNING_RATELIMIT_BURST}
+        WARNING_RATELIMIT_INTERVAL_MS=${WARNING_RATELIMIT_INTERVAL_MS}
+        MB_ORDER2_REQ=${MB_ORDER2_REQ}
+        MSG_RATELIMIT_INTERVAL_MS=${MSG_RATELIMIT_INTERVAL_MS}
+        NR_OVERCOMMIT_HUGEPAGES=${NR_OVERCOMMIT_HUGEPAGES}
+        NR_HUGEPAGES=${NR_HUGEPAGES}
+        NR_HUGEPAGES_MEMPOLICY=${NR_HUGEPAGES_MEMPOLICY}
+        ENABLED=${ENABLED}
+        USE_ZERO_PAGE=${USE_ZERO_PAGE}
+        DEFRAG=${DEFRAG}
+        MTU=${MTU}
+        NETDEV_GROUP=${NETDEV_GROUP}
+        FLAGS=${FLAGS}
+        GRO_FLUSH_TIMEOUT=${GRO_FLUSH_TIMEOUT}
+        TX_QUEUE_LEN=${TX_QUEUE_LEN}
+        BENCHMARK=${BENCHMARK}
+        init=/guest_start.sh
+      cores: 2
+    benchtool:
+      image: ghcr.io/unikraft/wayfinder/hpc-benchtool:latest
+      devices:
+        - /dev/urandom
+        - /dev/kvm
+        - /dev/net/tun
+      capabilities:
+        - CAP_NET_ADMIN
+      commands: /test.sh index.html
+      monitors:
+        - name: power
+          commands: ./scripts/power-monitor.sh http://192.168.0.225/meter/0
+      cores: 1
+      start_delay: 20
+      duration: 180
+    results:
+      - name: bench_ft
+        path: /results/total_ft
+        type: float
+      - name: bench_mg
+        path: /results/total_mg
+        type: float
+      - name: bench_cg
+        path: /results/total_cg
+        type: float
+      - name: bench_is
+        path: /results/total_is
+        type: float
