@@ -34,7 +34,7 @@ RUN set -xe; \
 #
 # Grab and prepare Lupine/Linux sources
 #
-ENV LUPINE_HASH=
+ENV LUPINE_HASH=3729c7570e5f1b25e786171d0a19cef858b4923f
 ENV LINUX_HASH=39a8804455fb23f09157341d3ba7db6d7ae6ee76
 ENV OSV_HASH=3e658b8ab32a424ae58a24d01d5b2e22da61932e
 ENV WORKDIR="/root/workspace"
