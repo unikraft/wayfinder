@@ -1,15 +1,5 @@
 version: '3.7'
 
-networks:
-  wayfinder:
-
-volumes:
-  postgres:
-  influxdb:
-  influxdb2:
-  chronograf:
-  pyroscope:
-
 services:
   logstash:
     image: ghcr.io/unikraft/wayfinder/logstash:latest
@@ -39,16 +29,16 @@ services:
 
   influxdb:
     image: influxdb:2.3-alpine
-    container_name: wayfinder-influxdb
     hostname: influxdb
+    container_name: wayfinder-influxdb
     restart: on-failure
     stdin_open: true
     volumes:
-     - influxdb:/var/lib/influxdb
-     - influxdb2:/var/lib/influxdb2
+      - influxdb:/var/lib/influxdb
+      - influxdb2:/var/lib/influxdb2
     # env_file: ./.env
     ports:
-     - 8086:8086
+      - 8086:8086
     networks:
       - wayfinder
     environment:
@@ -69,9 +59,9 @@ services:
     container_name: wayfinder-chronograf
     restart: on-failure
     volumes:
-     - chronograf:/var/lib/chronograf
+      - chronograf:/var/lib/chronograf
     ports:
-     - 8888:8888
+      - 8888:8888
     command: --influxdb-url=http://influxdb:8086
     networks:
       - wayfinder
@@ -85,6 +75,7 @@ services:
     image: grafana/grafana:latest
     hostname: grafana
     container_name: wayfinder-grafana
+    restart: on-failure
     ports:
       - 3000:3000/tcp
     volumes:
@@ -104,7 +95,7 @@ services:
       GF_SECURITY_SECRET_KEY: 1234
     networks:
       - wayfinder
-  
+
   redis:
     image: redis:6.2.6-alpine
     hostname: redis
@@ -117,12 +108,12 @@ services:
     ports:
       - 6379:6379
     networks:
-      - wayfinder    
+      - wayfinder
 
   postgres:
     image: postgres:latest
-    container_name: wayfinder-postgres
     hostname: postgres
+    container_name: wayfinder-postgres
     restart: on-failure
     env_file: ./.env
     ports:
@@ -134,17 +125,20 @@ services:
 
   registry:
     image: registry:2
-    container_name: wayfinder-registry
     hostname: registry
+    container_name: wayfinder-registry
     restart: on-failure
     env_file: ./.env
     ports:
       - 5000:5000
     networks:
       - wayfinder
-  
+
   pyroscope:
     image: "pyroscope/pyroscope:latest"
+    hostname: pyroscope
+    container_name: wayfinder-pyroscope
+    restart: on-failure
     ports:
       - "4040:4040"
     command:
@@ -156,11 +150,12 @@ services:
 
   wayfinder:
     image: ghcr.io/unikraft/wayfinder:latest
+    hostname: wayfinder
     container_name: wayfinder
+    restart: on-failure
     depends_on:
       - redis
       - postgres
-    restart: on-failure
     env_file: ./.env
     volumes:
       - .:/go/src/github.com/unikraft/wayfinder
@@ -169,3 +164,13 @@ services:
       - 5000:5000
     networks:
       - wayfinder
+
+networks:
+  wayfinder:
+
+volumes:
+  postgres:
+  influxdb:
+  influxdb2:
+  chronograf:
+  pyroscope:
