@@ -27,8 +27,7 @@ RUN set -xe; \
     git apply ./0001-Add-compatibility-with-external-scrapers.patch; \
     git apply ./0002-Add-option-to-execute-custom-commands.patch; \
     make; \
-    cd ..; \
-    tar -cvf /usr/src/bench.tar /usr/src/sqlite;
+    tar -cvf /bench.tar /usr/src/sqlite;
 
 # Build test image
 FROM ghcr.io/unikraft/wayfinder/linux-base
@@ -42,7 +41,7 @@ RUN crane export nginx:${NGINX_VERSION} ${WORKDIR}/sqlite.tar;
 
 RUN ./scripts/build-with-configs.sh patch ${MICROVM_CFG} ${SQLITE_CFG}
 
-COPY --from=benchmark /usr/src/bench.tar ${WORKDIR}/bench.tar
+COPY --from=benchmark /bench.tar ${WORKDIR}/bench.tar
 
 COPY ./set-sqlite-options.sh ${WORKDIR}/scripts/set-sqlite-options.sh
 COPY ./guest_start.sh ${WORKDIR}/scripts/guest_start.sh

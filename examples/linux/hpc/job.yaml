@@ -2797,14 +2797,14 @@ build:
     cp -v ./load_entropy/load_entropy /tmp/hpc-ext3
 
     mkdir -p bench
-    unzip ./benchmark_omp.zip -d ./bench
+    tar -xvf ./bench_omp.tar -C ./bench
     mkdir -p /tmp/hpc-ext3/bench-omp
     cp -v ./bench/bin/* /tmp/hpc-ext3/bench-omp
     cp -v ./run-bench-omp.sh /tmp/hpc-ext3/bench-omp/run-bench.sh
     rm -rf ./bench
 
     mkdir -p bench
-    unzip ./benchmark_ser.zip -d ./bench
+    tar -xvf ./bench_ser.tar -C ./bench
     mkdir -p /tmp/hpc-ext3/bench-ser
     cp -v ./bench/bin/* /tmp/hpc-ext3/bench-ser
     cp -v ./run-bench-ser.sh /tmp/hpc-ext3/bench-ser/run-bench.sh

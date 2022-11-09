@@ -5039,7 +5039,7 @@ build:
 
     # Copy the node benchmark
     mkdir -p /tmp/node-ext3/bench
-    tar -xzf ./bench.tar.gz -C /tmp/node-ext3/bench
+    tar -xvf ./bench.tar -C /tmp/node-ext3/bench
 
     # Unmounting seals the filesystem archive
     umount /tmp/node-ext3
