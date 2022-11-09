@@ -311,6 +311,7 @@ func (d *Domain) SetArgs(args string) error {
 			gwNet.Mask[2],
 			gwNet.Mask[3],
 		)
+		replaceVars["$WAYFINDER_DOMAIN_MAX_MEM"] = fmt.Sprintf("%d%s", d.config.Memory.Value, d.config.Memory.Unit)
 	}
 
 	for k, v := range replaceVars {
