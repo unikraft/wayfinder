@@ -11,8 +11,8 @@ RUN cp /etc/apt/sources.list /tmp/sources.list
 RUN sed -i 's/deb /deb-src /' /tmp/sources.list
 RUN cat /tmp/sources.list >> /etc/apt/sources.list
 
-RUN apt-get update
-RUN apt-get install -y \
+RUN apt-get update; \
+    apt-get install -y \
     build-essential \
     git \
     apt-transport-https \
@@ -25,33 +25,33 @@ RUN apt-get install -y \
     zip
 
 # Crane
-RUN curl -L https://github.com/google/go-containerregistry/releases/download/v0.8.0/go-containerregistry_Linux_x86_64.tar.gz -o /tmp/go-containerregistry.tar.gz
-RUN tar -xf /tmp/go-containerregistry.tar.gz -C /tmp
-RUN mv /tmp/crane /usr/local/bin
+RUN curl -L https://github.com/google/go-containerregistry/releases/download/v0.8.0/go-containerregistry_Linux_x86_64.tar.gz -o /tmp/go-containerregistry.tar.gz; \
+    tar -xf /tmp/go-containerregistry.tar.gz -C /tmp; \
+    mv /tmp/crane /usr/local/bin
 
 # Lupine/Linux
 WORKDIR ${WORKDIR}
 
-RUN git init
-RUN git remote add origin https://github.com/hlef/Lupine-Linux.git
-RUN git fetch --depth 1 origin ${LUPINE_HASH}
-RUN git checkout FETCH_HEAD
-RUN git checkout ${LUPINE_HASH}
+RUN git init; \
+    git remote add origin https://github.com/hlef/Lupine-Linux.git; \
+    git fetch --depth 1 origin ${LUPINE_HASH}; \
+    git checkout FETCH_HEAD; \
+    git checkout ${LUPINE_HASH}
 
 WORKDIR ${WORKDIR}/linux
 
-RUN git init
-RUN git remote add origin https://github.com/torvalds/linux.git
-RUN git fetch --depth 1 origin ${LINUX_HASH}
-RUN git checkout FETCH_HEAD
-RUN git checkout ${LINUX_HASH}
+RUN git init; \
+    git remote add origin https://github.com/torvalds/linux.git; \
+    git fetch --depth 1 origin ${LINUX_HASH}; \
+    git checkout FETCH_HEAD; \
+    git checkout ${LINUX_HASH}
 
 WORKDIR ${WORKDIR}/osv
 
-RUN git init
-RUN git remote add origin https://github.com/cloudius-systems/osv.git
-RUN git fetch --depth 1 origin ${OSV_HASH}
-RUN git checkout FETCH_HEAD
+RUN git init; \
+    git remote add origin https://github.com/cloudius-systems/osv.git; \
+    git fetch --depth 1 origin ${OSV_HASH}; \
+    git checkout FETCH_HEAD
 
 WORKDIR ${WORKDIR}/load_entropy
 
@@ -61,23 +61,23 @@ RUN make
 WORKDIR ${WORKDIR}/linux
 
 COPY ../patches /patches
-RUN git apply /patches/0001-init-Increase-env-var-limit.patch
-RUN git apply /patches/0001-arch-x86-Increase-cmdline-size.patch
+RUN git apply /patches/0001-init-Increase-env-var-limit.patch; \
+    git apply /patches/0001-arch-x86-Increase-cmdline-size.patch
 
 # Build base kernel
 WORKDIR ${WORKDIR}
 
-RUN echo "CONFIG_PCI=y"               >> ${MICROVM_CFG}
-RUN echo "CONFIG_VIRTIO_BLK_SCSI=y"   >> ${MICROVM_CFG}
-RUN echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> ${MICROVM_CFG}
-RUN echo "CONFIG_VIRTIO_PCI=y"        >> ${MICROVM_CFG}
-RUN echo "CONFIG_VGA_ARB_MAX_GPUS=16" >> ${MICROVM_CFG}
-RUN sed -i -e "s/docker run -it -v \"\$(PWD)\/linux\":\/linux-volume --rm linuxbuild:latest//" Makefile
-RUN sed -i -e "s/linux-volume/root\/workspace\/linux/" Makefile
-RUN sed -i -e 's/make patch-linux || true/echo "Keep everything as it is"/g' ${WORKDIR}/scripts/build-with-configs.sh
-RUN sed -i -e 's/CONFIGS=$@/CONFIGS=${@:2}/g' ${WORKDIR}/scripts/build-with-configs.sh
-RUN sed -i -e 's/-j8/-j $(( $(nproc) + 1 ))/g' ${WORKDIR}/Makefile
-RUN ./scripts/build-with-configs.sh patch ${MICROVM_CFG}
+RUN echo "CONFIG_PCI=y"               >> ${MICROVM_CFG}; \
+    echo "CONFIG_VIRTIO_BLK_SCSI=y"   >> ${MICROVM_CFG}; \
+    echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> ${MICROVM_CFG}; \
+    echo "CONFIG_VIRTIO_PCI=y"        >> ${MICROVM_CFG}; \
+    echo "CONFIG_VGA_ARB_MAX_GPUS=16" >> ${MICROVM_CFG}; \
+    sed -i -e "s/docker run -it -v \"\$(PWD)\/linux\":\/linux-volume --rm linuxbuild:latest//" Makefile; \
+    sed -i -e "s/linux-volume/root\/workspace\/linux/" Makefile; \
+    sed -i -e 's/make patch-linux || true/echo "Keep everything as it is"/g' ${WORKDIR}/scripts/build-with-configs.sh; \
+    sed -i -e 's/CONFIGS=$@/CONFIGS=${@:2}/g' ${WORKDIR}/scripts/build-with-configs.sh; \
+    sed -i -e 's/-j8/-j $(( $(nproc) + 1 ))/g' ${WORKDIR}/Makefile; \
+    ./scripts/build-with-configs.sh patch ${MICROVM_CFG}
 
 # Copy scripts
 COPY ../scripts/image2rootfs.sh /usr/local/bin/image2rootfs.sh
