@@ -168,8 +168,9 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
 			newPermutationInJob.CurrentPerm.Params[i].Value = value
 			io.WriteString(md5val, fmt.Sprintf("%s=%s\n", param.Name, value))
 
-			// Build no matter what
-			io.WriteString(md5valBuild, fmt.Sprintf("%s=%s\n", param.Name, value))
+			if param.When == "build" {
+				io.WriteString(md5valBuild, fmt.Sprintf("%s=%s\n", param.Name, value))
+			}
 		}
 
 		newPermutationInJob.CurrentPerm.Checksum = fmt.Sprintf("%x", md5val.Sum(nil))
