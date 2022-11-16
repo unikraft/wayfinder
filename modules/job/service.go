@@ -199,6 +199,8 @@ func (s *service) CreatePermutationJob(ctx context.Context, req *proto.CreatePer
 	w.Write(taskBytes)
 	w.Close()
 
+	s.p.DB.Repos().Permutations().SetStatusBuildInitByPermutationId(int64(perm.Id))
+
 	s.p.TaskQueue.PublishBytes(compressedBytes.Bytes())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not publish job to queue: %s", err)
