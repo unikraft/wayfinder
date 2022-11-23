@@ -36,6 +36,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/muesli/termenv"
 
@@ -62,14 +63,17 @@ type Logger struct {
 }
 
 var (
-	globalLogger *Logger
-	logFile      *os.File
+	globalLogger     *Logger
+	enableTimestamps bool
+	logFile          *os.File
 )
 
 func init() {
 	globalLogger = &Logger{
 		logLevel: INFO,
 	}
+
+	enableTimestamps = false
 
 	// TODO - make this configurable - Who owns the logs?
 	err := os.MkdirAll("/var/lib/wayfinder/logs", os.ModePerm)
@@ -123,17 +127,20 @@ func (l Logger) log(level LogLevel, format string, messages ...interface{}) {
 		return
 	}
 
-	// Add some colours!
-	out := termenv.String(logType)
-	out = out.Foreground(logColor)
+	output := "[" + termenv.String(logType).Foreground(logColor).String() + "]"
+
+	if enableTimestamps {
+		output += "[" + time.Now().Format("2006-01-02 15:04:05") + "]"
+	}
 
 	if len(l.Prefix) > 0 {
-		fmt.Printf("[%s][%s] %s\n", out, l.Prefix, fmt.Sprintf(format, messages...))
-		fmt.Fprintf(logFile, "[%s][%s] %s\n", out, l.Prefix, fmt.Sprintf(format, messages...))
-	} else {
-		fmt.Printf("[%s] %s\n", out, fmt.Sprintf(format, messages...))
-		fmt.Fprintf(logFile, "[%s] %s\n", out, fmt.Sprintf(format, messages...))
+		output += "[" + l.Prefix + "]"
 	}
+
+	output += " " + fmt.Sprintf(format, messages...)
+
+	fmt.Println(output)
+	fmt.Fprintln(logFile, output)
 }
 
 func SetLevel(level LogLevel) {
@@ -152,6 +159,10 @@ func (l Logger) Sub(name string) l2.Logger {
 
 func GetLevel() LogLevel {
 	return globalLogger.logLevel
+}
+
+func SetTimestamps(enabled bool) {
+	enableTimestamps = enabled
 }
 
 func Debug(args ...interface{}) {
