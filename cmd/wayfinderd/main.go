@@ -142,6 +142,12 @@ extensible and offers convenient APIs to:
 				})
 			}
 
+			addTimestamps, err := cmd.Flags().GetBool("timestamps")
+			if err != nil {
+				panic(err)
+			}
+			logs.SetTimestamps(addTimestamps)
+
 			return nil
 		},
 	}
@@ -165,6 +171,13 @@ extensible and offers convenient APIs to:
 		"a",
 		"http://localhost:4040",
 		"Address of the Pyroscope server",
+	)
+
+	rootCmd.PersistentFlags().BoolP(
+		"timestamps",
+		"t",
+		false,
+		"Show timestamps in logs",
 	)
 
 	rootCmd.PersistentFlags().StringVarP(
