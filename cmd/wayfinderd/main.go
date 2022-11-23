@@ -92,8 +92,7 @@ extensible and offers convenient APIs to:
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			showVer, err := cmd.Flags().GetBool("version")
 			if err != nil {
-				fmt.Printf("%s\n", err)
-				os.Exit(0)
+				panic(err)
 			}
 			if showVer {
 				fmt.Printf(
@@ -107,14 +106,12 @@ extensible and offers convenient APIs to:
 
 			startProf, err := cmd.Flags().GetBool("profile")
 			if err != nil {
-				fmt.Printf("%s\n", err)
-				os.Exit(0)
+				panic(err)
 			}
 
 			profAddr, err := cmd.Flags().GetString("address")
 			if err != nil {
-				fmt.Printf("%s\n", err)
-				os.Exit(0)
+				panic(err)
 			}
 
 			if startProf {
@@ -208,7 +205,6 @@ func main() {
 
 	cmd := NewRootCommand()
 	if err := cmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		panic(err)
 	}
 }
