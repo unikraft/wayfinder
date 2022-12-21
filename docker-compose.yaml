@@ -3,12 +3,15 @@ version: '3.7'
 networks:
   wayfinder:
 
+
 volumes:
   postgres:
   influxdb:
   influxdb2:
   chronograf:
   pyroscope:
+  registry:
+
 
 services:
   logstash:
@@ -44,11 +47,11 @@ services:
     restart: on-failure
     stdin_open: true
     volumes:
-     - influxdb:/var/lib/influxdb
-     - influxdb2:/var/lib/influxdb2
+      - influxdb:/var/lib/influxdb
+      - influxdb2:/var/lib/influxdb2
     # env_file: ./.env
     ports:
-     - 8086:8086
+      - 8086:8086
     networks:
       - wayfinder
     environment:
@@ -69,9 +72,9 @@ services:
     container_name: wayfinder-chronograf
     restart: on-failure
     volumes:
-     - chronograf:/var/lib/chronograf
+      - chronograf:/var/lib/chronograf
     ports:
-     - 8888:8888
+      - 8888:8888
     command: --influxdb-url=http://influxdb:8086
     networks:
       - wayfinder
@@ -104,7 +107,7 @@ services:
       GF_SECURITY_SECRET_KEY: 1234
     networks:
       - wayfinder
-  
+
   redis:
     image: redis:6.2.6-alpine
     hostname: redis
@@ -117,7 +120,7 @@ services:
     ports:
       - 6379:6379
     networks:
-      - wayfinder    
+      - wayfinder
 
   postgres:
     image: postgres:latest
@@ -142,7 +145,12 @@ services:
       - 5000:5000
     networks:
       - wayfinder
-  
+    volumes:
+      - type: tmpfs
+        target: /var/lib/registry
+        tmpfs:
+          size: 8G
+
   pyroscope:
     image: "pyroscope/pyroscope:latest"
     ports:
