@@ -50,20 +50,20 @@ var (
 )
 
 type config struct {
-	Endpoint       string        `file:"endpoint"        env:"LIBVIRT_ENDPOINT"        default:"qemu:///system"`
-	Emulator       string        `file:"emulator"        env:"LIBVIRT_EMULATOR"        default:"/usr/bin/qemu-system-x86_64"`
-	SockDir        string        `file:"sockdir"         env:"LIBVIRT_SOCKDIR"         default:"/run/libvirt/qemu/"`
-	Timeout        time.Duration `file:"conn_timeout"    env:"LIBVIRT_CONN_TIMEOUT"    default:"30s"`
-	HostIface      string        `file:"host_iface"      env:"LIBVIRT_HOST_IFACE"      default:"eth0"`
-	Bridge         string        `file:"bridge"          env:"LIBVIRT_BRIDGE"          default:"wayfinder0"`
-	BridgeStateDir string        `file:"bridge_statedir" env:"LIBVIRT_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
-	Subnet         string        `file:"subnet"          env:"LIBVIRT_SUBNET"          default:"172.88.0.1/24"`
-	LogDir         string        `file:"logdir"          env:"LIBVIRT_LOGDIR"          default:"/var/lib/wayfinder/logs"`
-	ProcFS         string        `file:"procfs"          env:"LIBVIRT_PROCFS"          default:"/proc"`
-	MeasureFreq    time.Duration `file:"measure_freq"    env:"LIBVIRT_MEASURE_FREQ"    default:"1s"`
-	EnableCPU      bool          `file:"measure_cpu"     env:"LIBVIRT_MEASURE_CPU"     default:"true"`
-	EnableMEM      bool          `file:"measure_mem"     env:"LIBVIRT_MEASURE_MEM"     default:"true"`
-	EnableNET      bool          `file:"measure_net"     env:"LIBVIRT_MEASURE_NET"     default:"true"`
+	Endpoint       string            `file:"endpoint"        env:"LIBVIRT_ENDPOINT"        default:"qemu:///system"`
+	Emulators      map[string]string `file:"emulators"       env:"LIBVIRT_EMULATORS"`
+	SockDir        string            `file:"sockdir"         env:"LIBVIRT_SOCKDIR"         default:"/run/libvirt/qemu/"`
+	Timeout        time.Duration     `file:"conn_timeout"    env:"LIBVIRT_CONN_TIMEOUT"    default:"30s"`
+	HostIface      string            `file:"host_iface"      env:"LIBVIRT_HOST_IFACE"      default:"eth0"`
+	Bridge         string            `file:"bridge"          env:"LIBVIRT_BRIDGE"          default:"wayfinder0"`
+	BridgeStateDir string            `file:"bridge_statedir" env:"LIBVIRT_BRIDGE_STATEDIR" default:"/var/lib/wayfinder/bridges"`
+	Subnet         string            `file:"subnet"          env:"LIBVIRT_SUBNET"          default:"172.88.0.1/24"`
+	LogDir         string            `file:"logdir"          env:"LIBVIRT_LOGDIR"          default:"/var/lib/wayfinder/logs"`
+	ProcFS         string            `file:"procfs"          env:"LIBVIRT_PROCFS"          default:"/proc"`
+	MeasureFreq    time.Duration     `file:"measure_freq"    env:"LIBVIRT_MEASURE_FREQ"    default:"1s"`
+	EnableCPU      bool              `file:"measure_cpu"     env:"LIBVIRT_MEASURE_CPU"     default:"true"`
+	EnableMEM      bool              `file:"measure_mem"     env:"LIBVIRT_MEASURE_MEM"     default:"true"`
+	EnableNET      bool              `file:"measure_net"     env:"LIBVIRT_MEASURE_NET"     default:"true"`
 }
 
 type provider struct {

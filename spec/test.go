@@ -37,6 +37,8 @@ type TestMonitorSpec struct {
 }
 
 type TestKernelSpec struct {
+	Plat   string `yaml:"plat"`
+	Arch   string `yaml:"arch"`
 	Memory string `yaml:"memory"`
 	Args   string `yaml:"args"`
 	Cores  uint64 `yaml:"cores"`
