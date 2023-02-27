@@ -128,7 +128,9 @@ libvirt:
   endpoint: qemu:///system
 
   # Emulator to use to launch virtual machines
-  emulator: /usr/bin/qemu-system-x86_64
+  emulators:
+    x86_64: /usr/bin/qemu-system-x86_64
+    riscv64: /usr/bin/qemu-system-riscv64
 
   # Path to list of runtime virtual machine's sockets.
   sockdir: /run/libvirt/qemu/

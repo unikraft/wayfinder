@@ -586,6 +586,8 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 				Disks:  buildOutput.Outputs.Disks,
 				Cores:  kernelCoreIds,
 				Args:   c.replaceArgs(&currentTest, task.CurrentPerm.Params),
+				Plat:   currentTest.Kernel.Plat,
+				Arch:   currentTest.Kernel.Arch,
 				Memory: currentTest.Kernel.Memory,
 			},
 			BenchTool: &proto.TestBenchTool{

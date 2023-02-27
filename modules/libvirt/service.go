@@ -51,14 +51,10 @@ import (
 	"github.com/unikraft/wayfinder/pkg/sys"
 )
 
-const (
-	x86_64   = "x86_64"
-	pci440fx = "pc-i440fx-3.1"
-)
-
 var (
 	archToMachine = map[string]string{
-		x86_64: pci440fx,
+		"x86_64":   "pc-i440fx-3.1",
+		"riscv64":  "virt",
 	}
 )
 
@@ -85,7 +81,7 @@ type Domain struct {
 	measure bool
 }
 
-func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inputDisks []*proto.BuildOutputDiskImage,
+func (s *Service) NewDomain(fakePid int, uuid, plat, kernel, initrd, arch, args string, inputDisks []*proto.BuildOutputDiskImage,
 	cores []uint64, memoryValue uint, memoryUnit string, monitors []*proto.TestMonitor, coreIsolationLevel coremap.CoreRestriction,
 	emulatorCores []uint64, ioThreadCores []uint64) (*Domain, error) {
 	// This maintains an open door for debug purpose
@@ -205,13 +201,13 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 	})
 
 	config := &libvirtxml.Domain{
-		Type:        "kvm",
+		Type:        plat,
 		Name:        uuid,
 		UUID:        uuid,
 		Title:       uuid,
 		Description: uuid,
 		Devices: &libvirtxml.DomainDeviceList{
-			Emulator:   s.p.Cfg.Emulator,
+			Emulator:   s.p.Cfg.Emulators[arch],
 			Consoles:   []libvirtxml.DomainConsole{console},
 			Serials:    []libvirtxml.DomainSerial{serial},
 			Interfaces: []libvirtxml.DomainInterface{iface},
@@ -222,8 +218,8 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 			Initrd: initrd,
 			Type: &libvirtxml.DomainOSType{
 				Type:    "hvm",
-				Arch:    x86_64,
-				Machine: archToMachine[x86_64],
+				Arch:    arch,
+				Machine: archToMachine[arch],
 			},
 		},
 		// Does not currently work
@@ -256,12 +252,6 @@ func (s *Service) NewDomain(fakePid int, uuid, kernel, initrd, args string, inpu
 			Placement: "static",
 			CPUSet:    strings.Trim(strings.Join(strings.Fields(fmt.Sprint(cores)), ","), "[]"),
 			Value:     uint(len(cores)),
-		},
-		CPU: &libvirtxml.DomainCPU{
-			Mode: "host-passthrough",
-			Cache: &libvirtxml.DomainCPUCache{
-				Mode: "passthrough",
-			},
 		},
 		CPUTune: &libvirtxml.DomainCPUTune{
 			EmulatorPin: &libvirtxml.DomainCPUTuneEmulatorPin{CPUSet: strings.Trim(strings.Join(strings.Fields(fmt.Sprint(emulatorCores)), ","), "[]")},

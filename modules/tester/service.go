@@ -92,6 +92,18 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 		}, errors.NewMissingParameterError("kernel.image")
 	}
 
+	if req.Kernel.Plat == "" {
+		return &proto.CreateTestResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("kernel.plat")
+	}
+
+	if req.Kernel.Arch == "" {
+		return &proto.CreateTestResponse{
+			Success: false,
+		}, errors.NewMissingParameterError("kernel.arch")
+	}
+
 	if len(req.Kernel.Cores) <= 0 {
 		return &proto.CreateTestResponse{
 			Success: false,
@@ -182,8 +194,10 @@ func (s *Service) CreateTest(ctx context.Context, req *proto.CreateTestRequest) 
 	domain, err := s.p.Libvirt.NewDomain(
 		pid,
 		uuid,
+		req.Kernel.Plat,
 		req.Kernel.Image,
 		req.Kernel.InitRd,
+		req.Kernel.Arch,
 		req.Kernel.Args,
 		req.Kernel.Disks,
 		req.Kernel.Cores,
