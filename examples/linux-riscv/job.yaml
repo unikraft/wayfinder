@@ -1,0 +1,73 @@
+params:
+  - name: CONFIG_CC_OPTIMIZE_FOR_SIZE
+    type: string
+    only: ["y", "n"]
+    when: build
+
+  - name: CONFIG_PRINTK
+    type: string
+    default: "y"
+    only: ["y", "n"]
+    when: build
+
+build:
+  image: localhost:5000/linux-riscv:latest
+  outputs:
+    kernel: /linux/arch/riscv/boot/Image
+    disks:
+      - name: vda
+        type: raw
+        path: /busybox.bin
+  devices:
+    - /dev/urandom
+    - /dev/loop-control
+  capabilities:
+    - CAP_NET_ADMIN
+    - CAP_SYS_ADMIN
+  cores: 2
+  workdir: /
+  commands:
+    |
+    set -xe
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+    echo "Generating filesystem image"
+    dd if=/dev/zero of=/busybox.bin bs=1M count=32
+    mkfs.ext2 /busybox.bin
+    mkdir -p /mnt
+    mount -o loop /busybox.bin /mnt
+    cp -rv /rootfs/* /mnt
+    umount /mnt
+
+    echo "Build Done!"
+
+test:
+  - name: throughput
+    kernel:
+      plat: qemu
+      arch: riscv64
+      memory: 512M
+      args:
+        >
+        root=/dev/vda
+        rw
+        WAYFINDER_DOMAIN_IP_ADDR=$WAYFINDER_DOMAIN_IP_ADDR
+        WAYFINDER_DOMAIN_IP_GW_ADDR=$WAYFINDER_DOMAIN_IP_GW_ADDR
+        console=ttyS0
+      cores: 2
+    benchtool:
+      image: localhost:5000/scratch:latest
+      devices:
+        - /dev/urandom
+        - /dev/kvm
+        - /dev/net/tun
+      capabilities:
+        - CAP_NET_ADMIN
+      commands: |
+        set -xe
+        ping -c 1 $WAYFINDER_DOMAIN_IP_ADDR
+      cores: 1
+      start_delay: 10
+      duration: 30
