@@ -2992,6 +2992,8 @@ build:
 test:
   - name: throughput
     kernel:
+      plat: kvm
+      arch: x86_64
       memory: 512M
       args: >
         root=/dev/vda

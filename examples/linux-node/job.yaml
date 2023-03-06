@@ -5266,6 +5266,8 @@ build:
 test:
   - name: throughput
     kernel:
+      plat: kvm
+      arch: x86_64
       memory: 2048M
       args:
         >
