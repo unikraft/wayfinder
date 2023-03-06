@@ -1,14 +1,658 @@
 params:
-  - name: CONFIG_CC_OPTIMIZE_FOR_SIZE
-    type: string
-    only: ["y", "n"]
-    when: build
-
-  - name: CONFIG_PRINTK
+  - name: CONFIG_ATA
     type: string
     default: "y"
     only: ["y", "n"]
-    when: build
+
+  - name: CONFIG_AUTOFS4_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_AUTOFS_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BACKLIGHT_CLASS_DEVICE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BINFMT_ELF
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BINFMT_SCRIPT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BLK_DEV
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BLK_DEV_INITRD
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BLOCK_LEGACY_AUTOLOAD
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BPF_SYSCALL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_BTRFS_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CGROUPS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CHECKPOINT_RESTORE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_COMPACTION
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_COMPAT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_COMPAT_32BIT_TIME
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_COMPAT_BRK
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CPU_IDLE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CRC16
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CRC7
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CRC_ITU_T
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CROSS_MEMORY_ATTACH
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_CRYPTO
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DEBUG_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DEBUG_KERNEL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DEBUG_TIMEKEEPING
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DEBUG_VM_PGTABLE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DEVMEM
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DEVTMPFS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DNOTIFY
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_DRM
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_EFIVAR_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_ERRATA_SIFIVE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_EXPERT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_EXT4_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_FB
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_FPU
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_FRAME_POINTER
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_GCC_PLUGINS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_GOLDFISH
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_GPIOLIB
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_HID
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_HIGH_RES_TIMERS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_HUGETLBFS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_HWMON
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_HW_RANDOM
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_I2C
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_IKCONFIG
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_INITRAMFS_PRESERVE_MTIME
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_INOTIFY_USER
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_INPUT_KEYBOARD
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_INPUT_MOUSE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_INPUT_MOUSEDEV
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_IOMMU_SUPPORT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_ISO9660_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_JUMP_LABEL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_KEYS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_LDISC_AUTOLOAD
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_LEGACY_PTYS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_LIBCRC32C
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_LOCALVERSION_AUTO
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MD
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MEMTEST
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MFD_SYSCON
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MISC_FILESYSTEMS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MMC
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MODULES
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MQ_IOSCHED_DEADLINE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MQ_IOSCHED_KYBER
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_MSDOS_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_NET
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_NLS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_NO_HZ_IDLE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_NVMEM
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_OVERLAY_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PAGE_REPORTING
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PCI
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PERF_EVENTS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PID_NS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PINCTRL
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PM
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_POWER_RESET
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_POWER_SUPPLY
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PREVENT_FIRMWARE_BUILD
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PRINTK_TIME
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PROC_CHILDREN
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_PROFILING
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_RANDOM_TRUST_BOOTLOADER
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_RANDOM_TRUST_CPU
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_RESET_CONTROLLER
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_RISCV_ISA_SVPBMT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_RISCV_ISA_ZICBOM
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_RPMSG_VIRTIO
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_RTC_CLASS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SCSI
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SECCOMP
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  # - name: CONFIG_SECTION_MISMATCH_WARN_ONLY
+  #   type: string
+  #   default: "y"
+  #   only: ["y", "n"]
+
+  - name: CONFIG_SECURITY
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SECURITYFS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SERIAL_8250
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SERIAL_SIFIVE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SERIO
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SIFIVE_PLIC
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SLAB_MERGE_DEFAULT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SMP
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SOC_MICROCHIP_POLARFIRE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SOC_SIFIVE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SOC_STARFIVE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  # - name: CONFIG_SOC_VIRT
+  #   type: string
+  #   default: "y"
+  #   only: ["y", "n"]
+
+  - name: CONFIG_SPI
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_STACKPROTECTOR
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_STANDALONE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_STRICT_KERNEL_RWX
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SWAP
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SYMBOLIC_ERRNAME
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SYNC_FILE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_SYSVIPC
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_TIME_NS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_TMPFS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_USB_SUPPORT
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_USER_NS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_UTS_NS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VFAT_FS
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VGA_CONSOLE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VHOST_MENU
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VIRTIO_CONSOLE
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VIRTIO_MENU
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VIRTUALIZATION
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VMAP_STACK
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_VT_HW_CONSOLE_BINDING
+    type: string
+    default: "y"
+    only: ["y", "n"]
+
+  - name: CONFIG_XZ_DEC
+    type: string
+    default: "y"
+    only: ["y", "n"]
 
 build:
   image: localhost:5000/linux-riscv:latest
@@ -24,7 +668,7 @@ build:
   capabilities:
     - CAP_NET_ADMIN
     - CAP_SYS_ADMIN
-  cores: 2
+  cores: 4
   workdir: /
   commands:
     |
@@ -32,6 +676,23 @@ build:
 
     export LC_ALL=C.UTF-8
     export LANG=C.UTF-8
+
+    env
+
+    echo "Configuring kernel"
+
+    cd /linux
+
+    for var in $(env | grep ^CONFIG_ | cut -d= -f1); do
+      if [ -n "${!var}" ]; then
+        ./kconfig-set.sh .config ${var} ${!var}
+      fi
+    done
+
+    make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- olddefconfig
+
+    echo "Building kernel"
+    make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j$(nproc)
 
     echo "Generating filesystem image"
     dd if=/dev/zero of=/busybox.bin bs=1M count=32
@@ -56,6 +717,137 @@ test:
         WAYFINDER_DOMAIN_IP_ADDR=$WAYFINDER_DOMAIN_IP_ADDR
         WAYFINDER_DOMAIN_IP_GW_ADDR=$WAYFINDER_DOMAIN_IP_GW_ADDR
         console=ttyS0
+        CONFIG_ATA=${CONFIG_ATA}
+        CONFIG_AUTOFS4_FS=${CONFIG_AUTOFS4_FS}
+        CONFIG_AUTOFS_FS=${CONFIG_AUTOFS_FS}
+        CONFIG_BACKLIGHT_CLASS_DEVICE=${CONFIG_BACKLIGHT_CLASS_DEVICE}
+        CONFIG_BINFMT_ELF=${CONFIG_BINFMT_ELF}
+        CONFIG_BINFMT_SCRIPT=${CONFIG_BINFMT_SCRIPT}
+        CONFIG_BLK_DEV=${CONFIG_BLK_DEV}
+        CONFIG_BLK_DEV_INITRD=${CONFIG_BLK_DEV_INITRD}
+        CONFIG_BLOCK_LEGACY_AUTOLOAD=${CONFIG_BLOCK_LEGACY_AUTOLOAD}
+        CONFIG_BPF_SYSCALL=${CONFIG_BPF_SYSCALL}
+        CONFIG_BTRFS_FS=${CONFIG_BTRFS_FS}
+        CONFIG_CGROUPS=${CONFIG_CGROUPS}
+        CONFIG_CHECKPOINT_RESTORE=${CONFIG_CHECKPOINT_RESTORE}
+        CONFIG_COMPACTION=${CONFIG_COMPACTION}
+        CONFIG_COMPAT=${CONFIG_COMPAT}
+        CONFIG_COMPAT_32BIT_TIME=${CONFIG_COMPAT_32BIT_TIME}
+        CONFIG_COMPAT_BRK=${CONFIG_COMPAT_BRK}
+        CONFIG_CPU_IDLE=${CONFIG_CPU_IDLE}
+        CONFIG_CRC16=${CONFIG_CRC16}
+        CONFIG_CRC7=${CONFIG_CRC7}
+        CONFIG_CRC_ITU_T=${CONFIG_CRC_ITU_T}
+        CONFIG_CROSS_MEMORY_ATTACH=${CONFIG_CROSS_MEMORY_ATTACH}
+        CONFIG_CRYPTO=${CONFIG_CRYPTO}
+        CONFIG_DEBUG_FS=${CONFIG_DEBUG_FS}
+        CONFIG_DEBUG_KERNEL=${CONFIG_DEBUG_KERNEL}
+        CONFIG_DEBUG_TIMEKEEPING=${CONFIG_DEBUG_TIMEKEEPING}
+        CONFIG_DEBUG_VM_PGTABLE=${CONFIG_DEBUG_VM_PGTABLE}
+        CONFIG_DEVMEM=${CONFIG_DEVMEM}
+        CONFIG_DEVTMPFS=${CONFIG_DEVTMPFS}
+        CONFIG_DNOTIFY=${CONFIG_DNOTIFY}
+        CONFIG_DRM=${CONFIG_DRM}
+        CONFIG_EFIVAR_FS=${CONFIG_EFIVAR_FS}
+        CONFIG_ERRATA_SIFIVE=${CONFIG_ERRATA_SIFIVE}
+        CONFIG_EXPERT=${CONFIG_EXPERT}
+        CONFIG_EXT4_FS=${CONFIG_EXT4_FS}
+        CONFIG_FB=${CONFIG_FB}
+        CONFIG_FPU=${CONFIG_FPU}
+        CONFIG_FRAME_POINTER=${CONFIG_FRAME_POINTER}
+        CONFIG_GCC_PLUGINS=${CONFIG_GCC_PLUGINS}
+        CONFIG_GOLDFISH=${CONFIG_GOLDFISH}
+        CONFIG_GPIOLIB=${CONFIG_GPIOLIB}
+        CONFIG_HID=${CONFIG_HID}
+        CONFIG_HIGH_RES_TIMERS=${CONFIG_HIGH_RES_TIMERS}
+        CONFIG_HUGETLBFS=${CONFIG_HUGETLBFS}
+        CONFIG_HWMON=${CONFIG_HWMON}
+        CONFIG_HW_RANDOM=${CONFIG_HW_RANDOM}
+        CONFIG_I2C=${CONFIG_I2C}
+        CONFIG_IKCONFIG=${CONFIG_IKCONFIG}
+        CONFIG_INITRAMFS_PRESERVE_MTIME=${CONFIG_INITRAMFS_PRESERVE_MTIME}
+        CONFIG_INOTIFY_USER=${CONFIG_INOTIFY_USER}
+        CONFIG_INPUT_KEYBOARD=${CONFIG_INPUT_KEYBOARD}
+        CONFIG_INPUT_MOUSE=${CONFIG_INPUT_MOUSE}
+        CONFIG_INPUT_MOUSEDEV=${CONFIG_INPUT_MOUSEDEV}
+        CONFIG_IOMMU_SUPPORT=${CONFIG_IOMMU_SUPPORT}
+        CONFIG_ISO9660_FS=${CONFIG_ISO9660_FS}
+        CONFIG_JUMP_LABEL=${CONFIG_JUMP_LABEL}
+        CONFIG_KEYS=${CONFIG_KEYS}
+        CONFIG_LDISC_AUTOLOAD=${CONFIG_LDISC_AUTOLOAD}
+        CONFIG_LEGACY_PTYS=${CONFIG_LEGACY_PTYS}
+        CONFIG_LIBCRC32C=${CONFIG_LIBCRC32C}
+        CONFIG_LOCALVERSION_AUTO=${CONFIG_LOCALVERSION_AUTO}
+        CONFIG_MD=${CONFIG_MD}
+        CONFIG_MEMTEST=${CONFIG_MEMTEST}
+        CONFIG_MFD_SYSCON=${CONFIG_MFD_SYSCON}
+        CONFIG_MISC_FILESYSTEMS=${CONFIG_MISC_FILESYSTEMS}
+        CONFIG_MMC=${CONFIG_MMC}
+        CONFIG_MODULES=${CONFIG_MODULES}
+        CONFIG_MQ_IOSCHED_DEADLINE=${CONFIG_MQ_IOSCHED_DEADLINE}
+        CONFIG_MQ_IOSCHED_KYBER=${CONFIG_MQ_IOSCHED_KYBER}
+        CONFIG_MSDOS_FS=${CONFIG_MSDOS_FS}
+        CONFIG_NET=${CONFIG_NET}
+        CONFIG_NLS=${CONFIG_NLS}
+        CONFIG_NO_HZ_IDLE=${CONFIG_NO_HZ_IDLE}
+        CONFIG_NVMEM=${CONFIG_NVMEM}
+        CONFIG_OVERLAY_FS=${CONFIG_OVERLAY_FS}
+        CONFIG_PAGE_REPORTING=${CONFIG_PAGE_REPORTING}
+        CONFIG_PCI=${CONFIG_PCI}
+        CONFIG_PERF_EVENTS=${CONFIG_PERF_EVENTS}
+        CONFIG_PID_NS=${CONFIG_PID_NS}
+        CONFIG_PINCTRL=${CONFIG_PINCTRL}
+        CONFIG_PM=${CONFIG_PM}
+        CONFIG_POWER_RESET=${CONFIG_POWER_RESET}
+        CONFIG_POWER_SUPPLY=${CONFIG_POWER_SUPPLY}
+        CONFIG_PREVENT_FIRMWARE_BUILD=${CONFIG_PREVENT_FIRMWARE_BUILD}
+        CONFIG_PRINTK_TIME=${CONFIG_PRINTK_TIME}
+        CONFIG_PROC_CHILDREN=${CONFIG_PROC_CHILDREN}
+        CONFIG_PROFILING=${CONFIG_PROFILING}
+        CONFIG_RANDOM_TRUST_BOOTLOADER=${CONFIG_RANDOM_TRUST_BOOTLOADER}
+        CONFIG_RANDOM_TRUST_CPU=${CONFIG_RANDOM_TRUST_CPU}
+        CONFIG_RESET_CONTROLLER=${CONFIG_RESET_CONTROLLER}
+        CONFIG_RISCV_ISA_SVPBMT=${CONFIG_RISCV_ISA_SVPBMT}
+        CONFIG_RISCV_ISA_ZICBOM=${CONFIG_RISCV_ISA_ZICBOM}
+        CONFIG_RPMSG_VIRTIO=${CONFIG_RPMSG_VIRTIO}
+        CONFIG_RTC_CLASS=${CONFIG_RTC_CLASS}
+        CONFIG_SCSI=${CONFIG_SCSI}
+        CONFIG_SECCOMP=${CONFIG_SECCOMP}
+        CONFIG_SECTION_MISMATCH_WARN_ONLY=${CONFIG_SECTION_MISMATCH_WARN_ONLY}
+        CONFIG_SECURITY=${CONFIG_SECURITY}
+        CONFIG_SECURITYFS=${CONFIG_SECURITYFS}
+        CONFIG_SERIAL_8250=${CONFIG_SERIAL_8250}
+        CONFIG_SERIAL_SIFIVE=${CONFIG_SERIAL_SIFIVE}
+        CONFIG_SERIO=${CONFIG_SERIO}
+        CONFIG_SIFIVE_PLIC=${CONFIG_SIFIVE_PLIC}
+        CONFIG_SLAB_MERGE_DEFAULT=${CONFIG_SLAB_MERGE_DEFAULT}
+        CONFIG_SMP=${CONFIG_SMP}
+        CONFIG_SOC_MICROCHIP_POLARFIRE=${CONFIG_SOC_MICROCHIP_POLARFIRE}
+        CONFIG_SOC_SIFIVE=${CONFIG_SOC_SIFIVE}
+        CONFIG_SOC_STARFIVE=${CONFIG_SOC_STARFIVE}
+        CONFIG_SOC_VIRT=${CONFIG_SOC_VIRT}
+        CONFIG_SPI=${CONFIG_SPI}
+        CONFIG_STACKPROTECTOR=${CONFIG_STACKPROTECTOR}
+        CONFIG_STANDALONE=${CONFIG_STANDALONE}
+        CONFIG_STRICT_KERNEL_RWX=${CONFIG_STRICT_KERNEL_RWX}
+        CONFIG_SWAP=${CONFIG_SWAP}
+        CONFIG_SYMBOLIC_ERRNAME=${CONFIG_SYMBOLIC_ERRNAME}
+        CONFIG_SYNC_FILE=${CONFIG_SYNC_FILE}
+        CONFIG_SYSVIPC=${CONFIG_SYSVIPC}
+        CONFIG_TIME_NS=${CONFIG_TIME_NS}
+        CONFIG_TMPFS=${CONFIG_TMPFS}
+        CONFIG_USB_SUPPORT=${CONFIG_USB_SUPPORT}
+        CONFIG_USER_NS=${CONFIG_USER_NS}
+        CONFIG_UTS_NS=${CONFIG_UTS_NS}
+        CONFIG_VFAT_FS=${CONFIG_VFAT_FS}
+        CONFIG_VGA_CONSOLE=${CONFIG_VGA_CONSOLE}
+        CONFIG_VHOST_MENU=${CONFIG_VHOST_MENU}
+        CONFIG_VIRTIO_CONSOLE=${CONFIG_VIRTIO_CONSOLE}
+        CONFIG_VIRTIO_MENU=${CONFIG_VIRTIO_MENU}
+        CONFIG_VIRTUALIZATION=${CONFIG_VIRTUALIZATION}
+        CONFIG_VMAP_STACK=${CONFIG_VMAP_STACK}
+        CONFIG_VT_HW_CONSOLE_BINDING=${CONFIG_VT_HW_CONSOLE_BINDING}
+        CONFIG_XZ_DEC=${CONFIG_XZ_DEC}
       cores: 2
     benchtool:
       image: localhost:5000/scratch:latest
@@ -68,6 +860,15 @@ test:
       commands: |
         set -xe
         ping -c 1 $WAYFINDER_DOMAIN_IP_ADDR
+        if [ $? -eq 0 ]; then
+          echo "1" > /result.txt
+        else
+          echo "0" > /result.txt
+        fi
       cores: 1
       start_delay: 10
       duration: 30
+      results:
+      - name: boot
+        path: /result.txt
+        type: int

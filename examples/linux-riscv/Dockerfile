@@ -22,11 +22,13 @@ RUN git clone --depth 1 --branch 1_36_0 https://git.busybox.net/busybox
 # Build the kernel
 WORKDIR /linux
 
-COPY ./patches/0001-init-Increase-env-var-limit.patch /0001-init-Increase-env-var-limit.patch
-RUN patch -p1 < /0001-init-Increase-env-var-limit.patch
+COPY ./patches/0001-init-Increase-env-var-limit.patch /linux/0001-init-Increase-env-var-limit.patch
+RUN patch -p1 < /linux/0001-init-Increase-env-var-limit.patch
 
 RUN make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig
 RUN make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j$(nproc)
+
+COPY kconfig-set.sh /linux/kconfig-set.sh
 
 # Build busybox
 WORKDIR /busybox
