@@ -1328,4 +1328,5 @@ ServerTokens ${SERVER_TOKENS}
 TimeOut ${TIME_OUT}
 EOF
 
-apachectl -X
+apachectl -k start
+sleep 100000
