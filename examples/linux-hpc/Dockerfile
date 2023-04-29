@@ -19,6 +19,7 @@ RUN set -xe; \
 #
 FROM debian:bullseye-slim AS benchmark
 
+COPY ./benchmark.tar.gz /tmp/benchmark.tar.gz
 COPY ./make-bench.sh /make-bench.sh
 COPY ./run-bench-ser.sh /run-bench-ser.sh
 COPY ./run-bench-omp.sh /run-bench-omp.sh
@@ -26,9 +27,8 @@ COPY ./patches/0001-Remove-references-to-getaddrinfo.patch /0001-Remove-referenc
 
 RUN set -xe; \
     apt-get update; \
-    apt install -y \
+    apt install -y --force-yes \
       curl build-essential zip git; \
-    curl -L "http://aces.snu.ac.kr/download.php?p=snunpbsuite&ver=2019&email=cezar.craciunoiu@gmail.com" -o /tmp/benchmark.tar.gz; \
     tar -xf /tmp/benchmark.tar.gz -C /tmp; \
     cd /tmp/SNU_NPB_2019/NPB3.3-OMP-C; \
     sed -i 's/O3/O3 -static/g' config/make.def; \
