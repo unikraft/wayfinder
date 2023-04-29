@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim AS sqlite-filesystem
+FROM debian:bullseye-slim AS redis-filesystem
 
 ARG REDIS_VERSION=7.0.4
 
