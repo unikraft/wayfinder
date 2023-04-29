@@ -1,4 +1,4 @@
-FROM debian:jessie-slim AS caddy-filesystem
+FROM debian:bullseye-slim AS caddy-filesystem
 
 ARG CADDY_VERSION=2.6
 
@@ -11,7 +11,7 @@ RUN set -xe; \
     mv /tmp/crane /usr/local/bin; \
     crane export caddy:${CADDY_VERSION} /caddy.tar;
 
-FROM debian:jessie-slim
+FROM debian:bullseye-slim
 
 #
 # Base utilities and tools
@@ -20,6 +20,7 @@ RUN set -xe; \
     cp /etc/apt/sources.list /tmp/sources.list; \
     sed -i 's/deb /deb-src /' /tmp/sources.list; \
     cat /tmp/sources.list >> /etc/apt/sources.list; \
+    echo "deb [trusted=yes] http://dk.archive.ubuntu.com/ubuntu/ bionic main universe" >> /etc/apt/sources.list; \
     apt-get update; \
     apt install -y --force-yes \
     build-essential \
@@ -27,9 +28,11 @@ RUN set -xe; \
     apt-transport-https \
     ca-certificates \
     curl \
+    gcc-5 \
     bc \
     libssl-dev \
-    openssl;
+    openssl; \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 5;
 
 #
 # Grab and prepare Lupine/Linux sources
@@ -73,6 +76,7 @@ RUN set -xe; \
     echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> ${MICROVM_CFG}; \
     echo "CONFIG_VIRTIO_PCI=y"        >> ${MICROVM_CFG}; \
     echo "CONFIG_VGA_ARB_MAX_GPUS=16" >> ${MICROVM_CFG}; \
+    sed -i 's/-Wall -Wundef -Wstrict-prototypes/-Wall -Wundef -Wstrict-prototypes -fno-pie/g' linux/Makefile; \
     sed -i -e "s/docker run -it -v \"\$(PWD)\/linux\":\/linux-volume --rm linuxbuild:latest//" Makefile; \
     sed -i -e "s/linux-volume/root\/workspace\/linux/" Makefile; \
     sed -i -e 's/make patch-linux || true/echo "Keep everything as it is"/g' ${WORKDIR}/scripts/build-with-configs.sh; \

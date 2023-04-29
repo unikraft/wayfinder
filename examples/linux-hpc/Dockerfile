@@ -1,13 +1,13 @@
 #
 # Use a file system image prebaked. Redis was chosen randomly.
 #
-FROM debian:jessie-slim AS redis-filesystem
+FROM debian:bullseye-slim AS redis-filesystem
 
 ARG REDIS_VERSION=7.0.4
 
 RUN set -xe; \
     apt-get update; \
-    apt install -y \
+    apt install -y --force-yes \
       curl; \
     curl -L https://github.com/google/go-containerregistry/releases/download/v0.8.0/go-containerregistry_Linux_x86_64.tar.gz -o /tmp/go-containerregistry.tar.gz; \
     tar -xf /tmp/go-containerregistry.tar.gz -C /tmp; \
@@ -17,7 +17,7 @@ RUN set -xe; \
 #
 # Make the benchmarks to use for testing the kernels
 #
-FROM debian:jessie-slim AS benchmark
+FROM debian:bullseye-slim AS benchmark
 
 COPY ./make-bench.sh /make-bench.sh
 COPY ./run-bench-ser.sh /run-bench-ser.sh
@@ -50,7 +50,7 @@ RUN set -xe; \
 #
 # Build the kernel
 #
-FROM debian:jessie-slim
+FROM debian:bullseye-slim
 
 #
 # Base utilities and tools
@@ -59,18 +59,21 @@ RUN set -xe; \
     cp /etc/apt/sources.list /tmp/sources.list; \
     sed -i 's/deb /deb-src /' /tmp/sources.list; \
     cat /tmp/sources.list >> /etc/apt/sources.list; \
+    echo "deb [trusted=yes] http://dk.archive.ubuntu.com/ubuntu/ bionic main universe" >> /etc/apt/sources.list; \
     apt-get update; \
-    apt install -y \
+    apt-get install -y --force-yes \
       build-essential \
       git \
       apt-transport-https \
       ca-certificates \
       curl \
       bc \
+      gcc-5 \
       zip \
       libssl-dev \
       libgomp1 \
-      openssl;
+      openssl; \
+      update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 5;
 
 #
 # Grab and prepare Lupine/Linux sources
@@ -114,6 +117,7 @@ RUN set -xe; \
     echo "CONFIG_VIRTIO_PCI_LEGACY=y" >> ${MICROVM_CFG}; \
     echo "CONFIG_VIRTIO_PCI=y"        >> ${MICROVM_CFG}; \
     echo "CONFIG_VGA_ARB_MAX_GPUS=16" >> ${MICROVM_CFG}; \
+    sed -i 's/-Wall -Wundef -Wstrict-prototypes/-Wall -Wundef -Wstrict-prototypes -fno-pie/g' linux/Makefile; \
     sed -i -e "s/docker run -it -v \"\$(PWD)\/linux\":\/linux-volume --rm linuxbuild:latest//" Makefile; \
     sed -i -e "s/linux-volume/root\/workspace\/linux/" Makefile; \
     sed -i -e 's/make patch-linux || true/echo "Keep everything as it is"/g' ${WORKDIR}/scripts/build-with-configs.sh; \
