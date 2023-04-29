@@ -20,7 +20,7 @@ RUN set -xe; \
     cp /etc/apt/sources.list /tmp/sources.list; \
     sed -i 's/deb /deb-src /' /tmp/sources.list; \
     cat /tmp/sources.list >> /etc/apt/sources.list; \
-    echo "deb [trusted=yes] http://dk.archive.ubuntu.com/ubuntu/ bionic main universe" >> /etc/apt/     sources.list; \
+    echo "deb [trusted=yes] http://dk.archive.ubuntu.com/ubuntu/ bionic main universe" >> /etc/apt/sources.list; \
     apt-get update; \
     apt-get install -y --force-yes \
       build-essential \
