@@ -130,7 +130,7 @@ RUN set -xe; \
     ./scripts/build-with-configs.sh patch ${MICROVM_CFG} ${SQLITE_CFG}
 
 RUN true
-COPY /usr/src/sqlite_bench.tar ${WORKDIR}/sqlite_bench.tar
+COPY --from=sqlite-bench /usr/src/sqlite_bench.tar ${WORKDIR}/sqlite_bench.tar
 
 #
 # Local tooling and filesystem
