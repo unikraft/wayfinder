@@ -1,0 +1,26 @@
+From 7940e59438d19ce31f9d9837a0b002fcf41b0ff8 Mon Sep 17 00:00:00 2001
+From: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+Date: Thu, 2 Jun 2022 14:49:28 +0300
+Subject: [PATCH] init: Increase env var limit
+
+Signed-off-by: Cezar Craciunoiu <cezar.craciunoiu@gmail.com>
+---
+ init/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/init/main.c b/init/main.c
+index 6f0f1c5f..e6ffdd02 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -112,7 +112,7 @@ EXPORT_SYMBOL(system_state);
+  * Boot command-line arguments
+  */
+ #define MAX_INIT_ARGS CONFIG_INIT_ENV_ARG_LIMIT
+-#define MAX_INIT_ENVS CONFIG_INIT_ENV_ARG_LIMIT
++#define MAX_INIT_ENVS (CONFIG_INIT_ENV_ARG_LIMIT + 1024)
+ 
+ extern void time_init(void);
+ /* Default late time init is NULL. archs can override this later. */
+-- 
+2.34.1
+
