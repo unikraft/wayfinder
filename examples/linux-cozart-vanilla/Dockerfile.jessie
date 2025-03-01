@@ -22,6 +22,7 @@ RUN apt-get install -y \
     bc \
     bison \
     build-essential \
+    binutils \
     git \
     flex \
     libelf-dev \
