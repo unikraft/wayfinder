@@ -1,0 +1,5341 @@
+params:
+  # Linux-specific
+  # Compile-time options
+  - name:    CONFIG_64BIT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AB3100_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ABX500_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ACPI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ACPI_AC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_APEI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_APEI_GHES
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_BATTERY
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_BGRT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_BUTTON
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_CONTAINER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_CPPC_LIB
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_CPU_FREQ_PSS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_DEBUGGER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_DEBUGGER_USER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_DOCK
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_FAN
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_HED
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_HOTPLUG_IOAPIC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_LPIT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_NUMA
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_PCI_SLOT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_PROCESSOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_PROCESSOR_IDLE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_SLEEP
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_SPCR_TABLE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_TABLE_UPGRADE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_THERMAL
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ACPI_PROCESSOR_CSTATE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ADVISE_SYSCALLS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AGP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AGP_AMD64
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AGP_INTEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AGP_VIA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ALLOW_LOCKDOWN_LIFT_BY_SYSRQ
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_AMD_IOMMU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AMD_MEM_ENCRYPT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AMD_NB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AMD_NUMA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_AMIGA_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ANON_INODES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_APPLE_PROPERTIES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_DISCARD_MEMBLOCK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_ENABLE_MEMORY_HOTREMOVE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_HAS_ACPI_TABLE_UPGRADE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ARCH_HAS_STRICT_KERNEL_RWX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ARCH_HIBERNATION_POSSIBLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ARCH_MIGHT_HAVE_PC_SERIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_PROC_KCORE_TEXT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_RANDOM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_SUPPORTS_ACPI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ARCH_SUPPORTS_ATOMIC_RMW
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_SUPPORTS_MEMORY_FAILURE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_SUPPORTS_NUMA_BALANCING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_SUPPORTS_UPROBES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_SUSPEND_POSSIBLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ASN1
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ASSOCIATIVE_ARRAY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ASYMMETRIC_KEY_TYPE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ATA
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ATA_ACPI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ATA_BMDMA
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ATA_GENERIC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ATA_PIIX
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ATARI_PARTITION
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ATA_SFF
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_AUDIT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_AUDITSYSCALL
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_AUDIT_TREE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_AUDIT_WATCH
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_BACKLIGHT_CLASS_DEVICE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BACKLIGHT_LCD_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BIG_KEYS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BINFMT_ELF
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BINFMT_SCRIPT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_CGROUP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEBUG_FS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_BSG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_INITRD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_INTEGRITY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_IO_TRACE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_LOOP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_MD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_SD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_SR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_THROTTLING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_DEV_ZONED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_SCSI_REQUEST
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLK_WBT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BLOCK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BOOT_PRINTK_DELAY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BOUNCE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BPF_JIT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_BPF_SYSCALL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BQL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BSD_PROCESS_ACCT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BTREE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_BUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CDROM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CFQ_GROUP_IOSCHED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_BPF
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_CPUACCT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_DEVICE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_FREEZER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_HUGETLB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_NET_CLASSID
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_NET_PRIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_PERF
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_PIDS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_RDMA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUPS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_SCHED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CGROUP_WRITEBACK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CHECKPOINT_RESTORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CHR_DEV_SG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CLEANCACHE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CLOCKSOURCE_WATCHDOG
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_CMA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CMDLINE_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_COMMON_CLK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_COMPACTION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_COMPAT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_COMPAT_NETLINK_MESSAGES
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_CONNECTOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_CONSOLE_TRANSLATIONS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ_GOV_CONSERVATIVE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ_GOV_ONDEMAND
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ_GOV_PERFORMANCE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ_GOV_POWERSAVE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ_GOV_SCHEDUTIL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ_GOV_USERSPACE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_FREQ_STAT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_IDLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_IDLE_GOV_LADDER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_IDLE_GOV_MENU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_ISOLATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPUMASK_OFFSTACK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPUSETS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_SUP_AMD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CPU_SUP_INTEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRASH_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRASH_DUMP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRC32
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_AEAD2
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_AES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_AKCIPHER2
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_ALGAPI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_BLKCIPHER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_CBC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_CRC32C
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_CRCT10DIF
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_CTR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_CTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_DEFLATE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_DRBG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_DRBG_MENU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_ECB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_GCM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_GHASH
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_HASH
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_HMAC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_KPP2
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_LZO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_MD5
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_NULL2
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_RNG2
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_SEQIV
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_SHA1
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_SHA256
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_SHA512
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_WORKQUEUE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_CRYPTO_XTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DAX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DCACHE_WORD_ACCESS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DCB
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DEBUG_BUGVERBOSE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DEBUG_FS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DEBUG_KERNEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DETECT_HUNG_TASK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DEVFREQ_GOV_PASSIVE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DEVFREQ_GOV_PERFORMANCE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DEVFREQ_GOV_POWERSAVE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DEVFREQ_GOV_SIMPLE_ONDEMAND
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DEVFREQ_GOV_USERSPACE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DEVFREQ_THERMAL
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DEVTMPFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DMADEVICES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DMA_DIRECT_OPS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DMA_ENGINE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_DMAR_TABLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DMI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DMIID
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DNOTIFY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DNS_RESOLVER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DQL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DRM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DRM_MIPI_DSI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DYNAMIC_DEBUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DYNAMIC_FTRACE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_DYNAMIC_FTRACE_WITH_REGS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_E1000
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EARLY_PRINTK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EARLY_PRINTK_DBGP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EARLY_PRINTK_EFI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_ECRYPT_FS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ECRYPT_FS_MESSAGING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EDD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EFI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EFI_ESRT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EFI_PARTITION
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EFI_SIGNATURE_LIST_PARSER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EFI_STUB
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EFI_VARS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EPOLL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ETHERNET
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EVENTFD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EVENT_TRACING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EVM
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EVM_ADD_XATTRS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EVM_ATTR_FSUUID
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_EXPERT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EXT4
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EXT4_ENCRYPTION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EXT4_FS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EXT4_FS_ENCRYPTION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EXT4_FS_POSIX_ACL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EXT4_FS_SECURITY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_EZX_PCAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FAIR_GROUP_SCHED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FANOTIFY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FAT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FB
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FB_ASILIANT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FB_CMDLINE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FB_EFI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FB_IMSTT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FB_NOTIFY
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FB_SIMPLE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FB_VESA
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FIB_RULES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FILE_LOCKING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FIRMWARE_MEMMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FIXED_PHY
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_FREEZER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FRONTSWAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FS_DAX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FS_MBCACHE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FSNOTIFY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FS_POSIX_ACL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FTRACE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FTRACE_SYSCALLS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FUNCTION_ERROR_INJECTION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FUNCTION_GRAPH_TRACER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FUNCTION_TRACER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FUTEX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FW_LOADER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_FW_LOADER_USER_HELPER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_ALLOCATOR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_BUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_CALIBRATE_DELAY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_CLOCKEVENTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_CLOCKEVENTS_MIN_ADJUST
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_CPU_AUTOPROBE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_CPU_VULNERABILITIES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_EARLY_IOREMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_IOMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_IRQ_MIGRATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_ISA_DMA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_MSI_IRQ
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_MSI_IRQ_DOMAIN
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_PCI_IOMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_PENDING_IRQ
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_PHY
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_GENERIC_SMP_IDLE_THREAD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_STRNCPY_FROM_USER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GENERIC_STRNLEN_USER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GLOB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_ACPI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_GPIOLIB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_LYNXPOINT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_PALMAS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_RC5T583
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_SYSFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_TPS6586X
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_TPS65910
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GPIO_TPS68470
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_GRO_CELLS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HARDENED_USERCOPY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HARDLOCKUP_CHECK_TIMESTAMP
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HARDLOCKUP_DETECTOR_PERF
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HAS_DMA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAS_IOMEM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAS_IOPORT_MAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_ACPI_APEI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HAVE_ARCH_AUDITSYSCALL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_ARCH_HUGE_VMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_ARCH_JUMP_LABEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_ARCH_KGDB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_ARCH_VMAP_STACK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_CMPXCHG_LOCAL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_DYNAMIC_FTRACE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_FUNCTION_ERROR_INJECTION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_FUNCTION_GRAPH_TRACER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_FUNCTION_TRACER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_HW_BREAKPOINT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_INTEL_TXT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_KPROBES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_LIVEPATCH
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_MEMBLOCK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_MEMBLOCK_NODE_MAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_MMIOTRACE_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_NMI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HAVE_OPTPROBES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_PCSPKR_PLATFORM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_PERF_EVENTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_REGS_AND_STACK_ACCESS_API
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_RSEQ
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_SYSCALL_TRACEPOINTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HAVE_UNSTABLE_SCHED_CLOCK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HIBERNATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HIGH_RES_TIMERS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HIST_TRIGGERS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HMM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HOTPLUG_CPU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HOTPLUG_SMT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HPET
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HPET_EMULATE_RTC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HPET_TIMER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HTC_I2CPLD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HUGETLBFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HUGETLB_PAGE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HVC_DRIVER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HVC_XEN
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_HW_CONSOLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HWLAT_TRACER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HWMON
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_HYPERVISOR_GUEST
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_I2C
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_I2C_AMD_MP2
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_I2C_CHARDEV
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_I2C_COMPAT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IA32_EMULATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IDLE_PAGE_TRACKING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IMA
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IMA_APPRAISE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_INET
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INOTIFY_USER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INPUT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INPUT_EVDEV
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INPUT_KEYBOARD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INPUT_MISC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INPUT_MOUSEDEV
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INPUT_TOUCHSCREEN
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INPUT_UINPUT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEGRITY
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_INTEGRITY_AUDIT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_INTEGRITY_SIGNATURE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_INTEL_GTT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_IDLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_IOMMU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_PMC_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_RDT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_SOC_PMIC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_SOC_PMIC_CHTWC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_TURBO_MAX_3
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_INTEL_TXT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IOMMU_API
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IOMMU_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IOSCHED_CFQ
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IOSCHED_DEADLINE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IOSCHED_NOOP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IOSF_MBI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IOSF_MBI_DEBUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IP_ADVANCED_ROUTER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPC_NS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IP_FIB_TRIE_STATS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IPMI_DMI_DECODE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IP_MROUTE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IP_MROUTE_COMMON
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IP_MULTICAST
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IP_MULTIPLE_TABLES
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IP_ROUTE_CLASSID
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IP_ROUTE_MULTIPATH
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPV6
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IPV6_MROUTE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPV6_MULTIPLE_TABLES
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPV6_NDISC_NODETYPE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPV6_ROUTE_INFO
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPV6_ROUTER_PREF
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPV6_SEG6_HMAC
+    type:    string
+    only:    ["n", "y"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IPV6_SEG6_LWTUNNEL
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IPV6_SUBTREES
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_IRQ_DOMAIN
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IRQ_DOMAIN_HIERARCHY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IRQ_POLL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IRQ_REMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_IRQ_WORK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ISA_DMA_API
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ISCSI_IBFT_FIND
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_JAILHOUSE_GUEST
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PHYLIB
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_MDIO_BUS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_JUMP_LABEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KALLSYMS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KALLSYMS_ALL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KARMA_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KDB_KEYBOARD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KEXEC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KEXEC_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KEYBOARD_ATKBD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KEYS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KGDB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KGDB_KDB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KGDB_SERIAL_CONSOLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KPROBE_EVENTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KPROBES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KSM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_KVM_GUEST
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_LDM_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LEGACY_PTYS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LIB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LIBNVDIMM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LIVEPATCH
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LOAD_UEFI_KEYS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LOCK_DEBUGGING_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LOCKDEP_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LOCK_DOWN_KERNEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LOCK_SPIN_ON_OWNER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LOCKUP_DETECTOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_LWTUNNEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_LWTUNNEL_BPF
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MAC_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MAGIC_SYSRQ
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MAILBOX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MEMCG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MEMORY_FAILURE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MEMORY_HOTPLUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MEMORY_HOTPLUG_SPARSE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MEMORY_HOTREMOVE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MEMTEST
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_AAT2870_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_AS3711
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_DA9052_I2C
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_DA9052_SPI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_LP8788
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_MAX14577
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_MAX77693
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_MAX77843
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_MAX8997
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_MAX8998
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_PALMAS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_RC5T583
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_SEC_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_SMSC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_SYSCON
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TPS65090
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TPS6586X
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TPS65910
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TPS65912_I2C
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TPS65912_SPI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TPS68470
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TPS80031
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_TWL4030_AUDIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_WM831X_I2C
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_WM831X_SPI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_WM8350_I2C
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MFD_WM8400
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MICROCODE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MICROCODE_INTEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MIGRATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MISC_FILESYSTEMS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MMIOTRACE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MMU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MODIFY_LDT_SYSCALL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MODULES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MODULE_SIG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MODULES_TREE_LOOKUP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MODULE_UNLOAD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MSDOS_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MTD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MTRR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MTRR_SANITIZER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MULTIUSER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_MUTEX_SPIN_ON_OWNER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NAMESPACES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NEED_MULTIPLE_NODES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_CLS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_CLS_ACT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NETDEVICES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NETFILTER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_NET_FLOW_LIMIT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_L3_MASTER_DEV
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_NETLABEL
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_NET_NS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_PTP_CLASSIFY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_RX_BUSY_POLL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_SCHED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NET_SWITCHDEV
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_NET_VENDOR_INTEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NETWORK_PHY_TIMESTAMPING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NETWORK_SECMARK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NLATTR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NLS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NLS_CODEPAGE_437
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NODES_SPAN_OTHER_NODES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NO_HZ_COMMON
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NUMA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NUMA_BALANCING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_NVM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_OID_REGISTRY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_OPTPROBES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_OSF_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PACKET
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PADATA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PAGE_COUNTER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PAGE_POISONING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PAGE_TABLE_ISOLATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PARAVIRT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PARTITION_ADVANCED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PATA_SIS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_ATS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_DIRECT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_DOMAINS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCIEAER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCIEASPM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCIE_DPC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCIE_DW_PLAT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_ENDPOINT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_ENDPOINT_CONFIGFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCIE_PME
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCIEPORTBUS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCIE_PTM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_IOV
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_LABEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_MMCONFIG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_MSI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_MSI_IRQ_DOMAIN
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_QUIRKS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PCI_XEN
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PCSPKR_PLATFORM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PERF_EVENTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PGTABLE_MAPPING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PHYS_ADDR_T_64BIT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PID_NS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PINCTRL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PINCTRL_AMD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PINCTRL_BAYTRAIL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PINCTRL_CHERRYVIEW
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PINCTRL_SX150X
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PMC_ATOM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PM
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PM_DEBUG
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PM_DEVFREQ
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PM_DEVFREQ_EVENT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PMIC_ADP5520
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PMIC_DA903X
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PM_OPP
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PM_TRACE_RTC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PNP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_POSIX_MQUEUE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_POSIX_MQUEUE_SYSCTL
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_POSIX_TIMERS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_POWERCAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_POWER_RESET
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_POWER_RESET_RESTART
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_POWER_SUPPLY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PPP
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PRINTK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PRINTK_NMI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_PROC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROCESSOR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROCESSOR_SELECT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROC_EVENTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROC_FS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROC_KCORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROC_PAGE_MONITOR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROC_SYSCTL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROC_VMCORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PROFILING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PTP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PWM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PWM_CRC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PWM_LPSS_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PWM_LPSS_PLATFORM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_PWM_SYSFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_QUEUED_RWLOCKS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_QUEUED_SPINLOCKS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_QUOTA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_QUOTACTL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_QUOTA_NETLINK_INTERFACE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_RADIX_TREE_MULTIORDER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RANDOMIZE_BASE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RANDOMIZE_MEMORY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RAPIDIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RAS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RAS_CEC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RCU_NEED_SEGCBLIST
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_REGMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_REGULATOR
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RELAY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RELOCATABLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RETPOLINE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RFKILL_INPUT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RING_BUFFER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RPS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RSEQ
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RTC_CLASS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RTC_DRV_CMOS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RTC_HCTOSYS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RTC_LIB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RTC_MC146818_LIB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RT_MUTEXES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RWSEM_SPIN_ON_OWNER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_RWSEM_XCHGADD_ALGORITHM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SATA_PMP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SBITMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_AUTOGROUP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_DEBUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_HRTICK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_INFO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_MC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_MC_PRIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_SMT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_STACK_END_CHECK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHEDSTATS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCHED_TRACER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCSI_DH
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCSI_LOGGING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCSI_MOD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SCSI_PROC_FS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SECCOMP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SECONDARY_TRUSTED_KEYRING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SECURITY_APPARMOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SECURITY_APPARMOR_HASH
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SECURITYFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SECURITY_PATH
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SECURITY_SMACK
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SECURITY_SMACK_NETFILTER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SERIAL_8250
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_8250_CONSOLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_8250_EXTENDED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_8250_FINTEK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_8250_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_8250_PNP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_8250_RSA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_DEV_BUS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SERIAL_DEV_CTRL_TTYPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_EARLYCON
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_KGDB_NMI
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SERIAL_MAX310X
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIAL_SCCNXP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIO_I8042
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SERIO_LIBPS2
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SFI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SGI_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SG_POOL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SHMEM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SIGNALFD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SIGNATURE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SILEAD_DMI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SLAB_FREELIST_HARDENED
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SLAB_FREELIST_RANDOM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SLUB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SLUB_CPU_PARTIAL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SLUB_DEBUG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SMP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SOCK_VALIDATE_XMIT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SPARSEMEM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SPARSEMEM_ALLOC_MEM_MAP_TOGETHER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SPARSEMEM_EXTREME
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SPARSEMEM_VMEMMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SPARSEMEM_VMEMMAP_ENABLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SPI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SPI_MASTER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SQUASHFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SRAM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SRCU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_STACK_TRACER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_STACKTRACE_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_STREAM_PARSER
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_STRICT_KERNEL_RWX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_STRICT_MODULE_RWX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SUN_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SUSPEND
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SWAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SWIOTLB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SWIOTLB_XEN
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SW_SYNC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYNC_FILE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYSCTL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYSFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYS_HYPERVISOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_SYSTEM_BLACKLIST_KEYRING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYSTEM_DATA_VERIFICATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYSTEM_TRUSTED_KEYRING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYSV68_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYSVIPC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_SYSVIPC_SYSCTL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TASK_DELAY_ACCT
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_TASKS_RCU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TASKSTATS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_TCG_CRB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TCG_TIS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TCG_TPM
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_TCP_CONG_CUBIC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TCP_MD5SIG
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_THERMAL
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_THERMAL_GOV_BANG_BANG
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_THERMAL_GOV_FAIR_SHARE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_THERMAL_GOV_POWER_ALLOCATOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_THERMAL_GOV_STEP_WISE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_THERMAL_GOV_USER_SPACE
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_THERMAL_STATISTICS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_THREAD_INFO_IN_TASK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TICK_ONESHOT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TIMERFD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TMPFS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TOUCHSCREEN_ELAN
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TPS68470_PMIC_OPREGION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRACE_CLOCK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRACE_IRQFLAGS_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRACEPOINTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRACER_MAX_TRACE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRACER_SNAPSHOT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRACING
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRACING_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRANSPARENT_HUGEPAGE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRANSPARENT_HUGE_PAGECACHE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TREE_RCU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TREE_SRCU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TRUSTED_KEYS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TTY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TTY_PRINTK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TUN
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_TWL4030_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_TWL6040_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_UEVENT_HELPER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ULTRIX_PARTITION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_UNIX
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_UNIX98_PTYS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_UNUSED_SYMBOLS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_UNWINDER_FRAME_POINTER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_UPROBE_EVENTS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_UPROBES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_ARCH_HAS_HCD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_EHCI_HCD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_EHCI_HCD_PLATFORM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_EHCI_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_OHCI_HCD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_OHCI_HCD_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_OHCI_HCD_PLATFORM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_SUPPORT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_UHCI_HCD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_XHCI_HCD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USB_XHCI_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USERFAULTFD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_USER_NS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_UTS_NS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VFAT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VGA_ARB
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VGA_CONSOLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO_BALLOON
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO_CONSOLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO_MENU
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO_MMIO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO_PCI
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO_PCI_LEGACY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VMAP_STACK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VME_BUS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VM_EVENT_COUNTERS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_VT_CONSOLE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_WATCHDOG
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_WATCHDOG_PRETIMEOUT_GOV
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_WATCHDOG_PRETIMEOUT_GOV_NOOP
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_16BIT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_64
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_64_ACPI_NUMA
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_ACPI_CPUFREQ
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_ACPI_CPUFREQ_CPB
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_AMD_PLATFORM_DEVICE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_CHECK_BIOS_CORRUPTION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_ESPFIX64
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_EXTENDED_PLATFORM
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_INTEL_MPX
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_INTEL_PSTATE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_IO_APIC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_LOCAL_APIC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_MCE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_MCE_AMD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_MCE_INTEL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_MCELOG_LEGACY
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_MPPARSE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_NUMACHIP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_PAT
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_PCC_CPUFREQ
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_PLATFORM_DEVICES
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_PMEM_LEGACY_DEVICE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_PM_TIMER
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_POWERNOW_K8
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_PTDUMP_CORE
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_SMAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_SPEEDSTEP_CENTRINO
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_THERMAL_VECTOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_X86_TSC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_VSYSCALL_EMULATION
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_X86_X2APIC
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XDP_SOCKETS
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_ACPI_PROCESSOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_BACKEND
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_BLKDEV_FRONTEND
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_DOM0
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_MCE_LOG
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_NETDEV_FRONTEND
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_PV
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_PVH
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_PVHVM
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_SYS_HYPERVISOR
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XEN_XENBUS_FRONTEND
+    type:    string
+    only:    ["n", "y"]
+    default: "n"
+    when:    build
+
+  - name:    CONFIG_XPS
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ZBUD
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ZONE_DMA
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ZPOOL
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ZSMALLOC
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  - name:    CONFIG_ZSWAP
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  # Ours-specific
+  # Won't detect file system without it
+  - name:    CONFIG_VIRTIO_BLK
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  # Won't detect network without it
+  - name:    CONFIG_VIRTIO_NET
+    type:    string
+    only:    ["y", "n"]
+    default: "y"
+    when:    build
+
+  # NGINX-specific
+  - name:    KEEPALIVE_TIMEOUT
+    description: |
+      The time to wait for a connection until dropping it.
+    type:    int
+    default: 60
+    only:    [60]
+    when:    test
+
+  - name:    OPEN_FILE_CACHE
+    description: |
+      If enabled, nginx will cache the file content.
+    type:    string
+    default: "nocaching"
+    only:    ["nocaching"]
+    when:    test
+
+  - name:    WORKER_RLIMIT_NOFILE
+    description: |
+      Changes the limit on the maximum number of open files.
+    type:    string
+    only:    [63]
+    default: 63
+    when:    test
+
+  - name:    SERVER_TOKENS
+    description: |
+      If enabled, it will send te server token together with the response.
+    type:    string
+    only:    ["off"]
+    default: "off"
+    when:    test
+
+  - name:    SENDFILE
+    description: |
+      If enabled, it will use the sendfile function family from the kernel.
+    type:    string
+    only:    ["off"]
+    default: "off"
+    when:    test
+
+  - name:    TCP_NOPUSH
+    description: |
+      If on, blocks the data until the packet reaches the MSS.
+    type:    string
+    default: "off"
+    only:    ["off"]
+    when:    test
+
+  - name:    WORKER_CONNECTIONS
+    description: |
+      The number of wrk connections.
+    type:    int
+    default: 63
+    only:    [63]
+    when:    test
+
+  - name:    NUM_PARALLEL_CONNS
+    description: |
+      The number of simultaneous TCP connections.
+    type:    int
+    default: 30
+    only:    [30]
+    when:    test
+
+  - name:    PAYLOAD_SIZE
+    type:    int
+    only:    [612] # bytes
+    when:    test
+
+build:
+  image: localhost:5000/linux-cozart-nginx-optimized:latest
+  outputs:
+    kernel: /root/workspace/linux/arch/x86/boot/bzImage
+    disks:
+      - name: vda
+        type: raw
+        path: /root/workspace/nginx.ext3
+  devices:
+    - /dev/urandom
+    - /dev/loop-control
+  capabilities:
+    - CAP_NET_ADMIN
+    - CAP_SYS_ADMIN
+  cores: 44
+  workdir: /root/workspace/linux
+  commands:
+    |
+    set -xe
+
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+    env
+
+    echo "Configuring Linux"
+    #
+    # 1. Configure Linux
+    #
+    cd ${WORKDIR}/linux
+
+    set +x
+    for var in $(env | grep ^CONFIG_ | cut -d= -f1); do
+      if [ -n "${!var}" ]; then
+        echo "${var}=${!var}" >> permutation.config
+      fi
+    done
+    set -x
+
+    KCONFIG_ALLCONFIG=permutation.config make allnoconfig
+
+    echo "Building kernel"
+    make -j$(nproc)
+
+    echo "Generating filesystem image"
+    #
+    # 2. Generate filesystem image
+    #
+    cd ${WORKDIR}
+    image2rootfs.sh ./nginx.tar ext3
+    mkdir -p /tmp/nginx-ext3
+    mount -o loop ./nginx.ext3 /tmp/nginx-ext3
+
+    # Install network setup script here as we cannot run `u`/`mount` during the
+    # container's build.
+    cp -v /root/workspace/lupine-linux/scripts/busybox-x86_64 /tmp/nginx-ext3
+    cp -v /root/workspace/lupine-linux/scripts/guest* /tmp/nginx-ext3
+
+    # Install musl libc
+    mkdir -p /tmp/nginx-ext3/trusted
+    cp -v /root/workspace/lupine-linux/scripts/libc.so /tmp/nginx-ext3/trusted/libc.so
+
+    # Generate a variable-size payload
+    mkdir -p /tmp/nginx-ext3/data/www/
+    tr -dc A-Za-z0-9 </dev/urandom | head -c ${PAYLOAD_SIZE} > /tmp/nginx-ext3/data/www/index.html
+
+    # Unmounting seals the filesystem archive
+    umount /tmp/nginx-ext3
+
+    echo "Build Done!"
+
+test:
+  - name: throughput
+    kernel:
+      plat: kvm
+      arch: x86_64
+      memory: 1024M
+      args:
+        >
+        raid=noautodetect
+        root=/dev/vda
+        rw
+        WAYFINDER_DOMAIN_IP_ADDR=$WAYFINDER_DOMAIN_IP_ADDR
+        WAYFINDER_DOMAIN_IP_GW_ADDR=$WAYFINDER_DOMAIN_IP_GW_ADDR
+        console=ttyS0
+        KEEPALIVE_TIMEOUT=${KEEPALIVE_TIMEOUT}
+        OPEN_FILE_CACHE=${OPEN_FILE_CACHE}
+        WORKER_RLIMIT_NOFILE=${WORKER_RLIMIT_NOFILE}
+        SERVER_TOKENS=${SERVER_TOKENS}
+        SENDFILE=${SENDFILE}
+        TCP_NOPUSH=${TCP_NOPUSH}
+        WORKER_CONNECTIONS=${WORKER_CONNECTIONS}
+        PAYLOAD_SIZE=${PAYLOAD_SIZE}
+        init=/guest_start.sh
+      cores: 4
+    benchtool:
+      image: localhost:5000/wrk:latest
+      devices:
+        - /dev/urandom
+        - /dev/kvm
+        - /dev/net/tun
+      capabilities:
+        - CAP_NET_ADMIN
+      commands: /test.sh index.html
+      cores: 1
+      start_delay: 15
+      duration: 1
+    results:
+      - name: throughput
+        path: /results/throughput.txt
+        type: float
