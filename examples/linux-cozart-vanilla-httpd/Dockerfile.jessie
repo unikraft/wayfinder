@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim AS httpd-filesystem
 
-ARG APACHE_VERSION=2.4
+ARG APACHE_VERSION=2.4.29
 
 RUN set -xe; \
     apt-get update; \

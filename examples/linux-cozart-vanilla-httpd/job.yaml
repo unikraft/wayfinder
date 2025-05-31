@@ -14673,12 +14673,17 @@ params:
     default: "y"
     when:    build
 
+  - name: PAYLOAD_SIZE
+    type: int
+    only: [612] # bytes
+    when: test
+
   # httpd-specific
   # https://httpd.apache.org/docs/2.4/mod/core.html
   - name: CONTENT_DIGEST # ContentDigest
     type: string
     default: "Off"
-    only: ["On", "Off"]
+    only: ["Off", "On"]
     when: test
 
   - name: ENABLE_MMAP # EnableMMAP
@@ -14690,29 +14695,13 @@ params:
   - name: ENABLE_SEND_FILE # EnableSendfile
     type: string
     default: "Off"
-    only: ["On", "Off"]
+    only: ["Off", "On"]
     when: test
 
   - name: EXTENDED_STATUS # ExtendedStatus
     type: string
     default: "Off"
-    only: ["On", "Off"]
-    when: test
-
-  - name: FLUSH_MAX_PIPELINED # FlushMaxPipelined
-    type: int
-    min: 0
-    max: 100
-    default: 5
-    only: [5]
-    when: test
-
-  - name: FLUSH_MAX_THRESHOLD # FlushMaxThreshold
-    type: int
-    min: 0
-    max: 524288
-    default: 65536
-    only: [65536]
+    only: ["Off", "On"]
     when: test
 
   - name: KEEP_ALIVE # KeepAlive
@@ -14764,7 +14753,7 @@ params:
   - name: LOG_LEVEL # LogLevel
     type: string
     default: "warn"
-    only: ["trace7", "trace6", "trace5", "trace4", "trace3", "trace2", "trace1", "debug", "info", "notice", "warn", "error", "crit", "alert", "emerg"]
+    only: ["warn", "trace7", "trace6", "trace5", "trace4", "trace3", "trace2", "trace1", "debug", "info", "notice", "error", "crit", "alert", "emerg"]
     when: test
 
   - name: MAX_KEEP_ALIVE_REQUESTS # MaxKeepAliveRequests
@@ -14802,15 +14791,7 @@ params:
   - name: MUTEX # Mutex
     type: string
     default: "default"
-    only: ["posixsem", "sysvsem", "pthread", "default"]
-    when: test
-
-  - name: READ_BUFFER_SIZE # ReadBufferSize
-    type: int
-    min: 0
-    max: 1048576
-    default: 8192
-    only: [8192]
+    only: ["default", "posixsem", "sysvsem", "pthread"]
     when: test
 
   - name: SERVER_TOKENS # ServerTokens
@@ -14828,7 +14809,7 @@ params:
     when: test
 
 build:
-  image: localhost:5000/linux-httpd:latest
+  image: localhost:5000/linux-cozart-httpd:latest
   outputs:
     kernel: /root/workspace/linux/arch/x86/boot/bzImage
     disks:
@@ -14875,19 +14856,19 @@ build:
     #
     # 2. Generate filesystem image
     #
+    cd ${WORKDIR}
     image2rootfs.sh httpd.tar
     mkdir -p /tmp/httpd-ext3
     mount -o loop ./httpd.ext3 /tmp/httpd-ext3
 
     # Install network setup script here as we cannot run `u`/`mount` during the
     # container's build.
-    cp -v ./scripts/busybox-x86_64 /tmp/httpd-ext3
-    cp -v ./scripts/guest* /tmp/httpd-ext3
-    cp -v ./load_entropy/load_entropy /tmp/httpd-ext3
+    cp -v /root/workspace/lupine-linux/scripts/busybox-x86_64 /tmp/httpd-ext3
+    cp -v /root/workspace/lupine-linux/scripts/guest* /tmp/httpd-ext3
 
     # Install musl libc
     mkdir -p /tmp/httpd-ext3/trusted
-    cp -v ./scripts/libc.so /tmp/httpd-ext3/trusted/libc.so
+    cp -v /root/workspace/lupine-linux/scripts/libc.so /tmp/httpd-ext3/trusted/libc.so
 
     # Generate a variable-size payload
     mkdir -p /tmp/httpd-ext3/data/www/

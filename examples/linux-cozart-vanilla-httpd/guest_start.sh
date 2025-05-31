@@ -6,7 +6,7 @@ set -ex
 
 echo "Init called as: $@"
 
-export PATH="/usr/local/bin:$PATH"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/apache2/bin:$PATH"
 
 mount -t proc proc /proc
 ulimit -n 65535
@@ -19,15 +19,13 @@ echo 1024 > /proc/sys/net/core/somaxconn
 ./busybox-x86_64 ip link set lo up
 ./busybox-x86_64 ip route add default via $WAYFINDER_DOMAIN_IP_GW_ADDR dev eth0
 
-tr -dc A-Za-z0-9 < /dev/urandom | head -c $PAYLOAD_SIZE > /usr/local/apache2/htdocs/index.html
+mv data/www/index.html /usr/local/apache2/htdocs/index.html
 
 cat << EOF >> /usr/local/apache2/conf/httpd.conf
 ContentDigest ${CONTENT_DIGEST}
 EnableMMAP ${ENABLE_MMAP}
 EnableSendfile ${ENABLE_SEND_FILE}
 ExtendedStatus ${EXTENDED_STATUS}
-FlushMaxPipeLined ${FLUSH_MAX_PIPELINED}
-FlushMaxThreshold ${FLUSH_MAX_THRESHOLD}
 KeepAlive ${KEEP_ALIVE}
 KeepAliveTimeout ${KEEP_ALIVE_TIMEOUT}
 LimitRequestBody ${LIMIT_REQUEST_BODY}
@@ -40,10 +38,12 @@ MaxRangeOverlaps ${MAX_RANGE_OVERLAPS}
 MaxRangeReversals ${MAX_RANGE_REVERSALS}
 MaxRanges ${MAX_RANGES}
 Mutex ${MUTEX}
-ReadBufferSize ${READ_BUFFER_SIZE}
 ServerTokens ${SERVER_TOKENS}
 TimeOut ${TIME_OUT}
+ServerName Wayfinder
 EOF
 
-apachectl -k start
+sleep 2
+
+apachectl -f /usr/local/apache2/conf/httpd.conf -k start
 sleep 100000
