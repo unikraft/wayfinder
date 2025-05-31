@@ -19,7 +19,7 @@ echo 1024 > /proc/sys/net/core/somaxconn
 ./busybox-x86_64 ip link set lo up
 ./busybox-x86_64 ip route add default via $WAYFINDER_DOMAIN_IP_GW_ADDR dev eth0
 
-mv data/www/index.html /usr/local/apache2/htdocs/index.html
+cp data/www/index.html /usr/local/apache2/htdocs/index.html
 
 cat << EOF >> /usr/local/apache2/conf/httpd.conf
 ContentDigest ${CONTENT_DIGEST}
