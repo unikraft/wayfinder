@@ -1,5 +1,7 @@
 # wayfinder: OS Configuration Micro-Benchmarking Framework
 
+[![DOI](https://zenodo.org/badge/424182263.svg)](https://doi.org/10.5281/zenodo.18592520)
+
 Wayfinder is a generic OS performance evaluation platform.  Wayfinder is fully
 automated and ensures both the accuracy and reproducibility of results, all the
 while speeding up how fast tests are run on a system. Wayfinder is easily
