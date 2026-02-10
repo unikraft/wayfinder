@@ -125,7 +125,9 @@ func (p *provider) PushMetrics(testUuid string, jobId int64, metrics map[string]
 	tags["job_id"] = fmt.Sprintf("%d", jobId)
 	tags["test_uuid"] = testUuid
 
-	stats, err := p.libvirtClient.GetAllDomainStats(p.libvirtDomains, libvirtStats.DOMAIN_STATS_PERF, libvirtStats.CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE)
+	// Use nil to avoid mismatch. Will not take much more as we usually run ~1 at the time
+	// If you need to use multiple, specify the domains with p.libvirtDomains
+	stats, err := p.libvirtClient.GetAllDomainStats(nil, libvirtStats.DOMAIN_STATS_PERF, libvirtStats.CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE)
 	if err != nil {
 		return err
 	}

@@ -53,8 +53,8 @@ import (
 
 var (
 	archToMachine = map[string]string{
-		"x86_64":   "pc-i440fx-3.1",
-		"riscv64":  "virt",
+		"x86_64": "pc-i440fx-3.1",
+		"riscv64": "virt",
 	}
 )
 
@@ -240,7 +240,7 @@ func (s *Service) NewDomain(fakePid int, uuid, plat, kernel, initrd, arch, args 
 		// },
 		MemoryBacking: &libvirtxml.DomainMemoryBacking{
 			MemoryAllocation: &libvirtxml.DomainMemoryAllocation{
-				Mode: "immediate",
+				Mode: "immediate", // Use "ondemand" for memory experiment, might add latency
 			},
 			// MemoryLocked: &libvirtxml.DomainMemoryLocked{}, // Might not work
 		},
@@ -639,7 +639,7 @@ func (d *Domain) MeasureResources() []error {
 	}
 
 	for _, monitor := range d.monitors {
-		if err := d.MetricMeasure(monitor.Name, monitor.Commands); err != nil {
+		if err := d.MetricMeasure(monitor.Name, d.pid, monitor.Commands); err != nil {
 			errs = append(errs, fmt.Errorf("could not measure custom metrics: %s", err))
 		}
 	}

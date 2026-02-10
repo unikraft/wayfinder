@@ -32,6 +32,8 @@ package libvirt
 // POSSIBILITY OF SUCH DAMAGE.
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -45,9 +47,11 @@ func (d *Domain) MetricLookup() error {
 }
 
 // Runs every measurement script and adds the values obtain
-func (d *Domain) MetricMeasure(name, command string) error {
+func (d *Domain) MetricMeasure(name string, pid int, command string) error {
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("DOMAIN_PID=%d", pid))
 	// TODO: variablize 'sh' such that user can specify entrypoint program
-	result, err := exec.Command("bash", "-c", command).Output()
+	result, err := cmd.Output()
 	if err != nil {
 		return err
 	}

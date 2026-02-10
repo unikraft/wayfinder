@@ -264,6 +264,10 @@ func GetCpuLayoutInfo() (*[]CPULayoutInfo, error) {
 
 	for i := 4; i < len(lines); i++ {
 		fields := strings.Split(lines[i], ",")
+		if len(fields) < 9 {
+			continue
+		}
+
 		CPUValue, _ := strconv.ParseUint(fields[0], 10, 64)
 		CoreValue, _ := strconv.ParseUint(fields[1], 10, 64)
 		SocketValue, _ := strconv.ParseUint(fields[2], 10, 64)

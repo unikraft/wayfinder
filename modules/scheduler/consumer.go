@@ -565,13 +565,17 @@ func (c *TaskConsumer) StartTask(task *spec.JobSpec) error {
 	for _, currentTest := range task.Test {
 		test := test{}
 
-		emulatorCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
-		iothreadCoreIds := c.busyWaitForCores(1, &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
-		benchToolCoreIds := c.busyWaitForCores(int(currentTest.BenchTool.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
-		kernelCoreIds := c.busyWaitForCores(int(currentTest.Kernel.Cores), &test, stageTest, task.IsolLevel, task.IsolSplit, task.LaxMode)
-		testCoreIds := append(emulatorCoreIds, benchToolCoreIds...)
-		testCoreIds = append(testCoreIds, iothreadCoreIds...)
-		testCoreIds = append(testCoreIds, kernelCoreIds...)
+		testCoreIds := c.busyWaitForCores(
+			int(currentTest.Kernel.Cores)+1+1+int(currentTest.BenchTool.Cores),
+			&test, stageTest, task.IsolLevel,
+			task.IsolSplit,
+			task.LaxMode,
+		)
+
+		kernelCoreIds := testCoreIds[:currentTest.Kernel.Cores]
+		emulatorCoreIds := testCoreIds[currentTest.Kernel.Cores : currentTest.Kernel.Cores+1]
+		iothreadCoreIds := testCoreIds[currentTest.Kernel.Cores+1 : currentTest.Kernel.Cores+2]
+		benchToolCoreIds := testCoreIds[currentTest.Kernel.Cores+2:]
 
 		// Create the test
 		// The environment variables are currently the same as in the build environment
