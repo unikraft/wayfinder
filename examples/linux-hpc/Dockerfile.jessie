@@ -57,7 +57,7 @@ RUN set -xe; \
 #
 # Base utilities and tools already included in the base image
 #
-FROM ghcr.io/unikraft/wayfinder/linux-base:jessie
+FROM ghcr.io/unikraft/wayfinder/linux-nginx:latest
 
 #
 # Grab and prepare Lupine/Linux sources
