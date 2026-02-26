@@ -1,4 +1,4 @@
-FROM debian:9.13 AS wrk
+FROM debian:12.13 AS wrk
 
 RUN set -xe; \
     apt-get update; \
@@ -12,7 +12,7 @@ RUN set -xe; \
     cd /wrk; \
     make
 
-FROM debian:9.13 AS test
+FROM debian:12.13 AS test
 
 RUN set -xe; \
     apt-get update; \
